@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Request Password Reset{% endblock %}
+
+{% block content %}
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <h2 class="active"> Request Password Reset </h2>
+
+    <form method="POST" action="{{ url_for('auth.request_reset') }}">
+      <input type="email" class="fadeIn second" name="email" placeholder="Email" required>
+      <input type="submit" class="fadeIn fourth" value="Request Password Reset">
+    </form>
+  </div>
+</div>
+{% endblock %}

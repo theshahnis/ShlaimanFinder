@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Authentication{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='custom-checkbox.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <!-- Tabs Titles -->
+    <h2 id="loginTab" class="active" onclick="showLogin()"> Sign In </h2>
+    <h2 id="signupTab" class="inactive underlineHover" onclick="showSignup()">Sign Up </h2>
+
+    <!-- Icon -->
+    <div class="fadeIn first">
+      <img src="{{ url_for('static', filename='icon.svg') }}" id="icon" alt="User Icon" />
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <form method="POST" action="{{ url_for('auth.auth_page') }}">
+        <input type="hidden" name="login" value="login">
+        <input type="email" id="loginEmail" class="fadeIn second" name="email" placeholder="email" required>
+        <input type="password" id="loginPassword" class="fadeIn third" name="password" placeholder="password" required>
+
+        <!-- Custom Checkbox -->
+        <div class="checkbox-wrapper-5 fadeIn fourth">
+          <label for="check-5">
+            <input type="checkbox" id="check-5" name="remember">
+            <span class="tick_mark"></span>
+          </label>
+          <span> Remember me?</span>
+        </div>
+
+        <input type="submit" class="fadeIn fifth" value="Log In">
+      </form>
+
+      <!-- Remind Password -->
+      <div id="formFooter">
+        <a class="underlineHover" href="{{ url_for('auth.request_reset') }}">Forgot Password?</a>
+      </div>
+    </div>
+
+    <!-- Signup Form -->
+    <div id="signupForm" style="display: none;">
+      <form method="POST" action="{{ url_for('auth.auth_page') }}">
+        <input type="hidden" name="signup" value="signup">
+        <input type="text" id="signupUsername" class="fadeIn second" name="username" placeholder="username" required>
+        <input type="email" id="signupEmail" class="fadeIn second" name="email" placeholder="email" required>
+        <input type="password" id="signupPassword" class="fadeIn third" name="password" placeholder="password" required>
+        <input type="submit" class="fadeIn fourth" value="Sign Up">
+      </form>
+
+      <!-- Redirect to Login -->
+      <div id="formFooter">
+        <a class="underlineHover" href="#" onclick="showLogin()">Already have an account? Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showLogin() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginTab').classList.add('active');
+    document.getElementById('loginTab').classList.remove('inactive');
+    document.getElementById('signupTab').classList.add('inactive');
+    document.getElementById('signupTab').classList.remove('active');
+  }
+
+  function showSignup() {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('loginTab').classList.add('inactive');
+    document.getElementById('loginTab').classList.remove('active');
+    document.getElementById('signupTab').classList.add('active');
+    document.getElementById('signupTab').classList.remove('inactive');
+  }
+</script>
+{% endblock %}

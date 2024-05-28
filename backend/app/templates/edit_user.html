@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<h1>Edit User</h1>
+<form method="POST">
+    <label for="email">Email:</label>
+    <input type="email" name="email" id="email" value="{{ user.email }}" required>
+    <br>
+    <label for="password">Password (leave blank to keep current password):</label>
+    <input type="password" name="password" id="password">
+    <br>
+    <button type="submit">Save Changes</button>
+</form>
+<a href="{{ url_for('main.superuser') }}">Cancel</a>
+{% endblock %}
