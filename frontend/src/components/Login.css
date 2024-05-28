@@ -13,9 +13,17 @@ body {
 
 a {
   color: #92badd;
-  display:inline-block;
+  display: inline-block;
   text-decoration: none;
   font-weight: 400;
+}
+
+h1.app-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0d0d0d;
+  margin: 20px 0;
 }
 
 h2 {
@@ -23,8 +31,8 @@ h2 {
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
-  display:inline-block;
-  margin: 40px 8px 10px 8px; 
+  display: inline-block;
+  margin: 40px 8px 10px 8px;
   color: #cccccc;
 }
 
@@ -33,7 +41,7 @@ h2 {
 .wrapper {
   display: flex;
   align-items: center;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: center;
   width: 100%;
   min-height: 100%;

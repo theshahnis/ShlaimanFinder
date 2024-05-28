@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Login.css';  // Ensure this import statement is correct
+import './Login.css';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -33,6 +33,7 @@ const Login = () => {
   return (
     <div className="wrapper fadeInDown">
       <div id="formContent">
+        <h1 className="app-title">Shlaiman app - Never lose your friends again!</h1>
         <h2
           className={isLogin ? 'active' : 'inactive underlineHover'}
           onClick={() => setIsLogin(true)}
@@ -47,7 +48,7 @@ const Login = () => {
         </h2>
 
         <div className="fadeIn first">
-          <img src="icon.svg" id="icon" alt="User Icon" />
+          <img src="/icon.png" id="icon" alt="User Icon" />
         </div>
 
         <form onSubmit={handleSubmit}>
