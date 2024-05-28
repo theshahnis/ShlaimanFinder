@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Location{% endblock %}
+
+{% block content %}
+<div>
+    <h2>Location Page</h2>
+    <button onclick="getLocation()">Get Current Location</button>
+    <button onclick="sendLocation()">Send Location</button>
+    <p id="location">Location will be displayed here</p>
+</div>
+
+<script>
+    let latitude;
+    let longitude;
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+
+    function showPosition(position) {
+        latitude = position.coords.latitude;
+        longitude = position.coords.longitude;
+        document.getElementById("location").innerHTML = "Latitude: " + latitude + 
+        "<br>Longitude: " + longitude;
+    }
+
+    function sendLocation() {
+        fetch('/main/location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                latitude: latitude,
+                longitude: longitude
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+{% endblock %}

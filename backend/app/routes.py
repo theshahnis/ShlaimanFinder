@@ -53,3 +53,17 @@ def delete_user(user_id):
     db.session.commit()
     flash('User deleted successfully', 'success')
     return redirect(url_for('main.superuser'))
+
+@main.route('/location', methods=['GET'])
+@login_required
+def location():
+    return render_template('location.html')
+
+@main.route('/location', methods=['POST'])
+@login_required
+def update_location():
+    data = request.get_json()
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    # Here, you can handle the received location data as needed
+    return jsonify({'message': 'Location updated successfully'}), 200

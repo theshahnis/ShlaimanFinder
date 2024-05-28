@@ -1,1 +1,21 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/favicon.ico"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Web site created using create-react-app"/><link rel="apple-touch-icon" href="/logo192.png"/><link rel="manifest" href="/manifest.json"/><title>React App</title><script defer="defer" src="/static/js/main.491797b3.js"></script><link href="/static/css/main.e6c13ad2.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shlaiman App - Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <h1 class="app-title">Shlaiman App - Never lose your friends again!</h1>
+            <h2 class="active">Welcome</h2>
+            <div class="fadeIn first">
+                <img src="{{ url_for('static', filename='custom-icon.png') }}" id="icon" alt="User Icon" />
+            </div>
+            <p class="fadeIn second">Please <a href="login.html">login</a> or <a href="{{ url_for('auth.signup') }}">sign up</a> to continue.</p>
+        </div>
+    </div>
+</body>
+</html>
