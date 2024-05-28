@@ -1,7 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_pymongo import PyMongo
 from flask_login import LoginManager
 from flask_mail import Mail
 
-db = SQLAlchemy()
+mongo = PyMongo()
 login_manager = LoginManager()
 mail = Mail()

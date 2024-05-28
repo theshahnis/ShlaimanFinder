@@ -21,8 +21,7 @@
 
     <!-- Login Form -->
     <div id="loginForm">
-      <form method="POST" action="{{ url_for('auth.auth_page') }}">
-        <input type="hidden" name="login" value="login">
+      <form method="POST" action="{{ url_for('auth.login') }}">
         <input type="email" id="loginEmail" class="fadeIn second" name="email" placeholder="email" required>
         <input type="password" id="loginPassword" class="fadeIn third" name="password" placeholder="password" required>
 
@@ -46,8 +45,7 @@
 
     <!-- Signup Form -->
     <div id="signupForm" style="display: none;">
-      <form method="POST" action="{{ url_for('auth.auth_page') }}">
-        <input type="hidden" name="signup" value="signup">
+      <form method="POST" action="{{ url_for('auth.signup') }}">
         <input type="text" id="signupUsername" class="fadeIn second" name="username" placeholder="username" required>
         <input type="email" id="signupEmail" class="fadeIn second" name="email" placeholder="email" required>
         <input type="password" id="signupPassword" class="fadeIn third" name="password" placeholder="password" required>
