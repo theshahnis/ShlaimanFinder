@@ -5,12 +5,13 @@ from sqlalchemy.orm import DeclarativeBase
 from .extensions import db, login_manager, mail
 from datetime import timedelta
 
+
 class Base(DeclarativeBase):
-    pass
+  pass
 
 def create_app():
-    app = Flask(__name__, static_folder='static', static_url_path='')
-    app.config['SECRET_KEY'] = 'zubur123'
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'your_secret_key'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=180)
@@ -29,18 +30,13 @@ def create_app():
     mail.init_app(app)
 
     from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(auth_blueprint)
 
     from .routes import main as main_blueprint
-    app.register_blueprint(main_blueprint, url_prefix='/main')
+    app.register_blueprint(main_blueprint)
 
-    @app.route('/')
-    def index():
-        return app.send_static_file('index.html')
-
-    # Ensure the database tables are created
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
 
     return app
 
