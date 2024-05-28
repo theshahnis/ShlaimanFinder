@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash,current_app
+from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
@@ -6,52 +6,32 @@ from .extensions import db
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 
-
 auth = Blueprint('auth', __name__)
 
-@auth.route('/auth', methods=['GET', 'POST'])
-def auth_page():
-    if request.method == 'POST':
-        if 'login' in request.form:
-            return login()
-        elif 'signup' in request.form:
-            return signup()
-    return render_template('auth.html')
-
+@auth.route('/api/auth/login', methods=['POST'])
 def login():
-    email = request.form.get('email')
-    password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password, password):
-        login_user(user, remember=remember)
-        flash('Successfully logged in!', 'success')
-        return redirect(url_for('main.profile'))
-    else:
-        flash('Login failed. Check your email and password.', 'error')
-        return redirect(url_for('auth.auth_page'))
+        return jsonify({'message': 'Login successful'}), 200
+    return jsonify({'message': 'Invalid credentials'}), 401
 
+@auth.route('/api/auth/signup', methods=['POST'])
 def signup():
-    email = request.form.get('email')
-    username = request.form.get('username')
-    password = request.form.get('password')
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        flash('Email already in use. Please choose a different email.', 'error')
-        return redirect(url_for('auth.auth_page'))
-
-    if len(password) < 6:
-        flash('Password must be at least 6 characters long.', 'error')
-        return redirect(url_for('auth.auth_page'))
-
+    data = request.get_json()
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+
     new_user = User(email=email, username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    login_user(new_user)
-    flash('Account created successfully!', 'success')
-    return redirect(url_for('main.profile'))
+
+    return jsonify({'message': 'User created successfully'}), 201
 
 @auth.route('/logout')
 @login_required
@@ -59,7 +39,6 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('auth.auth_page'))
-
 
 @auth.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
@@ -103,8 +82,6 @@ def reset_password(token):
             flash('Your password has been updated!', 'success')
             return redirect(url_for('auth.auth_page'))
     return render_template('reset_password.html', token=token)
-
-
 
 def generate_reset_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
