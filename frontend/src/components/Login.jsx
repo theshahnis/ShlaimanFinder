@@ -9,7 +9,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isLogin ? '/auth/api/auth/login' : '/auth/api/auth/signup';
+    const url = isLogin ? 'http://127.0.0.1:5000/auth/api/auth/login' : 'http://127.0.0.1:5000/auth/api/auth/signup';
     const data = isLogin ? { email, password } : { email, password, username };
 
     const response = await fetch(url, {
