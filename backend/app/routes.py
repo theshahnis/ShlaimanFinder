@@ -156,6 +156,18 @@ def get_location_data():
         }), 200
     return jsonify({'message': 'No location data found'}), 404
 
+@main.route('/location/<int:user_id>', methods=['GET'])
+@login_required
+def get_user_location(user_id):
+    location = Location.query.filter_by(user_id=user_id).order_by(Location.timestamp.desc()).first()
+    if location:
+        return jsonify({
+            'latitude': location.latitude,
+            'longitude': location.longitude,
+            'timestamp': location.timestamp.isoformat()
+        }), 200
+    return jsonify({'message': 'No location data found'}), 404
+
 
 @main.route('/join_group', methods=['GET', 'POST'])
 @login_required
@@ -180,7 +192,17 @@ def join_group():
             current_user.passcode_attempts = 0  # Reset attempts on successful joining
             db.session.commit()
             flash('You have successfully joined the group!', 'success')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.profile'))
         except Exception as e:
             print("Failed to process request or insert to db")
     return render_template('join_group.html', title='Join Group', form=form)
+
+@main.route('/friends', methods=['GET'])
+@login_required
+def friends():
+    if not current_user.group_id:
+        flash('You are not part of any group', 'warning')
+        return redirect(url_for('main.index'))
+    
+    users = User.query.filter_by(group_id=current_user.group_id).all()
+    return render_template('friends.html', users=users)

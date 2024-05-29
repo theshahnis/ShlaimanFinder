@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from .extensions import db
+from .extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 
@@ -76,7 +76,7 @@ def request_reset():
     return render_template('request_reset.html')
 
 def send_reset_email(to, token):
-    msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[to])
+    msg = Message('Shlaiman Finder-Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
 {url_for('auth.reset_password', token=token, _external=True)}
 If you did not make this request then simply ignore this email and no changes will be made.

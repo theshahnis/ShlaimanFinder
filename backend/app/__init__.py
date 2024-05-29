@@ -39,7 +39,7 @@ def create_app():
 
     @app.route('/')
     def index():
-        return app.send_static_file('index.html')
+        return app.send_static_file('auth.html')
 
     with app.app_context():
         db.create_all()

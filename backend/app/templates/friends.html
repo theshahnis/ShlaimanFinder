@@ -1,0 +1,45 @@
+<!-- templates/friends.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Friends{% endblock %}
+
+{% block content %}
+<h1>Friends in Your Group</h1>
+<div id="friends-list">
+    {% for user in users %}
+    <div class="friend">
+        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.jpg')) }}" alt="{{ user.username }}'s photo" width="100">
+        <p>{{ user.username }}</p>
+        <button onclick="viewLocation({{ user.id }})">View Location</button>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="location-info">
+    <h2>User Location</h2>
+    <p id="location-details"></p>
+</div>
+
+<script>
+    function viewLocation(userId) {
+        fetch(`/location/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.latitude && data.longitude) {
+                    document.getElementById('location-details').innerHTML = `
+                        Latitude: ${data.latitude}<br>
+                        Longitude: ${data.longitude}<br>
+                        Timestamp: ${data.timestamp}
+                    `;
+                } else {
+                    document.getElementById('location-details').innerHTML = 'No location data found.';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching location:', error);
+                document.getElementById('location-details').innerHTML = 'Error fetching location data.';
+            });
+    }
+</script>
+{% endblock %}
