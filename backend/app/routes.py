@@ -9,6 +9,7 @@ from .extensions import db
 from .forms import UpdateProfileForm, JoinGroupForm
 from datetime import datetime
 from pytz import timezone
+from PIL import Image
 
 main = Blueprint('main', __name__)
 
@@ -50,6 +51,15 @@ def save_picture(form_picture):
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
+
+    # Check if the file is a valid image
+    try:
+        with Image.open(form_picture) as img:
+            img.verify()  # Verify that this is an image
+            form_picture.seek(0)  # Reset file pointer to start
+    except (IOError, SyntaxError) as e:
+        raise ValueError("Invalid image file")
+
     form_picture.save(picture_path)
     return picture_fn
 
@@ -126,21 +136,19 @@ def update_location():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     print(f"lati:{latitude} , long:{longitude}")
+    
     if latitude and longitude:
-        # Fetch the latest location entry for the user
         location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
         if location:
-            # Update the existing entry
             location.latitude = latitude
             location.longitude = longitude
             location.timestamp = datetime.now()
         else:
-            # Create a new location entry if none exists
             location = Location(user_id=current_user.id, latitude=latitude, longitude=longitude, timestamp=datetime.now(timezone('Etc/GMT+3')))
             db.session.add(location)
-
         db.session.commit()
         return jsonify({'message': 'Location updated successfully'}), 200
+    
     return jsonify({'message': 'Invalid data'}), 400
 
 
@@ -167,6 +175,27 @@ def get_user_location(user_id):
             'timestamp': location.timestamp.isoformat()
         }), 200
     return jsonify({'message': 'No location data found'}), 404
+
+@main.route('/locations', methods=['GET'])
+@login_required
+def get_locations():
+    if not current_user.group_id:
+        return jsonify({'locations': []})
+
+    users = User.query.filter_by(group_id=current_user.group_id).all()
+    locations = []
+    for user in users:
+        location = Location.query.filter_by(user_id=user.id).order_by(Location.timestamp.desc()).first()
+        if location:
+            locations.append({
+                'username': user.username,
+                'latitude': location.latitude,
+                'longitude': location.longitude,
+                'profile_image': user.profile_image  # Include profile image filename
+            })
+
+    return jsonify({'locations': locations})
+
 
 
 @main.route('/join_group', methods=['GET', 'POST'])
@@ -206,3 +235,8 @@ def friends():
     
     users = User.query.filter_by(group_id=current_user.group_id).all()
     return render_template('friends.html', users=users)
+
+@main.route('/map', methods=['GET'])
+@login_required
+def map_view():
+    return render_template('map.html')
