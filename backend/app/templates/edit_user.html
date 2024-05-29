@@ -11,6 +11,14 @@
     <label for="password">Password (leave blank to keep current password):</label>
     <input type="password" name="password" id="password">
     <br>
+    <label for="group">Group:</label>
+    <select name="group_id" id="group">
+        <option value="">No Group</option>
+        {% for group in groups %}
+            <option value="{{ group.id }}" {% if user.group_id == group.id %}selected{% endif %}>{{ group.name }}</option>
+        {% endfor %}
+    </select>
+    <br>
     <button type="submit">Save Changes</button>
 </form>
 <a href="{{ url_for('main.superuser') }}">Cancel</a>

@@ -1,105 +1,32 @@
-from bson import ObjectId, errors
-from werkzeug.security import generate_password_hash, check_password_hash
+from .extensions import db
 from flask_login import UserMixin
-from .extensions import mongo
+from werkzeug.security import generate_password_hash, check_password_hash
 
-class Group:
-    @staticmethod
-    def create_group(name):
-        group = {
-            "name": name,
-            "users": []
-        }
-        result = mongo.db.groups.insert_one(group)
-        return result.inserted_id
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False, unique=True)
+    users = db.relationship('User', backref='group', lazy=True)
 
-    @staticmethod
-    def find_group_by_id(group_id):
-        try:
-            return mongo.db.groups.find_one({"_id": ObjectId(group_id)})
-        except errors.InvalidId:
-            return None
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    username = db.Column(db.String(150), nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+    superuser = db.Column(db.Boolean, default=False)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=True)
+    profile_image = db.Column(db.String(150), nullable=True)
 
-    @staticmethod
-    def find_group_by_name(name):
-        return mongo.db.groups.find_one({"name": name})
+def set_password(self, password):
+    self.password = generate_password_hash(password, method='pbkdf2:sha256')
 
-    @staticmethod
-    def add_user_to_group(group_id, user_id):
-        try:
-            mongo.db.groups.update_one({"_id": ObjectId(group_id)}, {"$addToSet": {"users": user_id}})
-        except errors.InvalidId:
-            pass
+def check_password(self, password):
+    return check_password_hash(self.password, password)
 
-class User(UserMixin):
-    def __init__(self, email, username, password, superuser=False, group_id=None, profile_image=None):
-        self.email = email
-        self.username = username
-        self.password = generate_password_hash(password)
-        self.superuser = superuser
-        self.group_id = group_id
-        self.profile_image = profile_image
+class Location(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-    @staticmethod
-    def create_user(email, username, password, superuser=False, group_id=None, profile_image=None):
-        user = {
-            "email": email,
-            "username": username,
-            "password": generate_password_hash(password),
-            "superuser": superuser,
-            "group_id": ObjectId(group_id) if group_id else None,
-            "profile_image": profile_image
-        }
-        result = mongo.db.users.insert_one(user)
-        return result.inserted_id
-
-    @staticmethod
-    def get_user_by_email(email):
-        return mongo.db.users.find_one({"email": email})
-
-    @staticmethod
-    def get_user_by_id(user_id):
-        try:
-            return mongo.db.users.find_one({"_id": ObjectId(user_id)})
-        except errors.InvalidId:
-            return None
-
-    @staticmethod
-    def update_user(user_id, update_data):
-        try:
-            if "password" in update_data:
-                update_data["password"] = generate_password_hash(update_data["password"])
-            if "group_id" in update_data and update_data["group_id"]:
-                update_data["group_id"] = ObjectId(update_data["group_id"])
-            mongo.db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update_data})
-        except errors.InvalidId:
-            pass
-
-    @staticmethod
-    def delete_user(user_id):
-        try:
-            mongo.db.users.delete_one({"_id": ObjectId(user_id)})
-        except errors.InvalidId:
-            pass
-
-    @staticmethod
-    def validate_login(email, password):
-        user = User.get_user_by_email(email)
-        if user and check_password_hash(user['password'], password):
-            return user
-        return None
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self['_id'])
+    user = db.relationship('User', backref=db.backref('locations', lazy=True))

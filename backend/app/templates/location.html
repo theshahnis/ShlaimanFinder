@@ -3,34 +3,26 @@
 {% block title %}Location{% endblock %}
 
 {% block content %}
-<div>
-    <h2>Location Page</h2>
-    <button onclick="getLocation()">Get Current Location</button>
-    <button onclick="sendLocation()">Send Location</button>
-    <p id="location">Location will be displayed here</p>
-</div>
+<h1>Share Your Location</h1>
+<p id="location">Click the button to share your location.</p>
+<button onclick="getLocation()">Share Location</button>
 
 <script>
-    let latitude;
-    let longitude;
-
     function getLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
             document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
         }
     }
 
     function showPosition(position) {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        document.getElementById("location").innerHTML = "Latitude: " + latitude + 
-        "<br>Longitude: " + longitude;
-    }
-
-    function sendLocation() {
-        fetch('/main/location', {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        
+        document.getElementById("location").innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
+        
+        fetch('/location', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -42,11 +34,28 @@
         })
         .then(response => response.json())
         .then(data => {
-            alert(data.message);
+            console.log('Success:', data);
         })
-        .catch(error => {
+        .catch((error) => {
             console.error('Error:', error);
         });
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                document.getElementById("location").innerHTML = "User denied the request for Geolocation."
+                break;
+            case error.POSITION_UNAVAILABLE:
+                document.getElementById("location").innerHTML = "Location information is unavailable."
+                break;
+            case error.TIMEOUT:
+                document.getElementById("location").innerHTML = "The request to get user location timed out."
+                break;
+            case error.UNKNOWN_ERROR:
+                document.getElementById("location").innerHTML = "An unknown error occurred."
+                break;
+        }
     }
 </script>
 {% endblock %}

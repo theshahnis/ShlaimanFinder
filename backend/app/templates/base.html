@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Shlaiman Finder{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% block head %}{% endblock %}
 </head>
 <body>
     <nav>
@@ -15,6 +16,8 @@
                 <li><a href="{{ url_for('main.superuser') }}">Superuser</a></li>
             {% endif %}
             <li><a href="{{ url_for('main.location') }}">Location</a></li>
+            <li><a href="{{ url_for('main.location') }}">Maps</a></li>
+            <li><a href="{{ url_for('main.location') }}">Friends and Groups</a></li>
             <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
         </ul>
     </nav>

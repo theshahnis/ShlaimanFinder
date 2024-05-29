@@ -1,17 +1,18 @@
 from flask import Flask, render_template
-from flask_pymongo import PyMongo
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from bson import ObjectId, errors  # Import ObjectId and errors
-from .extensions import mongo, login_manager, mail
+from sqlalchemy.orm import DeclarativeBase
+from .extensions import db, login_manager, mail, migrate
 from datetime import timedelta
 import os
 
-mongo = PyMongo()
+class Base(DeclarativeBase):
+  pass
 
 def create_app():
     app = Flask(__name__, static_folder='static', static_url_path='')
     app.config['SECRET_KEY'] = 'zubur123'
-    app.config['MONGO_URI'] = 'mongodb://localhost:27017/shlaiman-mongo'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shlaimanSQL.db'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=180)
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/profile_pics')
@@ -24,10 +25,11 @@ def create_app():
     app.config['MAIL_PASSWORD'] = 'qqgs uegs bgvg wfbh '
     app.config['SECURITY_PASSWORD_SALT'] = '9145f66020c06c5dfcdeaa017d5ff82f'
 
-    mongo.init_app(app)
+    db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     mail.init_app(app)
+    migrate.init_app(app, db)
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -36,17 +38,15 @@ def create_app():
     app.register_blueprint(main_blueprint)
 
     @app.route('/')
-    def home():
-        return render_template('index.html')
+    def index():
+        return app.send_static_file('index.html')
+
+    with app.app_context():
+        db.create_all()
 
     return app
 
 @login_manager.user_loader
 def load_user(user_id):
-    try:
-        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
-        if user:
-            return User(user['email'], user['username'], user['password'], user['superuser'], user.get('group_id'), user.get('profile_image'))
-    except errors.InvalidId:
-        return None
-    return None
+    from .models import User
+    return User.query.get(int(user_id))
