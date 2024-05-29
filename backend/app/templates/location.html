@@ -5,11 +5,14 @@
 {% block content %}
 <h1>Share Your Location</h1>
 <p id="location">Click the button to share your location.</p>
+<p id="status"></p>
 <button onclick="getLocation()">Share Location</button>
+<button onclick="fetchLocation()">Fetch Location</button>
 
 <script>
     function getLocation() {
         if (navigator.geolocation) {
+            document.getElementById("status").innerHTML = "Fetching location...";
             navigator.geolocation.getCurrentPosition(showPosition, showError);
         } else {
             document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
@@ -21,7 +24,10 @@
         const longitude = position.coords.longitude;
         
         document.getElementById("location").innerHTML = `Latitude: ${latitude}<br>Longitude: ${longitude}`;
-        
+        document.getElementById("status").innerHTML = "Sending location...";
+
+        console.log('Sending location to server:', latitude, longitude);
+
         fetch('/location', {
             method: 'POST',
             headers: {
@@ -35,27 +41,55 @@
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
+            document.getElementById("status").innerHTML = "Location shared successfully!";
         })
         .catch((error) => {
             console.error('Error:', error);
+            document.getElementById("status").innerHTML = "Error sharing location.";
+        });
+    }
+
+    function fetchLocation() {
+        document.getElementById("status").innerHTML = "Fetching saved location...";
+        
+        fetch('/location/data', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.latitude && data.longitude) {
+                document.getElementById("location").innerHTML = `Saved Location:<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}<br>Timestamp: ${data.timestamp}`;
+                document.getElementById("status").innerHTML = "Location fetched successfully!";
+            } else {
+                document.getElementById("location").innerHTML = "No saved location data found.";
+                document.getElementById("status").innerHTML = "";
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById("status").innerHTML = "Error fetching location.";
         });
     }
 
     function showError(error) {
         switch(error.code) {
             case error.PERMISSION_DENIED:
-                document.getElementById("location").innerHTML = "User denied the request for Geolocation."
+                document.getElementById("location").innerHTML = "User denied the request for Geolocation.";
                 break;
             case error.POSITION_UNAVAILABLE:
-                document.getElementById("location").innerHTML = "Location information is unavailable."
+                document.getElementById("location").innerHTML = "Location information is unavailable.";
                 break;
             case error.TIMEOUT:
-                document.getElementById("location").innerHTML = "The request to get user location timed out."
+                document.getElementById("location").innerHTML = "The request to get user location timed out.";
                 break;
             case error.UNKNOWN_ERROR:
-                document.getElementById("location").innerHTML = "An unknown error occurred."
+                document.getElementById("location").innerHTML = "An unknown error occurred.";
                 break;
         }
+        document.getElementById("status").innerHTML = "";
     }
 </script>
 {% endblock %}

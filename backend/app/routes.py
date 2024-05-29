@@ -4,9 +4,11 @@ from flask import current_app, Blueprint, render_template, redirect, url_for, re
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
-from .models import User, Group
+from .models import User, Group,Location
 from .extensions import db
-from .forms import UpdateProfileForm
+from .forms import UpdateProfileForm, JoinGroupForm
+from datetime import datetime
+from pytz import timezone
 
 main = Blueprint('main', __name__)
 
@@ -98,14 +100,15 @@ def delete_user(user_id):
     flash('User deleted successfully', 'success')
     return redirect(url_for('main.superuser'))
 
-@main.route('/superuser/add_group', methods=['POST'])  # Add this route
+@main.route('/superuser/add_group', methods=['POST'])
 @login_required
 def add_group():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('main.profile'))
     group_name = request.form['group_name']
-    new_group = Group(name=group_name)
+    passcode = request.form['passcode']
+    new_group = Group(name=group_name, passcode=passcode)
     db.session.add(new_group)
     db.session.commit()
     flash('Group added successfully', 'success')
@@ -122,11 +125,62 @@ def update_location():
     data = request.get_json()
     latitude = data.get('latitude')
     longitude = data.get('longitude')
-
+    print(f"lati:{latitude} , long:{longitude}")
     if latitude and longitude:
-        # Assuming you have a Location model related to the user
-        location = Location(user_id=current_user.id, latitude=latitude, longitude=longitude)
-        db.session.add(location)
+        # Fetch the latest location entry for the user
+        location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
+        if location:
+            # Update the existing entry
+            location.latitude = latitude
+            location.longitude = longitude
+            location.timestamp = datetime.now()
+        else:
+            # Create a new location entry if none exists
+            location = Location(user_id=current_user.id, latitude=latitude, longitude=longitude, timestamp=datetime.now(timezone('Etc/GMT+3')))
+            db.session.add(location)
+
         db.session.commit()
         return jsonify({'message': 'Location updated successfully'}), 200
     return jsonify({'message': 'Invalid data'}), 400
+
+
+@main.route('/location/data', methods=['GET'])
+@login_required
+def get_location_data():
+    location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
+    if location:
+        return jsonify({
+            'latitude': location.latitude,
+            'longitude': location.longitude,
+            'timestamp': location.timestamp.isoformat()
+        }), 200
+    return jsonify({'message': 'No location data found'}), 404
+
+
+@main.route('/join_group', methods=['GET', 'POST'])
+@login_required
+def join_group():
+    form = JoinGroupForm()
+    if form.validate_on_submit():
+        if current_user.passcode_attempts is None:
+            current_user.passcode_attempts = 0  # Initialize passcode_attempts if it's None
+
+        if current_user.passcode_attempts >= 10:
+            flash('Too many failed attempts. Please contact support.', 'danger')
+            return redirect(url_for('main.profile'))
+        try:
+            group = Group.query.filter_by(passcode=form.passcode.data).first()
+            if not group:
+                current_user.passcode_attempts += 1
+                db.session.commit()
+                flash('Invalid passcode. Please try again.', 'danger')
+                return redirect(url_for('main.join_group'))
+        
+            current_user.group = group
+            current_user.passcode_attempts = 0  # Reset attempts on successful joining
+            db.session.commit()
+            flash('You have successfully joined the group!', 'success')
+            return redirect(url_for('main.index'))
+        except Exception as e:
+            print("Failed to process request or insert to db")
+    return render_template('join_group.html', title='Join Group', form=form)

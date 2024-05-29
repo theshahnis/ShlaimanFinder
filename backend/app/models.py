@@ -1,11 +1,15 @@
 from .extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from pytz import timezone
+from datetime import datetime
 
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False, unique=True)
+    passcode = db.Column(db.String(4), nullable=True)
     users = db.relationship('User', backref='group', lazy=True)
+    
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +19,7 @@ class User(UserMixin, db.Model):
     superuser = db.Column(db.Boolean, default=False)
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=True)
     profile_image = db.Column(db.String(150), nullable=True)
+    passcode_attempts = db.Column(db.Integer, default=0, nullable=True) 
 
 def set_password(self, password):
     self.password = generate_password_hash(password, method='pbkdf2:sha256')

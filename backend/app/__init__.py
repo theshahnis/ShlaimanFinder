@@ -32,7 +32,7 @@ def create_app():
     migrate.init_app(app, db)
 
     from .auth import auth as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.register_blueprint(auth_blueprint, url_prefix='/')
 
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint)
@@ -44,6 +44,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
+    context = ('cert.pem', 'key.pem')  # Paths to your certificate and key files
     return app
 
 @login_manager.user_loader
