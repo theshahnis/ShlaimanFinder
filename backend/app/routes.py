@@ -4,10 +4,10 @@ from flask import current_app, Blueprint, render_template, redirect, url_for, re
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
-from .models import User, Group,Location
+from .models import User, Group,Location, MeetingPoint
 from .extensions import db
 from .forms import UpdateProfileForm, JoinGroupForm
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 from PIL import Image
 
@@ -30,10 +30,11 @@ def profile():
     if form.validate_on_submit():
         try:
             if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data)
+                picture_file = save_picture(form.profile_image.data,'static/profile_pics')
                 current_user.profile_image = picture_file
             current_user.username = form.username.data
             current_user.email = form.email.data
+            current_user.note = form.note.data  
             db.session.commit()
             flash('Your account has been updated!', 'success')
         except Exception as e:
@@ -43,34 +44,38 @@ def profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
+        form.note.data = current_user.note  
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
-def save_picture(form_picture):
+
+def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
-    picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
+    picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
-    # Check if the file is a valid image
+    if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
+        os.makedirs(os.path.join(current_app.root_path, target_dir))
+
     try:
         with Image.open(form_picture) as img:
-            img.verify()  # Verify that this is an image
-            form_picture.seek(0)  # Reset file pointer to start
+            img.verify()
+            form_picture.seek(0)
     except (IOError, SyntaxError) as e:
         raise ValueError("Invalid image file")
 
     form_picture.save(picture_path)
     return picture_fn
 
-@main.route('/superuser')
+@main.route('/superuser', methods=['GET'])
 @login_required
 def superuser():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('main.index'))
     users = User.query.all()
-    groups = Group.query.all()  # Add this line to fetch groups
+    groups = Group.query.all()  
     return render_template('superuser.html', users=users, groups=groups)
 
 @main.route('/superuser/edit/<int:user_id>', methods=['GET', 'POST'])
@@ -176,11 +181,21 @@ def get_user_location(user_id):
         }), 200
     return jsonify({'message': 'No location data found'}), 404
 
+from datetime import datetime
+
 @main.route('/locations', methods=['GET'])
 @login_required
 def get_locations():
     if not current_user.group_id:
         return jsonify({'locations': []})
+
+    def format_time(dt):
+        return dt.strftime("%H:%M %Y-%m-%d :%S")
+
+    def calculate_remaining_time(created_at, duration):
+        expires_at = created_at + timedelta(hours=duration)
+        remaining = expires_at - datetime.utcnow()
+        return remaining if remaining.total_seconds() > 0 else timedelta(0)
 
     users = User.query.filter_by(group_id=current_user.group_id).all()
     locations = []
@@ -191,8 +206,26 @@ def get_locations():
                 'username': user.username,
                 'latitude': location.latitude,
                 'longitude': location.longitude,
-                'profile_image': user.profile_image  # Include profile image filename
+                'profile_image': url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.png')),
+                'note': user.note,
+                'isMeetingPoint': False,
+                'created_at': format_time(location.timestamp),
+                'remaining_time': None
             })
+
+    meeting_points = MeetingPoint.query.filter_by(group_id=current_user.group_id).all()
+    for point in meeting_points:
+        remaining_time = calculate_remaining_time(point.created_at, point.duration)
+        locations.append({
+            'username': point.username,
+            'latitude': point.latitude,
+            'longitude': point.longitude,
+            'profile_image': url_for('static', filename='meeting_pics/' + (point.image if point.image else 'default_meeting_point.png')),
+            'note': point.note,
+            'isMeetingPoint': True,
+            'created_at': format_time(point.created_at),
+            'remaining_time': str(remaining_time) if remaining_time.total_seconds() > 0 else "Expired"
+        })
 
     return jsonify({'locations': locations})
 
@@ -240,3 +273,48 @@ def friends():
 @login_required
 def map_view():
     return render_template('map.html')
+
+@main.route('/create_meeting_point', methods=['POST'])
+@login_required
+def create_meeting_point():
+    latitude = request.form.get('latitude')
+    longitude = request.form.get('longitude')
+    username = request.form.get('username')
+    note = request.form.get('note')
+    image = request.files.get('image')
+    duration = request.form.get('duration', 3)
+
+    if not (latitude and longitude and username):
+        return jsonify({'message': 'Invalid data'}), 400
+
+    image_filename = None
+    if image:
+        try:
+            image_filename = save_picture(image, 'static/meeting_pics')
+        except ValueError as e:
+            return jsonify({'message': str(e)}), 400
+
+    meeting_point = MeetingPoint(
+        latitude=latitude,
+        longitude=longitude,
+        username=username,
+        note=note,
+        image=image_filename,
+        group_id=current_user.group_id,
+        duration=int(duration)
+    )
+    db.session.add(meeting_point)
+    db.session.commit()
+
+    return jsonify({'message': 'Meeting point created successfully'}), 200
+
+@main.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
+@login_required
+def delete_meeting_point(meeting_point_id):
+    if not current_user.superuser:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    meeting_point = MeetingPoint.query.get_or_404(meeting_point_id)
+    db.session.delete(meeting_point)
+    db.session.commit()
+    return jsonify({'message': 'Meeting point deleted successfully'}), 200

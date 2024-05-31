@@ -7,7 +7,6 @@
 <p id="location">Click the button to share your location.</p>
 <p id="status"></p>
 <button onclick="getLocation()">Share Location</button>
-<button onclick="fetchLocation()">Fetch Location</button>
 
 <script>
     function getLocation() {
@@ -46,31 +45,6 @@
         .catch((error) => {
             console.error('Error:', error);
             document.getElementById("status").innerHTML = "Error sharing location.";
-        });
-    }
-
-    function fetchLocation() {
-        document.getElementById("status").innerHTML = "Fetching saved location...";
-        
-        fetch('/location/data', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.latitude && data.longitude) {
-                document.getElementById("location").innerHTML = `Saved Location:<br>Latitude: ${data.latitude}<br>Longitude: ${data.longitude}<br>Timestamp: ${data.timestamp}`;
-                document.getElementById("status").innerHTML = "Location fetched successfully!";
-            } else {
-                document.getElementById("location").innerHTML = "No saved location data found.";
-                document.getElementById("status").innerHTML = "";
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            document.getElementById("status").innerHTML = "Error fetching location.";
         });
     }
 
