@@ -48,3 +48,12 @@ class MeetingPoint(db.Model):
     group = db.relationship('Group', backref=db.backref('meeting_points', lazy=True))
     duration = db.Column(db.Integer, default=3,nullable=True)  
     created_at = db.Column(db.DateTime, default=datetime.utcnow,nullable=True)
+
+class StaticLocation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    note = db.Column(db.Text, nullable=True)
+    image = db.Column(db.String(150), nullable=True)
+

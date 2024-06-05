@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Maps{% endblock %}
+
+{% block content %}
+<h1>Select a Map</h1>
+<div id="mapSelection">
+    <button onclick="loadMap('israelCentral')">Israel Central</button>
+    <button onclick="loadMap('amsterdam')">Amsterdam</button>
+    <button onclick="loadMap('jeraOnAir')">Jera on Air</button>
+</div>
+<div id="map" style="height: 500px; width: 100%;"></div>
+<button id="refreshButton" onclick="refreshLocations()">Refresh</button>
+<button id="locationButton" onclick="startLocationSelection()">Create Location</button>
+{% endblock %}

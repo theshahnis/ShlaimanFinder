@@ -4,7 +4,7 @@ from flask import current_app, Blueprint, render_template, redirect, url_for, re
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
-from .models import User, Group,Location, MeetingPoint
+from .models import User, Group, Location, MeetingPoint, StaticLocation
 from .extensions import db
 from .forms import UpdateProfileForm, JoinGroupForm
 from datetime import datetime, timedelta
@@ -30,11 +30,11 @@ def profile():
     if form.validate_on_submit():
         try:
             if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data,'static/profile_pics')
+                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
                 current_user.profile_image = picture_file
             current_user.username = form.username.data
             current_user.email = form.email.data
-            current_user.note = form.note.data  
+            current_user.note = form.note.data
             db.session.commit()
             flash('Your account has been updated!', 'success')
         except Exception as e:
@@ -44,10 +44,9 @@ def profile():
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
-        form.note.data = current_user.note  
+        form.note.data = current_user.note
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
-
 
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
@@ -75,13 +74,13 @@ def superuser():
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('main.index'))
     users = User.query.all()
-    groups = Group.query.all()  
+    groups = Group.query.all()
     return render_template('superuser.html', users=users, groups=groups)
 
 @main.route('/superuser/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def edit_user(user_id):
-    if not current_user.superuser:
+    if not current_user.is_superuser:
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('main.profile'))
 
@@ -106,7 +105,7 @@ def edit_user(user_id):
 @main.route('/superuser/delete/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):
-    if not current_user.superuser:
+    if not current_user.is_superuser:
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('main.profile'))
     user = User.query.get_or_404(user_id)
@@ -118,7 +117,7 @@ def delete_user(user_id):
 @main.route('/superuser/add_group', methods=['POST'])
 @login_required
 def add_group():
-    if not current_user.superuser:
+    if not current_user.is_superuser:
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('main.profile'))
     group_name = request.form['group_name']
@@ -141,7 +140,7 @@ def update_location():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     print(f"lati:{latitude} , long:{longitude}")
-    
+
     if latitude and longitude:
         location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
         if location:
@@ -153,9 +152,8 @@ def update_location():
             db.session.add(location)
         db.session.commit()
         return jsonify({'message': 'Location updated successfully'}), 200
-    
-    return jsonify({'message': 'Invalid data'}), 400
 
+    return jsonify({'message': 'Invalid data'}), 400
 
 @main.route('/location/data', methods=['GET'])
 @login_required
@@ -181,8 +179,6 @@ def get_user_location(user_id):
         }), 200
     return jsonify({'message': 'No location data found'}), 404
 
-from datetime import datetime
-
 @main.route('/locations', methods=['GET'])
 @login_required
 def get_locations():
@@ -190,7 +186,7 @@ def get_locations():
         return jsonify({'locations': []})
 
     def format_time(dt):
-        return dt.strftime("%H:%M %Y-%m-%d :%S")
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
 
     def calculate_remaining_time(created_at, duration):
         expires_at = created_at + timedelta(hours=duration)
@@ -216,20 +212,118 @@ def get_locations():
     meeting_points = MeetingPoint.query.filter_by(group_id=current_user.group_id).all()
     for point in meeting_points:
         remaining_time = calculate_remaining_time(point.created_at, point.duration)
+        if remaining_time.total_seconds() > 0:
+            locations.append({
+                'username': point.username,
+                'latitude': point.latitude,
+                'longitude': point.longitude,
+                'profile_image': url_for('static', filename='meeting_pics/' + (point.image if point.image else 'default_meeting_point.png')),
+                'note': point.note,
+                'isMeetingPoint': True,
+                'created_at': format_time(point.created_at),
+                'remaining_time': str(remaining_time)
+            })
+
+    static_locations = StaticLocation.query.all()
+    for location in static_locations:
         locations.append({
-            'username': point.username,
-            'latitude': point.latitude,
-            'longitude': point.longitude,
-            'profile_image': url_for('static', filename='meeting_pics/' + (point.image if point.image else 'default_meeting_point.png')),
-            'note': point.note,
-            'isMeetingPoint': True,
-            'created_at': format_time(point.created_at),
-            'remaining_time': str(remaining_time) if remaining_time.total_seconds() > 0 else "Expired"
+            'username': location.name,
+            'latitude': location.latitude,
+            'longitude': location.longitude,
+            'profile_image': url_for('static', filename='static_pics/' + (location.image if location.image else 'default_static.png')),
+            'note': location.note,
+            'isMeetingPoint': False,
+            'created_at': None,
+            'remaining_time': None
         })
 
     return jsonify({'locations': locations})
 
+@main.route('/create_location', methods=['POST'])
+@login_required
+def create_location():
+    latitude = request.form.get('latitude')
+    longitude = request.form.get('longitude')
+    username = request.form.get('username')
+    note = request.form.get('note')
+    loc_type = request.form.get('locType')
+    image = request.files.get('image')
+    duration = request.form.get('duration') if loc_type == 'meetingPoint' else None
 
+    if not (latitude and longitude and username and loc_type):
+        return jsonify({'message': 'Invalid data'}), 400
+
+    image_filename = None
+    if image:
+        target_dir = 'static/meeting_pics' if loc_type == 'meetingPoint' else 'static/static_pics'
+        try:
+            image_filename = save_picture(image, target_dir)
+        except ValueError as e:
+            return jsonify({'message': str(e)}), 400
+
+    if loc_type == 'meetingPoint':
+        meeting_point = MeetingPoint(
+            latitude=latitude,
+            longitude=longitude,
+            username=username,
+            note=note,
+            image=image_filename,
+            group_id=current_user.group_id,
+            duration=int(duration)
+        )
+        db.session.add(meeting_point)
+    else:
+        static_location = StaticLocation(
+            latitude=latitude,
+            longitude=longitude,
+            name=username,
+            note=note,
+            image=image_filename
+        )
+        db.session.add(static_location)
+
+    db.session.commit()
+
+    return jsonify({'message': 'Location created successfully'}), 200
+
+@main.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
+@login_required
+def delete_meeting_point(meeting_point_id):
+    if not current_user.is_superuser:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    meeting_point = MeetingPoint.query.get_or_404(meeting_point_id)
+    db.session.delete(meeting_point)
+    db.session.commit()
+    return jsonify({'message': 'Meeting point deleted successfully'}), 200
+
+@main.route('/delete_static_location/<int:location_id>', methods=['POST'])
+@login_required
+def delete_static_location(location_id):
+    if not current_user.is_superuser:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    static_location = StaticLocation.query.get_or_404(location_id)
+    db.session.delete(static_location)
+    db.session.commit()
+    return jsonify({'message': 'Static location deleted successfully'}), 200
+
+@main.route('/static_locations', methods=['GET'])
+@login_required
+def get_static_locations():
+    static_locations = StaticLocation.query.all()
+    locations = []
+    for location in static_locations:
+        locations.append({
+            'id': location.id,
+            'name': location.name,
+            'latitude': location.latitude,
+            'longitude': location.longitude,
+            'note': location.note,
+            'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'default_static.png'))
+        })
+
+    return jsonify({'locations': locations})
 
 @main.route('/join_group', methods=['GET', 'POST'])
 @login_required
@@ -249,7 +343,7 @@ def join_group():
                 db.session.commit()
                 flash('Invalid passcode. Please try again.', 'danger')
                 return redirect(url_for('main.join_group'))
-        
+
             current_user.group = group
             current_user.passcode_attempts = 0  # Reset attempts on successful joining
             db.session.commit()
@@ -265,7 +359,7 @@ def friends():
     if not current_user.group_id:
         flash('You are not part of any group', 'warning')
         return redirect(url_for('main.index'))
-    
+
     users = User.query.filter_by(group_id=current_user.group_id).all()
     return render_template('friends.html', users=users)
 
@@ -273,48 +367,3 @@ def friends():
 @login_required
 def map_view():
     return render_template('map.html')
-
-@main.route('/create_meeting_point', methods=['POST'])
-@login_required
-def create_meeting_point():
-    latitude = request.form.get('latitude')
-    longitude = request.form.get('longitude')
-    username = request.form.get('username')
-    note = request.form.get('note')
-    image = request.files.get('image')
-    duration = request.form.get('duration', 3)
-
-    if not (latitude and longitude and username):
-        return jsonify({'message': 'Invalid data'}), 400
-
-    image_filename = None
-    if image:
-        try:
-            image_filename = save_picture(image, 'static/meeting_pics')
-        except ValueError as e:
-            return jsonify({'message': str(e)}), 400
-
-    meeting_point = MeetingPoint(
-        latitude=latitude,
-        longitude=longitude,
-        username=username,
-        note=note,
-        image=image_filename,
-        group_id=current_user.group_id,
-        duration=int(duration)
-    )
-    db.session.add(meeting_point)
-    db.session.commit()
-
-    return jsonify({'message': 'Meeting point created successfully'}), 200
-
-@main.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
-@login_required
-def delete_meeting_point(meeting_point_id):
-    if not current_user.superuser:
-        return jsonify({'message': 'Permission denied'}), 403
-
-    meeting_point = MeetingPoint.query.get_or_404(meeting_point_id)
-    db.session.delete(meeting_point)
-    db.session.commit()
-    return jsonify({'message': 'Meeting point deleted successfully'}), 200
