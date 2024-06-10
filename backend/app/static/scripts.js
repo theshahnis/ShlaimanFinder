@@ -3,6 +3,7 @@ let markers = [];
 let locationMode = false;
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Existing map functionality
     const mapModeToggle = document.getElementById('cycleMapModeButton');
     if (mapModeToggle) {
         mapModeToggle.addEventListener('click', function() {
@@ -15,19 +16,27 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleDarkMode();
         });
     }
-    // Initialize map and apply the saved map mode
-    initializeMap(locations.israelCentral);
-    autoSelectMap();
+    const mapDarkModeToggle = document.getElementById('map-dark-mode-toggle');
+    if (mapDarkModeToggle) {
+        mapDarkModeToggle.addEventListener('click', function() {
+            toggleMapDarkMode();
+        });
+    }
+
+    // Apply general dark mode based on saved preference
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        enableDarkMode();
+    } else {
+        disableDarkMode();
+    }
+
+    // Apply map dark mode based on saved preference
     if (localStorage.getItem('mapDarkMode') === 'enabled') {
         applyMapDarkMode();
     } else {
         removeMapDarkMode();
     }
 });
-
-
-
-
 
 const locations = {
     israelCentral: [32.06607860466994, 34.78687443031782],
@@ -58,11 +67,31 @@ function cycleMapMode() {
 function toggleDarkMode() {
     const darkModeStylesheet = document.getElementById('dark-mode-stylesheet');
     if (darkModeStylesheet.disabled) {
-        darkModeStylesheet.disabled = false;
-        localStorage.setItem('darkMode', 'enabled');
+        enableDarkMode();
     } else {
-        darkModeStylesheet.disabled = true;
-        localStorage.setItem('darkMode', 'disabled');
+        disableDarkMode();
+    }
+}
+
+function enableDarkMode() {
+    const darkModeStylesheet = document.getElementById('dark-mode-stylesheet');
+    darkModeStylesheet.disabled = false;
+    localStorage.setItem('darkMode', 'enabled');
+}
+
+function disableDarkMode() {
+    const darkModeStylesheet = document.getElementById('dark-mode-stylesheet');
+    darkModeStylesheet.disabled = true;
+    localStorage.setItem('darkMode', 'disabled');
+}
+
+function toggleMapDarkMode() {
+    if (localStorage.getItem('mapDarkMode') === 'enabled') {
+        removeMapDarkMode();
+        localStorage.setItem('mapDarkMode', 'disabled');
+    } else {
+        applyMapDarkMode();
+        localStorage.setItem('mapDarkMode', 'enabled');
     }
 }
 
@@ -75,7 +104,6 @@ function applyMapDarkMode() {
 }
 
 function removeMapDarkMode() {
-    // Reinitialize the map with default tiles
     if (map) {
         map.eachLayer(function (layer) {
             map.removeLayer(layer);
@@ -337,4 +365,32 @@ function submitLocation(lat, lng) {
 
 function cancelLocation() {
     document.getElementById('locationForm').remove();
+}
+
+function initializeEventTimetable() {
+    const selectButtons = document.querySelectorAll('.select-show');
+
+    selectButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const showId = this.parentElement.getAttribute('data-show-id');
+            fetch(`/api/select-show`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ showId: showId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update attendees list
+                const attendeesDiv = this.nextElementSibling;
+                attendeesDiv.innerHTML = '';
+                data.attendees.forEach(user => {
+                    const img = document.createElement('img');
+                    img.src = user.avatarUrl;
+                    attendeesDiv.appendChild(img);
+                });
+            });
+        });
+    });
 }
