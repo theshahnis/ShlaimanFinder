@@ -23,8 +23,8 @@
         <td>{{ user.email }}</td>
         <td>{{ user.group.name if user.group else 'No group' }}</td>
         <td>
-            <a href="{{ url_for('main.edit_user', user_id=user.id) }}">Edit</a>
-            <form action="{{ url_for('main.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+            <a href="{{ url_for('superuser_bp.edit_user', user_id=user.id) }}">Edit</a>
+            <form action="{{ url_for('superuser_bp.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
                 <button type="submit">Delete</button>
             </form>
         </td>
@@ -33,7 +33,7 @@
 </table>
 
 <h2>Manage Groups</h2>
-<form action="{{ url_for('main.add_group') }}" method="POST">
+<form action="{{ url_for('superuser_bp.add_group') }}" method="POST">
     <input type="text" name="group_name" placeholder="New group name" required>
     <input type="text" name="passcode" placeholder="Group passcode (4 digits)" required>
     <button type="submit">Add Group</button>

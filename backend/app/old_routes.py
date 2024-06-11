@@ -20,8 +20,8 @@ def index():
 
 @main.before_request
 def before_request():
-    if not current_user.is_authenticated and request.endpoint != 'auth.auth_page':
-        return redirect(url_for('auth.auth_page'))
+    if not current_user.is_authenticated and request.endpoint != 'auth_bp.auth_page':
+        return redirect(url_for('auth_bp.auth_page'))
 
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -128,10 +128,10 @@ def add_group():
     flash('Group added successfully', 'success')
     return redirect(url_for('main.superuser'))
 
-@main.route('/location', methods=['GET'])
+@main.route('/test-location', methods=['GET'])
 @login_required
 def location():
-    return render_template('location.html')
+    return render_template('test-location.html')
 
 @main.route('/location', methods=['POST'])
 @login_required
@@ -139,16 +139,20 @@ def update_location():
     data = request.get_json()
     latitude = data.get('latitude')
     longitude = data.get('longitude')
-    print(f"lati:{latitude} , long:{longitude}")
 
     if latitude and longitude:
         location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
         if location:
             location.latitude = latitude
             location.longitude = longitude
-            location.timestamp = datetime.now()
+            location.timestamp = datetime.utcnow()  # Use UTC for consistency
         else:
-            location = Location(user_id=current_user.id, latitude=latitude, longitude=longitude, timestamp=datetime.now(timezone('Etc/GMT+3')))
+            location = Location(
+                user_id=current_user.id,
+                latitude=latitude,
+                longitude=longitude,
+                timestamp=datetime.utcnow()
+            )
             db.session.add(location)
         db.session.commit()
         return jsonify({'message': 'Location updated successfully'}), 200
@@ -238,6 +242,8 @@ def get_locations():
         })
 
     return jsonify({'locations': locations})
+
+
 
 @main.route('/create_location', methods=['POST'])
 @login_required

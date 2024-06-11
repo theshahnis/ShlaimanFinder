@@ -1,0 +1,14 @@
+Flask
+SQLAlchemy
+psycopg2-binary
+flask_login
+pytz
+flask_wtf
+flask_mail
+flask_login
+itsdangerous
+flask_migrate
+python-dotenv
+psycopg2-binary
+pymysql
+cryptography

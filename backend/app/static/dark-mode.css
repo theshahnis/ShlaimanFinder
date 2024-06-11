@@ -1,12 +1,59 @@
 body {
     background-color: rgb(39, 39, 39);
-    color: white;
+    color: rgb(230, 230, 230);
 }
 
 button {
     background-color: #007bff;
-    color: white;
+    color: rgb(64, 64, 64);
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+}
+.button.selected,
+.nav-button.selected {
+  background-color: #d59ad8;
+  color: #fff; 
+  border: 2px solid #43bf1d; 
+}
+/* Show element styling for dark mode */
+.show {
+    background-color: rgb(54, 54, 54);
+    color: rgb(230, 230, 230);
+    border: 1px solid rgb(64, 64, 64);
+}
+
+.show-name {
+    font-weight: bold;
+}
+
+.show-time {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: rgb(180, 180, 180);
+}
+
+
+/* Attendees styling for dark mode */
+.attendee-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    border: 2px solid rgb(64, 64, 64);
+}
+
+/* Stage container styling for dark mode */
+.stage {
+    border: 1px solid #814a0f;
+    padding: 10px;
+    width: 18%;
+    background-color: #363131;
+    position: relative;
+
+.stage h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: rgb(20, 20, 20);
 }

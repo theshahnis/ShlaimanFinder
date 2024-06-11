@@ -45,7 +45,7 @@ class MeetingPoint(db.Model):
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=False)
     group = db.relationship('Group', backref=db.backref('meeting_points', lazy=True))
     duration = db.Column(db.Integer, default=3, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=True)
 
 class StaticLocation(db.Model):
     id = db.Column(db.Integer, primary_key=True)

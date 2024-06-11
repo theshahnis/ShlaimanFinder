@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Join a Group</h1>
-<form method="POST" action="{{ url_for('main.join_group') }}">
+<form method="POST" action="{{ url_for('general_bp.join_group') }}">
     {{ form.hidden_tag() }}
     <div>
         {{ form.passcode.label }}<br>

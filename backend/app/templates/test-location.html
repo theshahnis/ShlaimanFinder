@@ -27,7 +27,7 @@
 
         console.log('Sending location to server:', latitude, longitude);
 
-        fetch('/location', {
+        fetch('/location/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

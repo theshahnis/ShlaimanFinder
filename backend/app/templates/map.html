@@ -5,9 +5,9 @@
 {% block content %}
 <h1>Friends' Locations</h1>
 <div id="mapSelection">
-    <button onclick="loadMap('israelCentral')">Israel Central</button>
-    <button onclick="loadMap('amsterdam')">Amsterdam</button>
-    <button onclick="loadMap('jeraOnAir')">Jera on Air</button>
+    <button class="button" onclick="loadMap('israelCentral')">Israel Central</button>
+    <button class="button" onclick="loadMap('amsterdam')">Amsterdam</button>
+    <button class="button" onclick="loadMap('jeraOnAir')">Jera on Air</button>
 </div>
 <div id="map" style="height: 500px; width: 100%;"></div>
 <button id="refreshButton" onclick="refreshLocations()">Refresh</button>
@@ -66,6 +66,8 @@
 
 <!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
-<script src="{{ url_for('static', filename='scripts.js') }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}"></script>
 
+<script src="{{ url_for('static', filename='map-mode.js') }}"></script>
 {% endblock %}
+

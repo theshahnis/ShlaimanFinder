@@ -1,15 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for, request, flash,current_app
+from flask import Blueprint, render_template, redirect, url_for, request, flash, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
-from .extensions import db, mail
+from ..models import User
+from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 
 
-auth = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth_bp', __name__)
 
-@auth.route('/auth', methods=['GET', 'POST'])
+@auth_bp.route('/auth', methods=['GET', 'POST'])
 def auth_page():
     if request.method == 'POST':
         if 'login' in request.form:
@@ -22,14 +22,23 @@ def login():
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
+
+    print(f"Attempting login for email: {email}")
+
     user = User.query.filter_by(email=email).first()
+
+    if user:
+        print(f"User found: {user.email}")
+    else:
+        print("User not found")
+
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
         flash('Successfully logged in!', 'success')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile_bp.profile'))
     else:
         flash('Login failed. Check your email and password.', 'error')
-        return redirect(url_for('auth.auth_page'))
+        return redirect(url_for('auth_bp.auth_page'))
 
 def signup():
     email = request.form.get('email')
@@ -39,11 +48,11 @@ def signup():
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
         flash('Email already in use. Please choose a different email.', 'error')
-        return redirect(url_for('auth.auth_page'))
+        return redirect(url_for('auth_bp.auth_page'))
 
     if len(password) < 6:
         flash('Password must be at least 6 characters long.', 'error')
-        return redirect(url_for('auth.auth_page'))
+        return redirect(url_for('auth_bp.auth_page'))
 
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
     new_user = User(email=email, username=username, password=hashed_password)
@@ -51,17 +60,17 @@ def signup():
     db.session.commit()
     login_user(new_user)
     flash('Account created successfully!', 'success')
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('profile_bp.profile'))
 
-@auth.route('/logout')
+@auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')
-    return redirect(url_for('auth.auth_page'))
+    return redirect(url_for('auth_bp.auth_page'))
 
 
-@auth.route('/request_reset', methods=['GET', 'POST'])
+@auth_bp.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -72,23 +81,23 @@ def request_reset():
             flash('A password reset email has been sent.', 'info')
         else:
             flash('Email not found.', 'warning')
-        return redirect(url_for('auth.auth_page'))
+        return redirect(url_for('auth_bp.auth_page'))
     return render_template('request_reset.html')
 
 def send_reset_email(to, token):
     msg = Message('Shlaiman Finder-Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
-{url_for('auth.reset_password', token=token, _external=True)}
+{url_for('auth_bp.reset_password', token=token, _external=True)}
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
     mail.send(msg)
 
-@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     email = verify_reset_token(token)
     if not email:
         flash('Invalid or expired token.', 'danger')
-        return redirect(url_for('auth.request_reset'))
+        return redirect(url_for('auth_bp.request_reset'))
     if request.method == 'POST':
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
@@ -100,7 +109,7 @@ def reset_password(token):
             user.password = generate_password_hash(password, method='pbkdf2:sha256')
             db.session.commit()
             flash('Your password has been updated!', 'success')
-            return redirect(url_for('auth.auth_page'))
+            return redirect(url_for('auth_bp.auth_page'))
     return render_template('reset_password.html', token=token)
 
 

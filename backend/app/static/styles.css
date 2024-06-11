@@ -3,12 +3,12 @@
 /* BASIC */
 
 html {
-  background-color: #644522;
+  background-color: #bea384;
 }
 
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #644522;
+  background-color: #efd6b6;
   height: 100vh;
   color: black;
 }
@@ -40,10 +40,10 @@ body {
 }
 
 .stage {
-    border: 1px solid #ccc;
+    border: 1px solid #db7018;
     padding: 10px;
     width: 18%;
-    background-color: #f4f4f4;
+    background-color: #ad9278;
     position: relative; /* Ensure this to allow absolute positioning of shows */
 }
 
@@ -124,15 +124,22 @@ body {
 }
 
 button {
-  background-color: #007bff;
-  color: white;
+  background-color: #e9a530;
+  color: rgb(0, 0, 0);
   border: none;
   padding: 10px 20px;
   cursor: pointer;
+  font-weight: bold
+}
+
+button.nav-button.selected {
+  background-color: #8c8e90;
+  color: #fff;
+  border: 2px solid #0056b3;
 }
 
 a {
-  color: #92badd;
+  color: #3d454c;
   display:inline-block;
   text-decoration: none;
   font-weight: 400;
@@ -145,10 +152,12 @@ h2 {
   text-transform: uppercase;
   display:inline-block;
   margin: 40px 8px 10px 8px; 
-  color: #cccccc;
+  color: #151313;
 }
 
 /* STRUCTURE */
+
+
 
 .wrapper {
   display: flex;
@@ -199,7 +208,7 @@ h2.active {
 input[type=button], input[type=submit], input[type=reset]  {
   background-color: #56baed;
   border: none;
-  color: white;
+  color: rgb(52, 42, 42);
   padding: 15px 80px;
   text-align: center;
   text-decoration: none;
@@ -374,4 +383,11 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
 
 * {
   box-sizing: border-box;
+}
+
+.button.selected,
+.nav-button.selected {
+  background-color: #007bff;
+  color: #fff; 
+  border: 2px solid #0056b3; 
 }

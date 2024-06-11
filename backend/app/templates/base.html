@@ -10,22 +10,21 @@
 </head>
 <body>
     <nav>
-        <ul>{% if current_user.is_authenticated  %}
-                <button id="home-btn"><a href="{{ url_for('main.index') }}">Home</a></button>
-                <button id="profile-btn"><a href="{{ url_for('main.profile') }}">Profile</a></button>
+        <ul>
+            {% if current_user.is_authenticated %}
+                <button class="nav-button" data-page="index"><a href="{{ url_for('general_bp.index') }}">Home</a></button>
+                <button class="nav-button" data-page="profile"><a href="{{ url_for('profile_bp.profile') }}">Profile</a></button>
                 {% if current_user.is_authenticated and current_user.superuser %}
-                    <button id="superuser-btn"><a href="{{ url_for('main.superuser') }}">Superuser</a></button>
-                    <button id="location-btn"><a href="{{ url_for('main.location') }}">Test Location</a></button>
+                    <button class="nav-button" data-page="superuser"><a href="{{ url_for('superuser_bp.superuser_view') }}">Superuser</a></button>
+                    <button class="nav-button" data-page="test-location"><a href="{{ url_for('location_bp.test_location') }}">Test Location</a></button>
                 {% endif %}
-                
-                <button id="map-view-btn"><a href="{{ url_for('main.map_view') }}">Maps</a></button>
-                <button id="join-group-btn"><a href="{{ url_for('main.shows') }}">Shows</a></button>
-                <button id="friends-btn"><a href="{{ url_for('main.friends') }}">Friends in Group</a></button>
-                <button id="join-group-btn"><a href="{{ url_for('main.join_group') }}">Join Group</a></button>
+                <button class="nav-button" data-page="map_view"><a href="{{ url_for('general_bp.map_view') }}">Maps</a></button>
+                <button class="nav-button" data-page="shows"><a href="{{ url_for('show_bp.shows') }}">Shows</a></button>
+                <button class="nav-button" data-page="friends"><a href="{{ url_for('general_bp.friends') }}">Friends in Group</a></button>
+                <button class="nav-button" data-page="join_group"><a href="{{ url_for('general_bp.join_group') }}">Join Group</a></button>
                 <button id="dark-mode-toggle">Toggle Dark Mode</button>
-                <!--<button id="cycleMapModeButton" onclick="cycleMapMode()">Cycle Map Mode</button>-->
-                <button id="logout-btn"><a href="{{ url_for('auth.logout') }}">Logout</a></button>
-                <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+                <button id="logout-btn"><a href="{{ url_for('auth_bp.logout') }}">Logout</a></button>
+                <script src="{{ url_for('static', filename='dark-mode.js') }}"></script>
             {% endif %}
         </ul>
     </nav>

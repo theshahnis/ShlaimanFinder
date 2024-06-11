@@ -3,19 +3,22 @@ let markers = [];
 let locationMode = false;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Existing map functionality
+    initializeMap();
+
     const mapModeToggle = document.getElementById('cycleMapModeButton');
     if (mapModeToggle) {
         mapModeToggle.addEventListener('click', function() {
             cycleMapMode();
         });
     }
+
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     if (darkModeToggle) {
         darkModeToggle.addEventListener('click', function() {
             toggleDarkMode();
         });
     }
+
     const mapDarkModeToggle = document.getElementById('map-dark-mode-toggle');
     if (mapDarkModeToggle) {
         mapDarkModeToggle.addEventListener('click', function() {
@@ -36,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         removeMapDarkMode();
     }
+
+    autoSelectMap();  // Request user's location on load
 });
 
 const locations = {
@@ -47,21 +52,51 @@ const locations = {
 let mapModes = ['default', 'moderate', 'dark', 'white'];
 let currentMapModeIndex = mapModes.indexOf(localStorage.getItem('mapMode')) || 0;
 
-function cycleMapMode() {
-    currentMapModeIndex++; // Increment index
+function initializeMap() {
+    map = L.map('map').setView(locations.israelCentral, 11);  // Default to Israel Central
+    applyMapMode(mapModes[currentMapModeIndex]);
 
-    // Skip moderate mode if it's selected
+    map.on('click', function(e) {
+        if (locationMode) {
+            const { lat, lng } = e.latlng;
+            showLocationForm(lat, lng);
+            locationMode = false;
+        }
+    });
+}
+
+function cycleMapMode() {
+    currentMapModeIndex++;
     if (currentMapModeIndex === mapModes.indexOf('default')) {
         currentMapModeIndex++;
     }
-
-    // Wrap around the array if necessary
     currentMapModeIndex %= mapModes.length;
 
     const selectedMode = mapModes[currentMapModeIndex];
     localStorage.setItem('mapMode', selectedMode);
     applyMapMode(selectedMode);
     refreshLocations();
+}
+
+function applyMapMode(mode) {
+    if (map) {
+        map.eachLayer(function(layer) {
+            map.removeLayer(layer);
+        });
+
+        let tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+        if (mode === 'moderate') {
+            tileLayerUrl = 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png';
+            removeMapDarkMode();
+        } else if (mode === 'dark') {
+            tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+        }
+
+        L.tileLayer(tileLayerUrl, {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    }
 }
 
 function toggleDarkMode() {
@@ -105,7 +140,7 @@ function applyMapDarkMode() {
 
 function removeMapDarkMode() {
     if (map) {
-        map.eachLayer(function (layer) {
+        map.eachLayer(function(layer) {
             map.removeLayer(layer);
         });
 
@@ -115,98 +150,12 @@ function removeMapDarkMode() {
     }
 }
 
-function applyMapMode(mode) {
-    if (map) {
-        map.eachLayer(function (layer) {
-            map.removeLayer(layer);
-        });
-
-        let tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-        if (mode === 'moderate') {
-            tileLayerUrl = 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png';
-            removeMapDarkMode()
-        } else if (mode === 'dark') {
-            tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-        } //else if (mode === 'white') {
-            //tileLayerUrl = 'http://b.tile.stamen.com/toner/{z}/{x}/{y}.png';
-            //removeMapDarkMode()
-        //}
-
-        L.tileLayer(tileLayerUrl, {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-    }
-}
-
-function initializeMap(center) {
-    if (map) {
-        map.remove();
-    }
-    map = L.map('map').setView(center, 11);
-    applyMapMode(mapModes[currentMapModeIndex]);
-
-    map.on('click', function(e) {
-        if (locationMode) {
-            const { lat, lng } = e.latlng;
-            showLocationForm(lat, lng);
-            locationMode = false;
-        }
-    });
-}
-
-function autoSelectMap() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            if (latitude >= 51.0 && latitude <= 53.0 && longitude >= 4.0 && longitude <= 5.0) {
-                loadMap('amsterdam');
-            } else if (latitude >= 51.0 && latitude <= 52.0 && longitude >= 5.0 && longitude <= 6.0) {
-                loadMap('jeraOnAir');
-            } else {
-                loadMap('israelCentral');
-            }
-
-            updateLocation(latitude, longitude);
-        }, showError);
-    } else {
-        alert('Geolocation is not supported by this browser.');
-    }
-}
-
 function loadMap(location) {
     map.setView(locations[location], 11);
     refreshLocations();
 }
 
-function updateLocation(latitude, longitude) {
-    fetch('/location', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            latitude: latitude,
-            longitude: longitude
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Location sent successfully:', data);
-        fetchLocations();
-    })
-    .catch(error => {
-        console.error('Error sending location:', error);
-    });
-}
-
 function refreshLocations() {
-    fetchLocations();
-}
-
-function fetchLocations() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
@@ -268,28 +217,6 @@ function getIconColorClass(location) {
     }
 
     return 'blue'; // Static locations are marked as blue
-}
-
-function showError(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            alert('User denied the request for Geolocation.');
-            break;
-        case error.POSITION_UNAVAILABLE:
-            alert('Location information is unavailable.');
-            break;
-        case error.TIMEOUT:
-            alert('The request to get user location timed out.');
-            break;
-        case error.UNKNOWN_ERROR:
-            alert('An unknown error occurred.');
-            break;
-    }
-}
-
-function startLocationSelection() {
-    alert('Click on the map to set the location.');
-    locationMode = true;
 }
 
 function showLocationForm(lat, lng) {
@@ -367,30 +294,40 @@ function cancelLocation() {
     document.getElementById('locationForm').remove();
 }
 
-function initializeEventTimetable() {
-    const selectButtons = document.querySelectorAll('.select-show');
+function autoSelectMap() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-    selectButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const showId = this.parentElement.getAttribute('data-show-id');
-            fetch(`/api/select-show`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ showId: showId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update attendees list
-                const attendeesDiv = this.nextElementSibling;
-                attendeesDiv.innerHTML = '';
-                data.attendees.forEach(user => {
-                    const img = document.createElement('img');
-                    img.src = user.avatarUrl;
-                    attendeesDiv.appendChild(img);
-                });
-            });
-        });
-    });
+            if (latitude >= 51.0 && latitude <= 53.0 && longitude >= 4.0 && longitude <= 5.0) {
+                loadMap('amsterdam');
+            } else if (latitude >= 51.0 && latitude <= 52.0 && longitude >= 5.0 && longitude <= 6.0) {
+                loadMap('jeraOnAir');
+            } else {
+                loadMap('israelCentral');
+            }
+
+            updateLocation(latitude, longitude);
+        }, showError);
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert('User denied the request for Geolocation.');
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert('Location information is unavailable.');
+            break;
+        case error.TIMEOUT:
+            alert('The request to get user location timed out.');
+            break;
+        case error.UNKNOWN_ERROR:
+            alert('An unknown error occurred.');
+            break;
+    }
 }
