@@ -5,6 +5,7 @@ from ..forms import UpdateProfileForm
 from ..extensions import db
 import secrets,os
 from PIL import Image
+import logging
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -36,20 +37,22 @@ def profile():
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
-    f_ext = f_ext.lower()  # Ensure the extension is in lower case
-    picture_fn = random_hex + f_ext  # Use the original extension
+    f_ext = f_ext.lower()
+    picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
         os.makedirs(os.path.join(current_app.root_path, target_dir))
 
+    logging.info(f'Saving picture to {picture_path}')
     try:
         with Image.open(form_picture) as img:
-            img.verify()  # Verify that this is indeed an image file
-            form_picture.seek(0)  # Reset file pointer to the beginning
-            img = Image.open(form_picture)  # Reopen the image for further processing
+            img.verify()
+            form_picture.seek(0)
+            img = Image.open(form_picture)
             img.save(picture_path)
     except (IOError, SyntaxError) as e:
+        logging.error(f'Invalid image file: {e}')
         raise ValueError("Invalid image file")
 
     return picture_fn
