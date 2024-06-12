@@ -36,7 +36,13 @@ def profile():
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
+    f_ext = f_ext.lower()  # Ensure the extension is in lower case
+
+    if f_ext in ['.jpeg', '.jpg']:
+        picture_fn = f"{random_hex}.jpg"  # Convert JPEG to JPG
+    else:
+        picture_fn = f"{random_hex}{f_ext}"  # Keep original extension for other formats
+
     picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
@@ -46,8 +52,18 @@ def save_picture(form_picture, target_dir):
         with Image.open(form_picture) as img:
             img.verify()
             form_picture.seek(0)
-    except (IOError, SyntaxError) as e:
-        raise ValueError("Invalid image file")
+            img = Image.open(form_picture)
 
-    form_picture.save(picture_path)
+            if f_ext in ['.jpeg', '.jpg']:
+                img = img.convert('RGB')  # Ensure image is in RGB format
+                img.save(picture_path, 'JPEG')  # Save as JPEG
+            else:
+                img.save(picture_path)  # Save in original format
+    except (IOError, SyntaxError) as e:
+        raise ValueError(f"Invalid image file: {e}")
+    except PermissionError as e:
+        raise ValueError(f"Permission denied: {e}")
+    except Exception as e:
+        raise ValueError(f"An unexpected error occurred: {e}")
+
     return picture_fn
