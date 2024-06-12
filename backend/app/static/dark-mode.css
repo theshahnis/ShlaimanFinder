@@ -1,12 +1,13 @@
 body {
     background-color: rgb(39, 39, 39);
-    color: rgb(230, 230, 230);
-    background-image: url('/static/images/background.png');
+    color: rgb(46, 45, 43);
+    background-image: url('/images/background.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
     background-attachment: fixed; 
-    background-color: #f3f4f6; 
+    background-color: #553c1a;
+    background-blend-mode: darken;
 }
 
 button {
