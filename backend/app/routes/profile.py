@@ -46,7 +46,9 @@ def save_picture(form_picture, target_dir):
         else:
             picture_fn = f"{random_hex}{f_ext}"  # Keep original extension for other formats
     except Exception as e:
-        logging.info(f"failed processing image extension: {f_ext}-{e}")
+        logging.error(f"Failed processing image extension: {f_ext} - {e}")
+        raise ValueError(f"Failed processing image extension: {f_ext} - {e}")
+
     picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
@@ -57,15 +59,18 @@ def save_picture(form_picture, target_dir):
         # Save the uploaded file first
         form_picture.save(picture_path)
         logging.info(f"Saved file to {picture_path}")
+    except Exception as e:
+        logging.error(f"Failed to save file: {e}")
+        raise ValueError(f"Failed to save file: {e}")
 
+    try:
         # Open and verify the image after saving
         with Image.open(picture_path) as img:
             img.verify()
             logging.info(f"Verified image file at {picture_path}")
 
-            # Re-open image for processing
-            img = Image.open(picture_path)
-
+        # Re-open image for processing
+        with Image.open(picture_path) as img:
             if f_ext in ['.jpeg', '.jpg']:
                 img = img.convert('RGB')  # Ensure image is in RGB format
                 img.save(picture_path, 'JPEG')  # Save as JPEG
