@@ -43,8 +43,6 @@ def save_picture(form_picture, target_dir):
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
         os.makedirs(os.path.join(current_app.root_path, target_dir))
 
-    print(f"Saving picture to: {picture_path}")  # Debug statement
-
     try:
         with Image.open(form_picture) as img:
             img.verify()
@@ -61,11 +59,7 @@ def save_picture(form_picture, target_dir):
             if os.path.getsize(picture_path) > max_size_kb * 1024:
                 img.save(picture_path, optimize=True, quality=75)
 
-            print("Image verified successfully")  # Debug statement
     except (IOError, SyntaxError) as e:
-        print(f"Invalid image file: {e}")  # Debug statement
         raise ValueError("Invalid image file")
 
-    form_picture.save(picture_path)
-    print(f"Image saved to: {picture_path}")  # Debug statement
     return picture_fn
