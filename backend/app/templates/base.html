@@ -6,11 +6,21 @@
     <title>{% block title %}Shlaiman Finder{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dark-mode.css') }}" id="dark-mode-stylesheet" disabled>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Shlaiman Finder">
+    <meta property="og:description" content="Find your Shlaiman friend and enjoy shows together with Shlaiman Finder.">
+    <meta property="og:image" content="{{ url_for('static', filename='images/logo1.png') }}">
+    <meta property="og:url" content="https://shlaiman.online">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Shlaiman Finder">
+
     {% block head %}{% endblock %}
+    
     <style>
         body {
-            background-size: cover;
-            background-repeat: no-repeat;
+            background-size: contain;
+            background-repeat: repeat-x;
             background-position: center center;
         }
     </style>
