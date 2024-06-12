@@ -68,21 +68,23 @@
                     imagePreview.style.display = 'block';
                     imageCropper.src = e.target.result;
                     cropButton.style.display = 'block'; // Show the crop button only when an image is selected
-                    $('#cropModal').modal('show');
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    cropper = new Cropper(imageCropper, {
-                        aspectRatio: 1, // 1 for square, NaN for free aspect ratio
-                        viewMode: 1,
-                        movable: true,
-                        zoomable: true,
-                        rotatable: true,
-                        scalable: true
-                    });
                 };
                 reader.readAsDataURL(files[0]);
             }
+        });
+
+        $('#cropModal').on('shown.bs.modal', function () {
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(imageCropper, {
+                aspectRatio: 1, // 1 for square, NaN for free aspect ratio
+                viewMode: 1,
+                movable: true,
+                zoomable: true,
+                rotatable: true,
+                scalable: true
+            });
         });
 
         document.getElementById('confirm-crop').addEventListener('click', function () {
