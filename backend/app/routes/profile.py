@@ -36,7 +36,8 @@ def profile():
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
-    picture_fn = random_hex + f_ext
+    f_ext = f_ext.lower()  # Ensure the extension is in lower case
+    picture_fn = random_hex + f_ext  # Use the original extension
     picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
@@ -44,10 +45,11 @@ def save_picture(form_picture, target_dir):
 
     try:
         with Image.open(form_picture) as img:
-            img.verify()
-            form_picture.seek(0)
+            img.verify()  # Verify that this is indeed an image file
+            form_picture.seek(0)  # Reset file pointer to the beginning
+            img = Image.open(form_picture)  # Reopen the image for further processing
+            img.save(picture_path)
     except (IOError, SyntaxError) as e:
         raise ValueError("Invalid image file")
 
-    form_picture.save(picture_path)
     return picture_fn
