@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_required, current_user
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
-import secrets,os
+from PIL import Image
+import secrets
+import os
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -13,8 +15,8 @@ def profile():
     form = UpdateProfileForm()
     if form.validate_on_submit():
         try:
-            if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
+            if 'profile_image' in request.files:
+                picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
                 current_user.profile_image = picture_file
             current_user.username = form.username.data
             current_user.email = form.email.data

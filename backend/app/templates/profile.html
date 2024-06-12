@@ -8,7 +8,7 @@
 {% if profile_image %}
     <img src="{{ profile_image }}" alt="Profile Picture" style="width:150px;height:150px;">
 {% endif %}
-<form method="POST" enctype="multipart/form-data">
+<form id="profile-form" method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
     <div>
         {{ form.username.label }} {{ form.username }}
@@ -18,14 +18,73 @@
     </div>
     <div>
         {{ form.profile_image.label }} {{ form.profile_image }}
+        <img id="image-preview" src="#" alt="Image Preview" style="display:none; max-width: 100%; height: auto;">
     </div>
     <div>
-        {{ form.note.label }} {{ form.note }}  <!-- Add this line -->
+        {{ form.note.label }} {{ form.note }}
+    </div>
+    <div>
+        <button type="button" id="crop-button">Crop & Upload</button>
     </div>
     <div>
         {{ form.submit }}
     </div>
 </form>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var imagePreview = document.getElementById('image-preview');
+        var cropper;
 
+        document.getElementById('profile_image').addEventListener('change', function (event) {
+            var files = event.target.files;
+            if (files && files.length > 0) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    cropper = new Cropper(imagePreview, {
+                        aspectRatio: 1, // 1 for square, NaN for free aspect ratio
+                        viewMode: 1,
+                        movable: true,
+                        zoomable: true,
+                        rotatable: true,
+                        scalable: true
+                    });
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        document.getElementById('crop-button').addEventListener('click', function () {
+            var canvas;
+            if (cropper) {
+                canvas = cropper.getCroppedCanvas({
+                    width: 525,
+                    height: 700,
+                });
+                canvas.toBlob(function (blob) {
+                    var formData = new FormData();
+                    formData.append('profile_image', blob, 'cropped_image.png');
+                    fetch('{{ url_for("profile_bp.profile") }}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ form.csrf_token.current_token }}' // Ensure CSRF token is included
+                        }
+                    }).then(function (response) {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('An error occurred while uploading the image.');
+                        }
+                    });
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

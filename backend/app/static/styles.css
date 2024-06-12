@@ -4,15 +4,16 @@
 
 html {
   background-color: #bea384;
-}
-
-body {
   background-image: url('/static/images/background.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain; 
   background-attachment: fixed; 
   background-color: #f3f4f6; 
+}
+
+body {
+  
   font-family: "Poppins", sans-serif;
   background-color: #efd6b6;
   height: 100vh;
