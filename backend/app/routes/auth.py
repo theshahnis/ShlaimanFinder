@@ -81,11 +81,11 @@ def request_reset():
             flash('A password reset email has been sent.', 'info')
         else:
             flash('Email not found.', 'warning')
-        return redirect(url_for('auth_bp.auth_page'))
+        return redirect(url_for('auth_bp.auth_page'))  # Ensure 'auth_page' exists in auth_bp
     return render_template('request_reset.html')
 
 def send_reset_email(to, token):
-    msg = Message('Shlaiman Finder-Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
+    msg = Message('Shlaiman Finder - Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
 {url_for('auth_bp.reset_password', token=token, _external=True)}
 If you did not make this request then simply ignore this email and no changes will be made.
@@ -103,16 +103,14 @@ def reset_password(token):
         confirm_password = request.form.get('confirm_password')
         if password != confirm_password:
             flash('Passwords do not match.', 'danger')
-            return redirect(url_for('auth.reset_password', token=token))
+            return redirect(url_for('auth_bp.reset_password', token=token))
         user = User.query.filter_by(email=email).first()
         if user:
             user.password = generate_password_hash(password, method='pbkdf2:sha256')
             db.session.commit()
             flash('Your password has been updated!', 'success')
-            return redirect(url_for('auth_bp.auth_page'))
+            return redirect(url_for('auth_bp.auth_page'))  # Ensure 'auth_page' exists in auth_bp
     return render_template('reset_password.html', token=token)
-
-
 
 def generate_reset_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
