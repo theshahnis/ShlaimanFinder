@@ -7,16 +7,16 @@ html {
 }
 
 body {
-  background-image: url('/static/images/background.png');
+  font-family: "Poppins", sans-serif;
+  background-color: #efd6b6;
+  height: 100vh;
+  color: black;
+  background-image: url('/images/background.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain; 
   background-attachment: fixed; 
   background-color: #f3f4f6; 
-  font-family: "Poppins", sans-serif;
-  background-color: #efd6b6;
-  height: 100vh;
-  color: black;
 }
 
 .date-buttons {
