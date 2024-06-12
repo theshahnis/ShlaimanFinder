@@ -43,6 +43,11 @@ def create_app():
     @app.route('/')
     def index():
         return app.send_static_file('auth.html')
+    
+    @app.errorhandler(413)
+    def request_entity_too_large(error):
+        flash('File is too large. Maximum file size is 16 MB.', 'danger')
+        return redirect(request.url)
 
     context = (os.getenv('SSL_CERT_PATH', 'cert.pem'), os.getenv('SSL_KEY_PATH', 'key.pem'))
     return app

@@ -49,6 +49,18 @@ def save_picture(form_picture, target_dir):
         with Image.open(form_picture) as img:
             img.verify()
             form_picture.seek(0)
+
+            # Resize and compress the image
+            max_size_kb = 700
+            target_width, target_height = 525, 700
+            img = img.convert("RGB")  # Ensure image is in RGB mode
+            img.thumbnail((target_width, target_height), Image.ANTIALIAS)
+
+            # Save the image with reduced quality
+            img.save(picture_path, optimize=True, quality=85)
+            if os.path.getsize(picture_path) > max_size_kb * 1024:
+                img.save(picture_path, optimize=True, quality=75)
+
             print("Image verified successfully")  # Debug statement
     except (IOError, SyntaxError) as e:
         print(f"Invalid image file: {e}")  # Debug statement
