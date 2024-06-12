@@ -12,11 +12,12 @@ body {
   height: 100vh;
   color: black;
   background-image: url('/images/background.png');
-  background-repeat: no-repeat;
+  background-blend-mode: overlay;
+  background-repeat: repeat-x;
   background-position: center;
   background-size: contain; 
   background-attachment: fixed; 
-  background-color: #f3f4f6; 
+  background-color: #ad7d35; 
 }
 
 .date-buttons {

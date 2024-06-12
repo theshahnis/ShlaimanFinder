@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dark-mode.css') }}" id="dark-mode-stylesheet" disabled>
     {% block head %}{% endblock %}
+    <style>
+        body {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -40,5 +47,17 @@
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var images = [
+                "{{ url_for('static', filename='images/background.png') }}",
+                "{{ url_for('static', filename='images/background2.png') }}",
+                "{{ url_for('static', filename='images/background3.png') }}",
+                "{{ url_for('static', filename='images/background4.png') }}"
+            ];
+            var randomImage = images[Math.floor(Math.random() * images.length)];
+            document.body.style.backgroundImage = 'url(' + randomImage + ')';
+        });
+    </script>
 </body>
 </html>
