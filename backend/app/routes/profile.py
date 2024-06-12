@@ -40,11 +40,13 @@ def save_picture(form_picture, target_dir):
     _, f_ext = os.path.splitext(form_picture.filename)
     f_ext = f_ext.lower()
 
-    if f_ext in ['.jpeg', '.jpg']:
-        picture_fn = f"{random_hex}.jpg"  # Convert JPEG to JPG
-    else:
-        picture_fn = f"{random_hex}{f_ext}"  # Keep original extension for other formats
-
+    try:
+        if f_ext in ['.jpeg', '.jpg']:
+            picture_fn = f"{random_hex}.jpg"  # Convert JPEG to JPG
+        else:
+            picture_fn = f"{random_hex}{f_ext}"  # Keep original extension for other formats
+    except Exception as e:
+        logging.info(f"failed processing image extension: {f_ext}-{e}")
     picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
 
     if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
