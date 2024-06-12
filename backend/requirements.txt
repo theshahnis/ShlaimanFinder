@@ -12,3 +12,5 @@ python-dotenv
 psycopg2-binary
 pymysql
 cryptography
+pillow
+flask_cors

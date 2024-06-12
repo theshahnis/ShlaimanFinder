@@ -37,7 +37,7 @@ def edit_user(user_id):
             user.group_id = None
         db.session.commit()
         flash('User updated successfully', 'success')
-        return redirect(url_for('superuser.superuser_view'))
+        return redirect(url_for('superuser_bp.superuser_view'))
 
     return render_template('edit_user.html', user=user, groups=groups)
 
@@ -51,7 +51,7 @@ def delete_user(user_id):
     db.session.delete(user)
     db.session.commit()
     flash('User deleted successfully', 'success')
-    return redirect(url_for('superuser.superuser_view'))
+    return redirect(url_for('superuser_bp.superuser_view'))
 
 @superuser_bp.route('/superuser/add_group', methods=['POST'])
 @login_required
@@ -65,4 +65,4 @@ def add_group():
     db.session.add(new_group)
     db.session.commit()
     flash('Group added successfully', 'success')
-    return redirect(url_for('superuser.superuser_view'))
+    return redirect(url_for('superuser_bp.superuser_view'))
