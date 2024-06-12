@@ -4,6 +4,7 @@ from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
 import secrets,os
+from PIL import Image
 
 profile_bp = Blueprint('profile_bp', __name__)
 
