@@ -9,7 +9,7 @@ from flask_mail import Message
 
 auth_bp = Blueprint('auth_bp', __name__)
 
-@auth_bp.route('/auth', methods=['GET', 'POST'])
+@auth_bp.route('/', methods=['GET', 'POST'])
 def auth_page():
     if request.method == 'POST':
         if 'login' in request.form:

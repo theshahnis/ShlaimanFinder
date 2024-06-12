@@ -7,7 +7,7 @@ import secrets,os
 
 profile_bp = Blueprint('profile_bp', __name__)
 
-@profile_bp.route('/profile', methods=['GET', 'POST'])
+@profile_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def profile():
     form = UpdateProfileForm()
