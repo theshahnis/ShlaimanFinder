@@ -22,7 +22,7 @@ def create_app():
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=180)
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/profile_pics')
-    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+    #app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
     # Flask-Mail configuration
     app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
