@@ -1,11 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
-from PIL import Image
-import secrets
-import os
+import secrets,os
 
 profile_bp = Blueprint('profile_bp', __name__)
 
@@ -15,8 +13,8 @@ def profile():
     form = UpdateProfileForm()
     if form.validate_on_submit():
         try:
-            if 'profile_image' in request.files:
-                picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+            if form.profile_image.data:
+                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
                 current_user.profile_image = picture_file
             current_user.username = form.username.data
             current_user.email = form.email.data
@@ -47,19 +45,8 @@ def save_picture(form_picture, target_dir):
         with Image.open(form_picture) as img:
             img.verify()
             form_picture.seek(0)
-
-            # Resize and compress the image
-            max_size_kb = 700
-            target_width, target_height = 525, 700
-            img = img.convert("RGB")  # Ensure image is in RGB mode
-            img.thumbnail((target_width, target_height), Image.ANTIALIAS)
-
-            # Save the image with reduced quality
-            img.save(picture_path, optimize=True, quality=85)
-            if os.path.getsize(picture_path) > max_size_kb * 1024:
-                img.save(picture_path, optimize=True, quality=75)
-
     except (IOError, SyntaxError) as e:
         raise ValueError("Invalid image file")
 
+    form_picture.save(picture_path)
     return picture_fn
