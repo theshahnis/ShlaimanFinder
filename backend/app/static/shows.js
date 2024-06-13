@@ -20,6 +20,11 @@ function loadShowsForDate(date, selectedButton) {
     fetch(`/show/api/shows?date=${date}`)
         .then(response => response.json())
         .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+
             const shows = data.shows;
             const showsAttendees = data.shows_attendees;
             renderShows(shows, showsAttendees);

@@ -22,6 +22,9 @@ def my_shows():
 @login_required
 def get_shows():
     date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'error': 'Date parameter is required'}), 400
+
     date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
     next_day = date + timedelta(days=1)
     shows = Show.query.filter(
