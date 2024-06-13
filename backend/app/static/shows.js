@@ -1,75 +1,41 @@
 document.addEventListener('DOMContentLoaded', function() {
-    loadMyShows();
+    const dateButtons = document.querySelectorAll('.button');
+
+    dateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const selectedDate = this.getAttribute('data-date');
+            loadShowsForDate(selectedDate, this);
+        });
+    });
+
+    // Load shows for the first date by default and highlight the first button
+    const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+    if (firstButton) {
+        firstButton.classList.add('selected');
+        loadShowsForDate('2024-06-27', firstButton);
+    }
 });
 
-function loadMyShows() {
-    fetch('/show/user-shows')
+function loadShowsForDate(date, selectedButton) {
+    fetch(`/show/api/shows?date=${date}`)
         .then(response => response.json())
         .then(data => {
-            const showIds = data.show_ids;
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            const shows = data.shows;
             const showsAttendees = data.shows_attendees;
-            fetchShowsByIds(showIds, showsAttendees);
-        });
-}
+            renderShows(shows, showsAttendees);
+        })
+        .catch(error => console.error('Error loading shows:', error));
 
-function fetchShowsByIds(showIds, showsAttendees) {
-    const timetable = document.querySelector('.timetable');
-    timetable.innerHTML = ''; // Clear the timetable
+    // Remove 'selected' class from all buttons
+    const dateButtons = document.querySelectorAll('.button');
+    dateButtons.forEach(button => button.classList.remove('selected'));
 
-    showIds.forEach(showId => {
-        fetch(`/show/api/shows?id=${showId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-                if (data.shows.length > 0) {
-                    renderShow(data.shows[0], showsAttendees[showId]);
-                }
-            });
-    });
-}
-
-function renderShow(show, attendees) {
-    const timetable = document.querySelector('.timetable');
-
-    const stageName = show.stage;
-    let stageDiv = timetable.querySelector(`.stage[data-stage="${stageName}"]`);
-
-    if (!stageDiv) {
-        stageDiv = document.createElement('div');
-        stageDiv.classList.add('stage');
-        stageDiv.setAttribute('data-stage', stageName);
-        stageDiv.innerHTML = `<h2>${stageName}</h2>`;
-        timetable.appendChild(stageDiv);
-    }
-
-    const showElement = document.createElement('div');
-    showElement.classList.add('show');
-    showElement.setAttribute('data-show-id', show.id);
-    const startTime = new Date(show.start_time);
-    const endTime = new Date(show.end_time);
-    showElement.innerHTML = `
-        <span>${show.name}</span>
-        <span>${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-        <button class="select-show">Attend</button>
-        <div class="attendees"></div>
-    `;
-    stageDiv.appendChild(showElement);
-
-    // Populate existing attendees
-    const attendeesDiv = showElement.querySelector('.attendees');
-    if (attendees) {
-        attendees.forEach(user => {
-            const img = document.createElement('img');
-            img.src = user.avatarUrl;
-            img.alt = user.username;
-            img.title = user.username;
-            img.classList.add('attendee-icon');
-            attendeesDiv.appendChild(img);
-        });
-    }
+    // Add 'selected' class to the clicked button
+    selectedButton.classList.add('selected');
 }
 
 function renderShows(shows, showsAttendees) {
@@ -77,7 +43,6 @@ function renderShows(shows, showsAttendees) {
     timetable.innerHTML = '';  // Clear the timetable
 
     const stages = {};
-    const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content')); // Assuming you have a meta tag with user ID
 
     shows.forEach(show => {
         const showDate = new Date(show.start_time);
@@ -99,20 +64,10 @@ function renderShows(shows, showsAttendees) {
         const showElement = document.createElement('div');
         showElement.classList.add('show');
         showElement.setAttribute('data-show-id', show.id);
-
-        let buttonText = 'Attend';
-        if (showsAttendees[show.id]) {
-            showsAttendees[show.id].forEach(user => {
-                if (user.id === currentUserId) {
-                    buttonText = 'Leave';
-                }
-            });
-        }
-
         showElement.innerHTML = `
             <span>${show.name}</span>
             <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-            <button class="select-show">${buttonText}</button>
+            <button class="select-show">Attend</button>
             <div class="attendees"></div>
         `;
         stages[show.stage].appendChild(showElement);
@@ -169,7 +124,8 @@ function initializeEventTimetable() {
                 } else {
                     this.textContent = 'Attend';
                 }
-            });
+            })
+            .catch(error => console.error('Error updating show attendance:', error));
         });
     });
 }
