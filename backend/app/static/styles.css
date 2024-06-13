@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins');
 
 /* BASIC */
-
 html {
   background-color: #bea384;
 }
@@ -12,11 +11,11 @@ body {
   height: 100vh;
   color: black;
   background-blend-mode: normal;
-  background-repeat: no-repeat;;
+  background-repeat: no-repeat;
   background-position: center;
-  background-size: contain; 
-  background-attachment: fixed; 
-  background-color: #ad7d35; 
+  background-size: contain;
+  background-attachment: fixed;
+  background-color: #ad7d35;
 }
 
 .profile-container {
@@ -26,11 +25,11 @@ body {
   justify-content: center;
   text-align: center;
   margin: 0 auto;
-  max-width: 600px; /* Adjust this value as needed */
+  max-width: 600px;
   padding: 20px;
-  background-color: #e6ba80; /* Optional: add a background color */
-  border-radius: 8px; /* Optional: add rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow */
+  background-color: #e6ba80;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-container img {
@@ -42,112 +41,113 @@ body {
 }
 
 .date-buttons {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .date-button {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    padding: 10px 20px;
-    margin: 0 5px;
-    cursor: pointer;
-    font-size: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .date-button:hover {
-    background-color: #f4f4f4;
+  background-color: #f4f4f4;
 }
 
 .timetable {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px;
-    position: relative; /* Ensure this to allow absolute positioning of shows */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
 }
 
 .stage {
-    border: 1px solid #db7018;
-    padding: 10px;
-    width: 18%;
-    background-color: #ad9278;
-    position: relative; /* Ensure this to allow absolute positioning of shows */
+  border: 1px solid #db7018;
+  padding: 10px;
+  background-color: #ad9278;
+  position: relative;
 }
 
 .stage h2 {
-    text-align: center;
+  text-align: center;
 }
 
 .show {
-    border-top: 1px solid #ccc;
-    padding: 10px 0;
-    text-align: center;
-    position: relative; /* Change to relative for manual spacing */
-    margin-bottom: 20px; /* Add fixed margin between shows */
+  border-top: 1px solid #ccc;
+  padding: 10px 0;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .show button {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .attendees {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .attendees img {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    margin-right: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 5px;
 }
 
 .attendee-icon {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .modal-content {
-    max-width: 80%;
-    max-height: 80%;
+  max-width: 80%;
+  max-height: 80%;
 }
 
 .caption {
-    color: white;
-    font-size: 1.5em;
-    text-align: center;
-    margin-top: 10px;
+  color: white;
+  font-size: 1.5em;
+  text-align: center;
+  margin-top: 10px;
 }
 
 @media (max-width: 768px) {
+  .timetable {
+    grid-template-columns: 1fr;
+  }
+
   .stage {
-      width: 45%; /* Adjust width for smaller screens */
-      margin-bottom: 20px;
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .stage {
-      width: 100%; /* Full width for very small screens */
-      margin-bottom: 20px;
+@media (min-width: 769px) {
+  .timetable {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
-  
-  .date-button {
-      padding: 8px 16px;
-      font-size: 14px;
+
+  .stage {
+    width: auto;
   }
 }
 
@@ -157,7 +157,7 @@ button {
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-  font-weight: bold
+  font-weight: bold;
 }
 
 button.nav-button.selected {
@@ -168,29 +168,26 @@ button.nav-button.selected {
 
 a {
   color: #3d454c;
-  display:inline-block;
+  display: inline-block;
   text-decoration: none;
   font-weight: 400;
 }
 
 h2 {
   text-align: center;
-  font-size: 16px; 
+  font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
-  display:inline-block;
-  margin: 40px 8px 10px 8px; 
+  display: inline-block;
+  margin: 40px 8px 10px 8px;
   color: #151313;
 }
 
 /* STRUCTURE */
-
-
-
 .wrapper {
   display: flex;
   align-items: center;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: center;
   width: 100%;
   min-height: 100%;
@@ -221,7 +218,6 @@ h2 {
 }
 
 /* TABS */
-
 h2.inactive {
   color: #cccccc;
 }
@@ -231,9 +227,8 @@ h2.active {
   border-bottom: 2px solid #5fbae9;
 }
 
-/* FORM TYPOGRAPHY*/
-
-input[type=button], input[type=submit], input[type=reset]  {
+/* FORM TYPOGRAPHY */
+input[type=button], input[type=submit], input[type=reset] {
   background-color: #56baed;
   border: none;
   color: rgb(52, 42, 42);
@@ -255,11 +250,11 @@ input[type=button], input[type=submit], input[type=reset]  {
   transition: all 0.3s ease-in-out;
 }
 
-input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
+input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
   background-color: #39ace7;
 }
 
-input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {
+input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
   -moz-transform: scale(0.95);
   -webkit-transform: scale(0.95);
   -o-transform: scale(0.95);
@@ -293,13 +288,11 @@ input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
   border-bottom: 2px solid #5fbae9;
 }
 
-input[type=text]:placeholder, input[type=password]:placeholder, input[type=email]:placeholder {
+input[type=text]::placeholder, input[type=password]::placeholder, input[type=email]::placeholder {
   color: #cccccc;
 }
 
 /* ANIMATIONS */
-
-/* Simple CSS3 Fade-in-down Animation */
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
@@ -335,21 +328,29 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
   }
 }
 
-/* Simple CSS3 Fade-in Animation */
-@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-webkit-keyframes fadeIn { 
+  from { opacity:0; } 
+  to { opacity:1; } 
+}
+
+@-moz-keyframes fadeIn { 
+  from { opacity:0; } 
+  to { opacity:1; } 
+}
+
+@keyframes fadeIn { 
+  from { opacity:0; } 
+  to { opacity:1; } 
+}
 
 .fadeIn {
   opacity:0;
   -webkit-animation:fadeIn ease-in 1;
   -moz-animation:fadeIn ease-in 1;
   animation:fadeIn ease-in 1;
-
   -webkit-animation-fill-mode:forwards;
   -moz-animation-fill-mode:forwards;
   animation-fill-mode:forwards;
-
   -webkit-animation-duration:0.5s;
   -moz-animation-duration:0.5s;
   animation-duration:0.5s;
@@ -395,14 +396,13 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
   color: #0d0d0d;
 }
 
-.underlineHover:hover:after{
+.underlineHover:hover:after {
   width: 100%;
 }
 
 /* OTHERS */
-
 *:focus {
-    outline: none;
+  outline: none;
 } 
 
 #icon {
@@ -456,4 +456,3 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
   font-size: 1.1em;
   margin-top: 10px;
 }
-
