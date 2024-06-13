@@ -141,6 +141,9 @@ def create_location():
     image = request.files.get('image')
     duration = request.form.get('duration') if loc_type == 'meetingPoint' else None
 
+    # Logging received form data
+    print(f"Received data: latitude={latitude}, longitude={longitude}, username={username}, note={note}, loc_type={loc_type}, image={image}, duration={duration}")
+
     if not (latitude and longitude and username and loc_type):
         return jsonify({'message': 'Invalid data'}), 400
 
@@ -152,30 +155,35 @@ def create_location():
         except ValueError as e:
             return jsonify({'message': str(e)}), 400
 
-    if loc_type == 'meetingPoint':
-        meeting_point = MeetingPoint(
-            latitude=latitude,
-            longitude=longitude,
-            username=username,
-            note=note,
-            image=image_filename,
-            group_id=current_user.group_id,
-            duration=int(duration)
-        )
-        db.session.add(meeting_point)
-    else:
-        static_location = StaticLocation(
-            latitude=latitude,
-            longitude=longitude,
-            name=username,
-            note=note,
-            image=image_filename
-        )
-        db.session.add(static_location)
+    try:
+        if loc_type == 'meetingPoint':
+            meeting_point = MeetingPoint(
+                latitude=latitude,
+                longitude=longitude,
+                username=username,
+                note=note,
+                image=image_filename,
+                group_id=current_user.group_id,
+                duration=int(duration)
+            )
+            db.session.add(meeting_point)
+        else:
+            static_location = StaticLocation(
+                latitude=latitude,
+                longitude=longitude,
+                name=username,
+                note=note,
+                image=image_filename
+            )
+            db.session.add(static_location)
 
-    db.session.commit()
-
-    return jsonify({'message': 'Location created successfully'}), 200
+        db.session.commit()
+        print("Location created successfully")
+        return jsonify({'message': 'Location created successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error: {e}")
+        return jsonify({'message': 'Failed to create location', 'error': str(e)}), 500
 
 @location_bp.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
 @login_required

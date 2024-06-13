@@ -52,7 +52,9 @@ class MeetingPoint(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=True)
 
 class StaticLocation(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = 'static_location'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(150), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
