@@ -60,16 +60,18 @@ body {
 }
 
 .timetable {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-content: center;
+  display: flex;
+  justify-content: flex-start; /* Align items to the start for horizontal scroll */
+  overflow-x: auto; /* Allow horizontal scrolling */
+  padding: 10px;
+  margin: 20px 0; /* Adjust margins for better appearance */
+  gap: 10px; /* Add gap between stages */
 }
 
 .stage {
   border: 1px solid #db7018;
   padding: 10px;
+  min-width: 150px; /* Set a minimum width for each stage */
   background-color: #ad9278;
   position: relative;
 }
@@ -131,14 +133,14 @@ body {
   margin-top: 10px;
 }
 
+/* Additional styles for smaller screens */
 @media (max-width: 768px) {
   .timetable {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusted min-width to show more columns */
-      overflow-x: auto; /* Allow horizontal scrolling */
+      justify-content: flex-start;
   }
 
   .stage {
-      width: auto; /* Remove fixed width for better flexibility */
+      min-width: 200px; /* Increase minimum width for better readability */
   }
 }
 
