@@ -12,11 +12,11 @@ body {
   height: 100vh;
   color: black;
   background-blend-mode: normal;
-  background-repeat: no-repeat;
   background-position: center;
   background-size: contain; 
   background-attachment: fixed; 
   background-color: #ad7d35; 
+  background-repeat: repeat-y;
 }
 
 .profile-container {
