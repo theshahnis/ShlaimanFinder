@@ -23,7 +23,7 @@ function renderMyShows(shows) {
         showElement.classList.add('show');
         showElement.innerHTML = `
             <span>${show.name}</span>
-            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}</span>
         `;
         timetable.appendChild(showElement);
     });
