@@ -1,19 +1,19 @@
 body {
-    background-color: rgb(39, 39, 39);
-    color: rgb(165, 103, 14);
-    background-blend-mode: darken;
+    background-color: rgb(67, 64, 61);
+    color: rgb(188, 116, 14);
+    background-blend-mode: luminosity;
 }
 
 button {
-    background-color: #583b09;
-    color: rgb(64, 64, 64);
+    background-color: #4e3409;
+    color: rgb(184, 176, 167);
     border: none;
     padding: 10px 20px;
     cursor: pointer;
 }
 button.nav-button.selected {
     background-color: #5c4b5d;
-    color: #3b3b3b; 
+    color: #cdcdcd; 
     border: 2px solid #873800; 
   }
 
