@@ -3,18 +3,18 @@ body {
     color: #E0E0E0; /* Light text */
     background-blend-mode: luminosity;
     position: relative;
-    overflow: hidden; /* Ensure content doesn't scroll under the overlay */
 }
 
 body::before {
     content: '';
-    position: absolute;
+    position: fixed; /* Changed to fixed to cover the entire viewport */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.3); /* Semi-transparent overlay for darker effect */
     z-index: -1; /* Ensure the overlay is behind other content */
+    pointer-events: none; /* Ensure the overlay does not capture any mouse events */
 }
 
 button {
