@@ -27,7 +27,6 @@ function fetchShowsByIds(showIds, showsAttendees) {
                 renderShow(data.show, showsAttendees[showId]);
             });
     });
-}
 
 function renderShow(show, attendees) {
     const timetable = document.querySelector('.timetable');
