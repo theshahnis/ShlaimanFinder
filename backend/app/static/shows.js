@@ -42,21 +42,7 @@ function renderShows(shows, showsAttendees) {
     const timetable = document.querySelector('.timetable');
     timetable.innerHTML = '';  // Clear the timetable
 
-    const stages = {
-        'Eagle': document.createElement('div'),
-        'Vulture': document.createElement('div'),
-        'Buzzard': document.createElement('div'),
-        'Hawk': document.createElement('div'),
-        'Raven': document.createElement('div')
-    };
-
-    for (const stage of Object.keys(stages).sort()) {
-        stages[stage].classList.add('stage');
-        stages[stage].setAttribute('data-stage', stage);
-        stages[stage].innerHTML = `<h2>${stage}</h2>`;
-        timetable.appendChild(stages[stage]);
-    }
-
+    const stages = {};
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
@@ -67,6 +53,13 @@ function renderShows(shows, showsAttendees) {
         }
         if (endDate.getHours() < 6) {
             endDate.setDate(endDate.getDate() - 1);
+        }
+
+        if (!stages[show.stage]) {
+            stages[show.stage] = document.createElement('div');
+            stages[show.stage].classList.add('stage');
+            stages[show.stage].innerHTML = `<h2>${show.stage}</h2>`;
+            timetable.appendChild(stages[show.stage]);
         }
 
         const showElement = document.createElement('div');
@@ -83,11 +76,9 @@ function renderShows(shows, showsAttendees) {
         }
 
         showElement.innerHTML = `
-            <span class="show-name">${show.name}</span>
-            <span class="show-time">${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-            <span class="show-stage">${show.stage}</span>
+            <span>${show.name}</span>
+            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             <button class="select-show">${buttonText}</button>
-            <button class="whos-going">Who's going?</button>
             <div class="attendees"></div>
         `;
         stages[show.stage].appendChild(showElement);
@@ -111,7 +102,6 @@ function renderShows(shows, showsAttendees) {
 
 function initializeEventTimetable() {
     const selectButtons = document.querySelectorAll('.select-show');
-    const whosGoingButtons = document.querySelectorAll('.whos-going');
 
     selectButtons.forEach(button => {
         const showId = parseInt(button.parentElement.getAttribute('data-show-id'));
@@ -128,7 +118,7 @@ function initializeEventTimetable() {
             .then(response => response.json())
             .then(data => {
                 // Update attendees list
-                const attendeesDiv = this.nextElementSibling.nextElementSibling.nextElementSibling;
+                const attendeesDiv = this.nextElementSibling;
                 attendeesDiv.innerHTML = '';
                 data.attendees.forEach(user => {
                     const img = document.createElement('img');
@@ -149,88 +139,19 @@ function initializeEventTimetable() {
             .catch(error => console.error('Error updating show attendance:', error));
         });
     });
-
-    whosGoingButtons.forEach(button => {
-        const showId = parseInt(button.parentElement.getAttribute('data-show-id'));
-
-        button.addEventListener('click', function() {
-            fetch(`/show/api/show?id=${showId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        console.error(data.error);
-                        return;
-                    }
-                    const attendees = data.attendees;
-                    showModal(attendees);
-                })
-                .catch(error => console.error('Error fetching attendees:', error));
-        });
-    });
-}
-
-function showModal(attendees) {
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
-
-    const modalContent = document.createElement('div');
-    modalContent.classList.add('modal-content');
-
-    const closeButton = document.createElement('span');
-    closeButton.classList.add('close');
-    closeButton.innerHTML = '&times;';
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(modal);
-    });
-
-    modalContent.appendChild(closeButton);
-
-    const attendeesList = document.createElement('div');
-    attendeesList.classList.add('attendees-list');
-
-    attendees.forEach(user => {
-        const attendeeDiv = document.createElement('div');
-        attendeeDiv.classList.add('attendee');
-
-        const img = document.createElement('img');
-        img.src = user.avatarUrl;
-        img.alt = user.username;
-        img.title = user.username;
-        img.classList.add('attendee-icon');
-
-        const username = document.createElement('span');
-        username.textContent = user.username;
-
-        attendeeDiv.appendChild(img);
-        attendeeDiv.appendChild(username);
-        attendeesList.appendChild(attendeeDiv);
-    });
-
-    modalContent.appendChild(attendeesList);
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
-
-    modal.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            document.body.removeChild(modal);
-        }
-    });
 }
 
 document.addEventListener('click', function(event) {
     if (event.target.classList.contains('attendee-icon')) {
         const modal = document.createElement('div');
         modal.classList.add('modal');
-
         const img = document.createElement('img');
         img.src = event.target.src;
         img.alt = event.target.alt;
         img.classList.add('modal-content');
-
         const caption = document.createElement('div');
         caption.classList.add('caption');
         caption.textContent = event.target.alt;
-
         modal.appendChild(img);
         modal.appendChild(caption);
         document.body.appendChild(modal);
