@@ -56,30 +56,37 @@ button.nav-button.selected {
     border: 2px solid #FF5722; /* Orange border */
 }
 
-/* Show element styling for dark mode */
 .show {
     background-color: #1E1E1E; /* Dark background */
     color: #E0E0E0; /* Light text */
     border: 1px solid #2E2E2E; /* Slightly lighter border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding inside the show box */
+    margin-bottom: 20px; /* Space between show boxes */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+    width: 90%; /* Full width inside the timetable */
+    max-width: 800px; /* Maximum width for larger screens */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
+}
+
+.show:hover {
+    transform: translateY(-5px); /* Slight lift on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5); /* Stronger shadow on hover */
 }
 
 .show-name {
     font-weight: bold;
+    font-size: 1.5em; /* Larger font size */
     color: #FFEB3B; /* Yellow for show names */
+    margin-bottom: 10px; /* Space below the show name */
 }
 
-.show-time {
-    display: block;
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #B0B0B0; /* Grey for show times */
-}
-
+.show-time,
 .show-stage {
     display: block;
-    margin-top: 5px;
-    font-size: 0.9em;
-    color: #B0B0B0; /* Grey for show stages */
+    font-size: 1.2em; /* Larger font size */
+    color: #B0B0B0; /* Grey for show times and stages */
+    margin-bottom: 8px; /* Space below each line */
 }
 
 /* Attendees styling for dark mode */
@@ -96,9 +103,9 @@ button.nav-button.selected {
     display: flex;
     flex-direction: column; /* Stack items vertically */
     align-items: center; /* Center align items */
-    padding: 10px;
+    padding: 20px;
     margin: 20px;
-    gap: 10px; /* Space between show boxes */
+    gap: 20px; /* Space between show boxes */
 }
 
 .timetable {
