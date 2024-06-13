@@ -17,7 +17,13 @@ def shows():
 @login_required
 def get_shows():
     date_str = request.args.get('date')
-    date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+    if not date_str:
+        return jsonify({'error': 'Date parameter is required'}), 400
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+    except ValueError:
+        return jsonify({'error': 'Invalid date format'}), 400
+
     next_day = date + timedelta(days=1)
     shows = Show.query.filter(
         Show.start_time >= date,
@@ -36,6 +42,24 @@ def get_shows():
         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
     
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+
+@show_bp.route('/api/show', methods=['GET'])
+@login_required
+def get_show():
+    show_id = request.args.get('id')
+    if not show_id:
+        return jsonify({'error': 'Show ID is required'}), 400
+    
+    show = Show.query.get(show_id)
+    if not show:
+        return jsonify({'error': 'Show not found'}), 404
+    
+    show_dict = show.to_dict()
+    
+    attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+
+    return jsonify({'show': show_dict, 'attendees': attendees_data})
 
 @show_bp.route('/user-shows', methods=['GET'])
 @login_required

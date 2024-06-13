@@ -17,10 +17,14 @@ function fetchShowsByIds(showIds, showsAttendees) {
     timetable.innerHTML = ''; // Clear the timetable
 
     showIds.forEach(showId => {
-        fetch(`/show/api/shows?id=${showId}`) // Ensure this endpoint exists
+        fetch(`/show/api/show?id=${showId}`)
             .then(response => response.json())
             .then(data => {
-                renderShow(data, showsAttendees[showId]);
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                renderShow(data.show, showsAttendees[showId]);
             });
     });
 }
@@ -46,7 +50,7 @@ function renderShow(show, attendees) {
     const endTime = new Date(show.end_time);
     showElement.innerHTML = `
         <span>${show.name}</span>
-        <span>${startTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+        <span>${startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         <button class="select-show">Attend</button>
         <div class="attendees"></div>
     `;
