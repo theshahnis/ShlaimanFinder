@@ -197,6 +197,30 @@ button.nav-button.selected, .nav-button.selected {
   border: 2px solid #0056b3;
 }
 
+/* Specific styles for .nav-button */
+.nav-button {
+  background-color: #e9a530; /* General button background */
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none; /* Remove underline from links */
+  display: inline-block;
+}
+
+.nav-button:hover {
+  background-color: #8c8e90;
+  color: #fff;
+}
+
+.nav-button.selected {
+  background-color: #007bff;
+  color: #fff;
+  border: 2px solid #0056b3;
+}
+
 /* Links */
 a {
   color: #3d454c;
