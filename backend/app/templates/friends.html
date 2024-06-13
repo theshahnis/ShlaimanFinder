@@ -1,18 +1,16 @@
-<!-- templates/friends.html -->
-
 {% extends "base.html" %}
 
 {% block title %}ShlaimanFinder - Friends{% endblock %}
 
 {% block content %}
 <h1>Friends in Your Group</h1>
-<div id="friends-list">
+<div id="friends-list" class="friends-container">
     {% if no_friends %}
     <p>No friends in current group - Join a group to view friends.</p>
     {% else %}
     {% for user in users %}
     <div class="friend">
-        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.jpg')) }}" alt="{{ user.username }}'s photo" width="100">
+        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.jpg')) }}" alt="{{ user.username }}'s photo" class="friend-img">
         <p>{{ user.username }}</p>
         <button onclick="viewLocation({{ user.id }})">View Location</button>
     </div>
@@ -36,6 +34,8 @@
                         Longitude: ${data.longitude}<br>
                         Timestamp: ${data.timestamp}
                     `;
+                    // Open Google Maps with the location
+                    window.open(`https://www.google.com/maps?q=${data.latitude},${data.longitude}`, '_blank');
                 } else {
                     document.getElementById('location-details').innerHTML = 'No location data found.';
                 }

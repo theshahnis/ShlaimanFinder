@@ -133,11 +133,25 @@ button.nav-button.selected {
 }
 
 /* Friends list styling for dark mode */
-.friend {
+
+.friends-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+.friend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #2E2E2E;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  width: 150px;
 }
 
 .friend-img {
