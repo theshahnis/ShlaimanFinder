@@ -57,6 +57,8 @@ function renderShows(shows, showsAttendees) {
         timetable.appendChild(stages[stage]);
     }
 
+    const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
+
     shows.forEach(show => {
         const showDate = new Date(show.start_time);
         const endDate = new Date(show.end_time);
@@ -70,11 +72,21 @@ function renderShows(shows, showsAttendees) {
         const showElement = document.createElement('div');
         showElement.classList.add('show');
         showElement.setAttribute('data-show-id', show.id);
+
+        let buttonText = 'Attend';
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                if (user.id === currentUserId) {
+                    buttonText = 'Leave';
+                }
+            });
+        }
+
         showElement.innerHTML = `
             <span class="show-name">${show.name}</span>
             <span class="show-time">${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             <span class="show-stage">${show.stage}</span>
-            <button class="select-show">Attend</button>
+            <button class="select-show">${buttonText}</button>
             <button class="whos-going">Who's going?</button>
             <div class="attendees"></div>
         `;
@@ -116,7 +128,7 @@ function initializeEventTimetable() {
             .then(response => response.json())
             .then(data => {
                 // Update attendees list
-                const attendeesDiv = this.nextElementSibling.nextElementSibling;
+                const attendeesDiv = this.nextElementSibling.nextElementSibling.nextElementSibling;
                 attendeesDiv.innerHTML = '';
                 data.attendees.forEach(user => {
                     const img = document.createElement('img');
@@ -124,7 +136,7 @@ function initializeEventTimetable() {
                     img.alt = user.username;
                     img.title = user.username;
                     img.classList.add('attendee-icon');
-                    attendeesDiv.append.appendChild(img);
+                    attendeesDiv.appendChild(img);
                 });
 
                 // Update button text
