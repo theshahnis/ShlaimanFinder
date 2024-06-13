@@ -17,6 +17,14 @@ body::before {
     pointer-events: none; /* Ensure the overlay does not capture any mouse events */
 }
 
+a {
+    color: #FF5722;
+    display:inline-block;
+    text-decoration: none;
+    font-weight: 400;
+    background-color: #1F1F1F;
+  }
+
 button {
     background-color: #1F1F1F; /* Dark button background */
     color: #FF5722; /* Orange text */
