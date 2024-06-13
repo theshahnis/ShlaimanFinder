@@ -61,18 +61,18 @@ body {
 }
 
 .timetable {
-  display: flex;
-  justify-content: space-around;
-  margin: 20px;
-  position: relative; /* Ensure this to allow absolute positioning of shows */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
 }
 
 .stage {
   border: 1px solid #db7018;
   padding: 10px;
-  width: 18%;
   background-color: #ad9278;
-  position: relative; /* Ensure this to allow absolute positioning of shows */
+  position: relative;
 }
 
 .stage h2 {
@@ -83,8 +83,8 @@ body {
   border-top: 1px solid #ccc;
   padding: 10px 0;
   text-align: center;
-  position: relative; /* Change to relative for manual spacing */
-  margin-bottom: 20px; /* Add fixed margin between shows */
+  position: relative;
+  margin-bottom: 20px;
 }
 
 .show button {
@@ -133,17 +133,24 @@ body {
 }
 
 @media (max-width: 768px) {
+  .timetable {
+    grid-template-columns: 1fr;
+  }
+
   .stage {
-    width: 45%; /* Adjust width for smaller screens */
-    margin-bottom: 20px;
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .stage {
-    width: 100%; /* Full width for very small screens */
-    margin-bottom: 20px;
+@media (min-width: 769px) {
+  .timetable {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
+
+  .stage {
+    width: auto;
+  }
+}
   
   .date-button {
     padding: 8px 16px;

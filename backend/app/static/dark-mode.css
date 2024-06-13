@@ -19,11 +19,11 @@ body::before {
 
 a {
     color: #FF5722;
-    display:inline-block;
+    display: inline-block;
     text-decoration: none;
     font-weight: 400;
     background-color: #1F1F1F;
-  }
+}
 
 button {
     background-color: #1F1F1F; /* Dark button background */
@@ -45,14 +45,14 @@ button.nav-button {
 
 button.nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
-    color: #E0E0E0; 
+    color: #E0E0E0;
     border: 2px solid #FF5722; /* Orange border */
 }
 
 .button.selected,
 .nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
-    color: #E0E0E0; 
+    color: #E0E0E0;
     border: 2px solid #FF5722; /* Orange border */
 }
 
@@ -88,9 +88,17 @@ button.nav-button.selected {
 .stage {
     border: 1px solid #FF5722; /* Orange border */
     padding: 10px;
-    width: 18%;
     background-color: #1E1E1E; /* Dark background */
     position: relative;
+}
+
+/* Timetable styling for dark mode */
+.timetable {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
 }
 
 .stage h2 {
@@ -133,25 +141,24 @@ button.nav-button.selected {
 }
 
 /* Friends list styling for dark mode */
-
 .friends-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
     margin-top: 20px;
-  }
+}
 
 .friend {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  background-color: #2E2E2E;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #2E2E2E;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    width: 150px;
 }
 
 .friend-img {
@@ -170,3 +177,22 @@ button.nav-button.selected {
     margin-top: 10px;
 }
 
+@media (max-width: 768px) {
+    .timetable {
+        grid-template-columns: 1fr;
+    }
+
+    .stage {
+        width: 100%;
+    }
+}
+
+@media (min-width: 769px) {
+    .timetable {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .stage {
+        width: auto;
+    }
+}

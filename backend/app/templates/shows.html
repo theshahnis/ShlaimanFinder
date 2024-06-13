@@ -4,16 +4,13 @@
 
 {% block content %}
 <div class="date-buttons">
-    <button class="button" data-date="2024-06-27">June 27</button>
-    <button class="button" data-date="2024-06-28">June 28</button>
-    <button class="button" data-date="2024-06-29">June 29</button>
-    <button class="button" data-date="2024-06-30">June 30</button>
+    <button class="date-button" data-date="2024-06-27">June 27</button>
+    <button class="date-button" data-date="2024-06-28">June 28</button>
+    <button class="date-button" data-date="2024-06-29">June 29</button>
+    <button class="date-button" data-date="2024-06-30">June 30</button>
 </div>
 <div class="timetable">
-    <!-- Stages and shows will be dynamically added here by JavaScript -->
+
 </div>
 <script src="{{ url_for('static', filename='shows.js') }}"></script>
-
-
 {% endblock %}
-
