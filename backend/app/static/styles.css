@@ -17,7 +17,6 @@ body {
   background-size: contain; 
   background-attachment: fixed; 
   background-color: #ad7d35; 
-  background-repeat: repeat-y;
 }
 
 .profile-container {
@@ -166,7 +165,7 @@ button, .nav-button {
 }
 
 button.nav-button {
-  background-color: #e9a530;
+  background-color: transparent;
   color: #3d454c;
   padding: 0;
   border: none;
