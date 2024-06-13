@@ -9,6 +9,11 @@ general_bp = Blueprint('general_bp', __name__)
 @general_bp.route('/')
 @login_required
 def index():
+    return redirect(url_for('general_bp.home'))
+
+@general_bp.route('/home')
+@login_required
+def home():
     return render_template('index.html', name=current_user.username)
 
 @general_bp.route('/before_request')
@@ -22,11 +27,11 @@ def join_group():
     form = JoinGroupForm()
     if form.validate_on_submit():
         if current_user.passcode_attempts is None:
-            current_user.passcode_attempts = 0  # Initialize passcode_attempts if it's None
+            current_user.passcode_attempts = 0 
 
         if current_user.passcode_attempts >= 10:
             flash('Too many failed attempts. Please contact support.', 'danger')
-            return redirect(url_for('profile_bp.profile'))
+            return redirect(url_for('profile_bp.home'))
         try:
             group = Group.query.filter_by(passcode=form.passcode.data).first()
             if not group:
@@ -39,7 +44,7 @@ def join_group():
             current_user.passcode_attempts = 0  # Reset attempts on successful joining
             db.session.commit()
             flash('You have successfully joined the group!', 'success')
-            return redirect(url_for('profile_bp.profile'))
+            return redirect(url_for('profile_bp.home'))
         except Exception as e:
             print("Failed to process request or insert to db")
     return render_template('join_group.html', title='Join Group', form=form)

@@ -41,7 +41,7 @@
     <nav>
         <ul>
             {% if current_user.is_authenticated %}
-                <button class="nav-button" data-page="index"><a href="{{ url_for('general_bp.index') }}">Home</a></button>
+                <button class="nav-button" data-page="index"><a href="{{ url_for('general_bp.home') }}">Home</a></button>
                 <button class="nav-button" data-page="profile"><a href="{{ url_for('profile_bp.profile') }}">Profile</a></button>
                 {% if current_user.is_authenticated and current_user.superuser %}
                     <button class="nav-button" data-page="superuser"><a href="{{ url_for('superuser_bp.superuser_view') }}">Superuser</a></button>
