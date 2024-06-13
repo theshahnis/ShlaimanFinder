@@ -22,7 +22,7 @@ def my_shows():
 @login_required
 def get_shows():
     date_str = request.args.get('date')
-    date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+    date = datetime.strptime(date_str, '%Y-%m-%d')
     next_day = date + timedelta(days=1)
     shows = Show.query.filter(
         Show.start_time >= date,
