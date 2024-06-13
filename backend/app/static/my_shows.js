@@ -96,4 +96,11 @@ function displayAttendeesModal(attendees) {
     modalContent.appendChild(attendeesList);
     modal.appendChild(modalContent);
     document.body.appendChild(modal);
+
+    // Close modal when clicking outside of it
+    modal.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
 }
