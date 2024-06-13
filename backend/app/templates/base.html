@@ -31,6 +31,8 @@
     <!-- PWA Configuration -->
     <meta name="theme-color" content="#FF5722">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/android-chrome-192x192.png') }}">
+
+    <meta name="user-id" content="{{ current_user.id }}">
     
     {% block head %}{% endblock %}
     
