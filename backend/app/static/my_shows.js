@@ -36,9 +36,9 @@ function renderMyShows(shows) {
         showElement.classList.add('show');
         showElement.setAttribute('data-show-id', show.id);
         showElement.innerHTML = `
-            <span>${show.name}</span>
-            <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            <span>${show.stage}</span>
+            <span class="show-name">${show.name}</span>
+            <span class="show-time">${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span class="show-stage">${show.stage}</span>
         `;
         timetable.appendChild(showElement);
     });
