@@ -73,27 +73,24 @@ def logout():
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
-    form = RequestResetForm()
-    if form.validate_on_submit():
-        email = form.email.data
-        user = User.query.filter_by(email=email).first()
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.get_user_by_email(email)
         if user:
-            token = generate_reset_token(user.email)
-            if send_reset_email(user.email, token):
-                flash('A password reset email has been sent. Please check your inbox.', 'info')
-            else:
-                flash('Failed to send email. Please try again later.', 'danger')
+            token = generate_reset_token(user['email'])
+            send_reset_email(user['email'], token)
+            flash('A password reset email has been sent.', 'info')
         else:
             flash('Email not found.', 'warning')
-        return redirect(url_for('auth_bp.request_reset'))
-    return render_template('request_reset.html', form=form)
+        return redirect(url_for('auth.login'))
+    return render_template('request_reset.html')
 
-def send_reset_email(to, token):
+def send_reset_email(to, token_id):
     msg = Message('Shlaiman Finder - Password Reset Request', sender=current_app.config['MAIL_USERNAME'], recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
-{url_for('auth_bp.reset_password', token=token, _external=True)}
-If you did not make this request then simply ignore this email and no changes will be made.
-'''
+        {url_for('auth_bp.reset_password', token=token_id, _external=True)}
+        If you did not make this request then simply ignore this email and no changes will be made.
+        '''
     try:
         mail.send(msg)
         return True
