@@ -81,7 +81,7 @@ def request_reset():
             flash('A password reset email has been sent.', 'info')
         else:
             flash('Email not found.', 'warning')
-        return redirect(url_for('auth_bp.request_reset'))
+        return redirect(url_for('auth_bp.auth_page')) 
     return render_template('request_reset.html')
 
 def send_reset_email(to, token):

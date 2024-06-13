@@ -8,7 +8,6 @@
     <h2 class="active"> Request Password Reset </h2>
 
     <form method="POST" action="{{ url_for('auth_bp.request_reset') }}">
-      {{ form.hidden_tag() }}
       <input type="email" class="fadeIn second" name="email" placeholder="Email" required>
       <input type="submit" class="fadeIn fourth" value="Request Password Reset">
     </form>
