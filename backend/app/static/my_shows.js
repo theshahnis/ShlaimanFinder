@@ -1,15 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM fully loaded and parsed");
     loadMyShows();
 });
 
 function loadMyShows() {
+    console.log("Fetching user shows");
     fetch('/show/user-shows')
         .then(response => response.json())
         .then(data => {
+            console.log("Received user shows data:", data);
             const showIds = data.show_ids;
             const showsAttendees = data.shows_attendees;
             fetchShowsByIds(showIds, showsAttendees);
-        });
+        })
+        .catch(error => console.error("Error fetching user shows:", error));
 }
 
 function fetchShowsByIds(showIds, showsAttendees) {
@@ -17,16 +21,21 @@ function fetchShowsByIds(showIds, showsAttendees) {
     timetable.innerHTML = ''; // Clear the timetable
 
     showIds.forEach(showId => {
-        fetch(`/show/api/show?id=${showId}`)
+        console.log(`Fetching show details for show ID: ${showId}`);
+        fetch(`/show/api/shows?id=${showId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
                     console.error(data.error);
                     return;
                 }
-                renderShow(data.show, showsAttendees[showId]);
-            });
+                if (data.shows.length > 0) {
+                    renderShow(data.shows[0], showsAttendees[showId]);
+                }
+            })
+            .catch(error => console.error(`Error fetching details for show ID ${showId}:`, error));
     });
+}
 
 function renderShow(show, attendees) {
     const timetable = document.querySelector('.timetable');

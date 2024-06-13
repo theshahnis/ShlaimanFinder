@@ -1,11 +1,16 @@
-{% extends "base.html" %}
-
-{% block title %}ShlaimanFinder - My Shows{% endblock %}
-
-{% block content %}
-<h1>My Upcoming Shows</h1>
-<div class="timetable">
-    <!-- User shows will be dynamically added here by JavaScript -->
-</div>
-<script src="{{ url_for('static', filename='my_shows.js') }}"></script>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="user-id" content="{{ current_user.id }}">
+    <title>My Shows</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="timetable"></div>
+    </div>
+    <script src="{{ url_for('static', filename='my_shows.js') }}"></script>
+</body>
+</html>

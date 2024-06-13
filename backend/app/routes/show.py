@@ -25,7 +25,7 @@ def get_shows():
         except ValueError:
             return jsonify({'error': 'Invalid date format'}), 400
 
-        next_day = date + timedelta(days(1))
+        next_day = date + timedelta(days=1)
         shows = Show.query.filter(
             Show.start_time >= date,
             Show.start_time < next_day + timedelta(hours=6)  # Include shows that end up to 6 AM the next day
