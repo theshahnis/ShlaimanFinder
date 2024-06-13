@@ -6,6 +6,7 @@ from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
+import smtplib
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -78,8 +79,10 @@ def request_reset():
         user = User.query.filter_by(email=email).first()
         if user:
             token = generate_reset_token(user.email)
-            send_reset_email(user.email, token)
-            flash('A password reset email has been sent.', 'info')
+            if send_reset_email(user.email, token):
+                flash('A password reset email has been sent. Please check your inbox.', 'info')
+            else:
+                flash('Failed to send email. Please try again later.', 'danger')
         else:
             flash('Email not found.', 'warning')
         return redirect(url_for('auth_bp.request_reset'))
@@ -91,7 +94,12 @@ def send_reset_email(to, token):
 {url_for('auth_bp.reset_password', token=token, _external=True)}
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    mail.send(msg)
+    try:
+        mail.send(msg)
+        return True
+    except smtplib.SMTPException as e:
+        current_app.logger.error(f"Failed to send email: {e}")
+        return False
 
 @auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
