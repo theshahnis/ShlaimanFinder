@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Shlaiman Finder{% endblock %}</title>
+
+    <link rel="preload" href="{{ url_for('static', filename='styles.css') }}" as="style">
+    <link rel="preload" href="{{ url_for('static', filename='dark-mode.css') }}" as="style">
+    <link rel="preload" href="{{ url_for('static', filename='scripts.js') }}" as="script">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dark-mode.css') }}" id="dark-mode-stylesheet" disabled>
     
