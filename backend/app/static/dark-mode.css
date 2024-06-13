@@ -1,8 +1,8 @@
 body {
-    background-color: #121212; /* Dark background */
+    background-color: #000000; /* Dark background */
     color: #E0E0E0; /* Light text */
-    background-blend-mode: difference;
-    background-repeat: repeat-y;
+    background-blend-mode: luminosity;
+    
 }
 
 button {
