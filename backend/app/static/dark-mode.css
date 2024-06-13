@@ -1,46 +1,48 @@
 body {
-    background-color: rgb(67, 64, 61);
-    color: rgb(188, 116, 14);
+    background-color: #121212; /* Dark background */
+    color: #E0E0E0; /* Light text */
     background-blend-mode: luminosity;
 }
 
 button {
-    background-color: #4e3409;
-    color: rgb(184, 176, 167);
+    background-color: #1F1F1F; /* Dark button background */
+    color: #FF5722; /* Orange text */
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    border-radius: 5px;
 }
 button.nav-button.selected {
-    background-color: #5c4b5d;
-    color: #cdcdcd; 
-    border: 2px solid #873800; 
-  }
+    background-color: #673AB7; /* Purple background for selected buttons */
+    color: #E0E0E0; 
+    border: 2px solid #FF5722; /* Orange border */
+}
 
 .button.selected,
 .nav-button.selected {
-  background-color: #d59ad8;
-  color: #fff; 
-  border: 2px solid #43bf1d; 
+    background-color: #673AB7; /* Purple background for selected buttons */
+    color: #E0E0E0; 
+    border: 2px solid #FF5722; /* Orange border */
 }
+
 /* Show element styling for dark mode */
 .show {
-    background-color: rgb(54, 54, 54);
-    color: rgb(230, 230, 230);
-    border: 1px solid rgb(64, 64, 64);
+    background-color: #1E1E1E; /* Dark background */
+    color: #E0E0E0; /* Light text */
+    border: 1px solid #2E2E2E; /* Slightly lighter border */
 }
 
 .show-name {
     font-weight: bold;
+    color: #FFEB3B; /* Yellow for show names */
 }
 
 .show-time {
     display: block;
     margin-top: 5px;
     font-size: 0.9em;
-    color: rgb(180, 180, 180);
+    color: #B0B0B0; /* Grey for show times */
 }
-
 
 /* Attendees styling for dark mode */
 .attendee-icon {
@@ -48,21 +50,22 @@ button.nav-button.selected {
     height: 30px;
     border-radius: 50%;
     margin-right: 5px;
-    border: 2px solid rgb(64, 64, 64);
+    border: 2px solid #2E2E2E; /* Slightly lighter border */
 }
 
 /* Stage container styling for dark mode */
 .stage {
-    border: 1px solid #814a0f;
+    border: 1px solid #FF5722; /* Orange border */
     padding: 10px;
     width: 18%;
-    background-color: #363131;
+    background-color: #1E1E1E; /* Dark background */
     position: relative;
+}
 
 .stage h2 {
     font-size: 1.5em;
     margin-bottom: 10px;
-    color: rgb(20, 20, 20);
+    color: #03A9F4; /* Blue for stage titles */
 }
 
 .profile-container {
@@ -72,32 +75,28 @@ button.nav-button.selected {
     justify-content: center;
     text-align: center;
     margin: 0 auto;
-    max-width: 600px; /* Adjust this value as needed */
+    max-width: 600px;
     padding: 20px;
-    background-color: #4a3e2f; /* Optional: add a background color */
-    border-radius: 8px; /* Optional: add rounded corners */
-    box-shadow: 0 2px 4px rgba(180, 179, 179, 0.1); /* Optional: add a subtle shadow */
+    background-color: #2E2E2E; /* Dark background */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 #formContent {
-    -webkit-border-radius: 10px 10px 10px 10px;
-    border-radius: 10px 10px 10px 10px;
-    background: #c78c55;
+    border-radius: 10px;
+    background: #333333; /* Dark background */
     padding: 30px;
     width: 90%;
     max-width: 450px;
     position: relative;
-    padding: 0px;
-    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
-    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
     text-align: center;
 }
-  
-  #formFooter {
-    background-color: #a6a39e;
-    border-top: 1px solid #354551;
+
+#formFooter {
+    background-color: #424242; /* Dark footer background */
+    border-top: 1px solid #FF5722; /* Orange border */
     padding: 25px;
     text-align: center;
-    -webkit-border-radius: 0 0 10px 10px;
     border-radius: 0 0 10px 10px;
 }
