@@ -69,3 +69,8 @@ def map_view():
 @login_required
 def shows():
     return render_template('shows.html')
+
+@general_bp.route('/my-shows', methods=['GET'])
+@login_required
+def my_shows():
+    return render_template('my_shows.html')
