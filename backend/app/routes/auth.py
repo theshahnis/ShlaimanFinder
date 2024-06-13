@@ -89,7 +89,7 @@ def request_reset():
     return render_template('request_reset.html', form=form)
 
 def send_reset_email(to, token):
-    msg = Message('Shlaiman Finder - Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
+    msg = Message('Shlaiman Finder - Password Reset Request', sender=current_app.config['MAIL_USERNAME'], recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
 {url_for('auth_bp.reset_password', token=token, _external=True)}
 If you did not make this request then simply ignore this email and no changes will be made.
@@ -118,7 +118,7 @@ def reset_password(token):
             user.password = generate_password_hash(password, method='pbkdf2:sha256')
             db.session.commit()
             flash('Your password has been updated!', 'success')
-            return redirect(url_for('auth_bp.auth_page'))  # Ensure 'auth_page' exists in auth_bp
+            return redirect(url_for('auth_bp.auth_page'))
     return render_template('reset_password.html', token=token)
 
 def generate_reset_token(email):

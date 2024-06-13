@@ -4,7 +4,7 @@ from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from app.extensions import db, login_manager, mail, migrate
 from datetime import timedelta
-import os
+import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints
 
@@ -25,12 +25,12 @@ def create_app():
     #app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
     # Flask-Mail configuration
-    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
-    app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+    app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT'))
     app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'your_email@gmail.com')
-    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'your_password')
-    app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT', 'default_salt')
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -46,16 +46,21 @@ def create_app():
     
     @app.errorhandler(413)
     def request_entity_too_large(error):
-        flash('File is too large. Maximum file size is 16 MB.', 'danger')
+        flash('File is too large. Maximum file size is 32 MB.', 'danger')
         return redirect(request.url)
 
     context = (os.getenv('SSL_CERT_PATH', 'cert.pem'), os.getenv('SSL_KEY_PATH', 'key.pem'))
+
+    if not app.debug:
+        import logging
+        from logging.handlers import RotatingFileHandler
+        file_handler = RotatingFileHandler('error.log', maxBytes=10240, backupCount=10)
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('ShlaimanFinder startup')
+        
     return app
-
-    # with app.app_context():
-    #     db.create_all()
-
-    
 
 @login_manager.user_loader
 def load_user(user_id):
