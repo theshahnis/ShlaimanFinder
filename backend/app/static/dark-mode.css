@@ -92,15 +92,6 @@ button.nav-button.selected {
     position: relative;
 }
 
-/* Timetable styling for dark mode */
-.timetable {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    justify-content: center;
-}
-
 .stage h2 {
     font-size: 1.5em;
     margin-bottom: 10px;
@@ -175,6 +166,15 @@ button.nav-button.selected {
 #location-details {
     font-size: 1.1em;
     margin-top: 10px;
+}
+
+/* Timetable and stage styling for dark mode */
+.timetable {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {
