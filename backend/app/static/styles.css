@@ -136,11 +136,11 @@ body {
 /* Additional styles for smaller screens */
 @media (max-width: 768px) {
   .timetable {
-    justify-content: flex-start;
+      justify-content: flex-start;
   }
 
   .stage {
-    min-width: 200px; /* Increase minimum width for better readability */
+      min-width: 200px; /* Increase minimum width for better readability */
   }
 }
 
@@ -206,8 +206,8 @@ h2 {
   max-width: 450px;
   position: relative;
   padding: 0px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
-  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+  box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
   text-align: center;
 }
 
@@ -460,23 +460,5 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
   margin-top: 10px;
 }
 
-/* Additional styles for smaller screens */
-@media (max-width: 768px) {
-  .timetable {
-    justify-content: flex-start;
-  }
 
-  .stage {
-    min-width: 200px; /* Increase minimum width for better readability */
-  }
-}
-
-@media (min-width: 769px) {
-  .timetable {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  .stage {
-    width: auto;
-  }
-}
+/* before */
