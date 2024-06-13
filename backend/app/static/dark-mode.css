@@ -1,12 +1,6 @@
 body {
     background-color: rgb(39, 39, 39);
-    color: rgb(64, 64, 64);
-    background-image: url('/images/background.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain; 
-    background-attachment: fixed; 
-    background-color: #2d2b28;
+    color: rgb(165, 103, 14);
     background-blend-mode: darken;
 }
 
