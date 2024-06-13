@@ -13,3 +13,7 @@ class UpdateProfileForm(FlaskForm):
 class JoinGroupForm(FlaskForm):
     passcode = StringField('Group Passcode', validators=[DataRequired(), Length(min=4, max=4)])
     submit = SubmitField('Join Group')
+
+class RequestResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')

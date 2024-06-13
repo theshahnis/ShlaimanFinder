@@ -303,8 +303,8 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
 .fadeInDown {
   -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
+  -webkit-animation-duration: 0.5s;
+  animation-duration: 0.5s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
@@ -350,9 +350,9 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
   -moz-animation-fill-mode:forwards;
   animation-fill-mode:forwards;
 
-  -webkit-animation-duration:1s;
-  -moz-animation-duration:1s;
-  animation-duration:1s;
+  -webkit-animation-duration:0.5s;
+  -moz-animation-duration:0.5s;
+  animation-duration:0.5s;
 }
 
 .fadeIn.first {
@@ -386,7 +386,7 @@ input[type=text]:placeholder, input[type=password]:placeholder, input[type=email
   bottom: -10px;
   width: 0;
   height: 2px;
-  background-color: #56baed;
+  background-color: #a35111;
   content: "";
   transition: width 0.2s;
 }

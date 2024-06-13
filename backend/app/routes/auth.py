@@ -72,8 +72,9 @@ def logout():
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
-    if request.method == 'POST':
-        email = request.form.get('email')
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        email = form.email.data
         user = User.query.filter_by(email=email).first()
         if user:
             token = generate_reset_token(user.email)
@@ -81,8 +82,8 @@ def request_reset():
             flash('A password reset email has been sent.', 'info')
         else:
             flash('Email not found.', 'warning')
-        return redirect(url_for('auth_bp.auth_page')) 
-    return render_template('request_reset.html')
+        return redirect(url_for('auth_bp.request_reset'))
+    return render_template('request_reset.html', form=form)
 
 def send_reset_email(to, token):
     msg = Message('Shlaiman Finder - Password Reset Request', sender='Shlaiman@gmail.com', recipients=[to])
