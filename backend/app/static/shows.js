@@ -43,11 +43,11 @@ function renderShows(shows, showsAttendees) {
     timetable.innerHTML = '';  // Clear the timetable
 
     const stages = {
-        'Stage 1': document.createElement('div'),
-        'Stage 2': document.createElement('div'),
-        'Stage 3': document.createElement('div'),
-        'Stage 4': document.createElement('div'),
-        'Stage 5': document.createElement('div')
+        'Eagle': document.createElement('div'),
+        'Vulture': document.createElement('div'),
+        'Buzzard': document.createElement('div'),
+        'Hawk': document.createElement('div'),
+        'Raven': document.createElement('div')
     };
 
     for (const stage in stages) {
