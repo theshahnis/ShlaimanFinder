@@ -13,18 +13,10 @@ show_bp = Blueprint('show_bp', __name__)
 def shows():
     return render_template('shows.html')
 
-@show_bp.route('/my-shows', methods=['GET'])
-@login_required
-def my_shows():
-    return render_template('my_shows.html')
-
 @show_bp.route('/api/shows', methods=['GET'])
 @login_required
 def get_shows():
     date_str = request.args.get('date')
-    if not date_str:
-        return jsonify({'error': 'Date parameter is required'}), 400
-
     date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
     next_day = date + timedelta(days=1)
     shows = Show.query.filter(
@@ -44,7 +36,6 @@ def get_shows():
         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
     
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
-
 
 @show_bp.route('/user-shows', methods=['GET'])
 @login_required
@@ -81,7 +72,10 @@ def select_show():
     
     return jsonify({'attendees': attendees_data})
 
-
+@show_bp.route('/my-shows', methods=['GET'])
+@login_required
+def my_shows():
+    return render_template('my_shows.html')
 
 @show_bp.route('/api/my-shows', methods=['GET'])
 @login_required
