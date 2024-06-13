@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}ShlaimanFinder - My Shows{% endblock %}
+
+{% block content %}
+<h1>My Upcoming Shows</h1>
+<div class="timetable">
+    <!-- User shows will be dynamically added here by JavaScript -->
+</div>
+<script src="{{ url_for('static', filename='my_shows.js') }}"></script>
+{% endblock %}
