@@ -1,0 +1,21 @@
+{
+    "name": "Shlaiman Finder",
+    "short_name": "Shlaiman",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ad7d35",  
+    "theme_color": "#e9a530",      
+    "icons": [
+      {
+        "src": "/static/images/android-chrome-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/static/images/android-chrome-512x512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ]
+  }
+  
