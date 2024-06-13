@@ -101,12 +101,14 @@ If you did not make this request then simply ignore this email and no changes wi
         current_app.logger.error(f"Failed to send email: {e}")
         return False
 
+
 @auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     email = verify_reset_token(token)
     if not email:
         flash('Invalid or expired token.', 'danger')
         return redirect(url_for('auth_bp.request_reset'))
+    
     if request.method == 'POST':
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
@@ -118,7 +120,8 @@ def reset_password(token):
             user.password = generate_password_hash(password, method='pbkdf2:sha256')
             db.session.commit()
             flash('Your password has been updated!', 'success')
-            return redirect(url_for('auth_bp.auth_page'))
+            return redirect(url_for('auth_bp.auth_page'))  # Ensure 'auth_page' exists in auth_bp
+    
     return render_template('reset_password.html', token=token)
 
 def generate_reset_token(email):
@@ -136,3 +139,13 @@ def verify_reset_token(token, expiration=3600):
     except:
         return None
     return email
+
+@app.route('/test-email')
+def test_email():
+    msg = Message('Test Email', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=['theshahnis@gmail.com'])
+    msg.body = 'This is a test email sent from Flask-Mail with Postfix as the mail server.'
+    try:
+        mail.send(msg)
+        return 'Email sent successfully!'
+    except Exception as e:
+        return f'Failed to send email: {e}'

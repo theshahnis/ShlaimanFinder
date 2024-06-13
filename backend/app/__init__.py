@@ -22,14 +22,14 @@ def create_app():
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
     app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=180)
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/profile_pics')
-    #app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
-
+    #app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024    
     app.config['MAIL_SERVER'] = 'localhost'
     app.config['MAIL_PORT'] = 25
     app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USE_SSL'] = False
     app.config['MAIL_USERNAME'] = None
     app.config['MAIL_PASSWORD'] = None
-    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
+    app.config['MAIL_DEFAULT_SENDER'] = 'Shlaiman Finder <agileprocessuser@gmail.com>'
     app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
 
     db.init_app(app)
