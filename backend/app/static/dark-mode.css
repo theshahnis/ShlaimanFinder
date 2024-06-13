@@ -98,6 +98,7 @@ button.nav-button.selected {
     align-items: center; /* Center align items */
     padding: 10px;
     margin: 20px;
+    gap: 10px; /* Space between show boxes */
 }
 
 .timetable {
@@ -193,7 +194,6 @@ button.nav-button.selected {
     margin-top: 10px;
 }
 
-/* Additional styles for smaller screens */
 @media (max-width: 768px) {
     .my-shows-timetable {
         align-items: center; /* Center align items on smaller screens */
