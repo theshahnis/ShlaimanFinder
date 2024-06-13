@@ -12,6 +12,15 @@ button {
     cursor: pointer;
     border-radius: 5px;
 }
+
+button.nav-button {
+    background-color: #1F1F1F;
+    color: #FF5722;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+
 button.nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
     color: #E0E0E0; 
