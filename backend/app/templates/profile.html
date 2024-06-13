@@ -3,29 +3,29 @@
 {% block title %}ShlaimanFinder - Profile{% endblock %}
 
 {% block content %}
-<h1>Profile Page</h1>
-<p>Welcome, {{ name }}!</p>
-{% if profile_image %}
-    <img src="{{ profile_image }}" alt="Profile Picture" style="width:150px;height:150px;">
-{% endif %}
-<form method="POST" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
-    <div>
-        {{ form.username.label }} {{ form.username }}
-    </div>
-    <div>
-        {{ form.email.label }} {{ form.email }}
-    </div>
-    <div>
-        {{ form.profile_image.label }} {{ form.profile_image }}
-    </div>
-    <div>
-        {{ form.note.label }} {{ form.note }} 
-    </div>
-    <div>
-        {{ form.submit }}
-    </div>
-</form>
-
-
+<div class="profile-container">
+    <h1>Profile Page</h1>
+    <p>Welcome, {{ name }}!</p>
+    {% if profile_image %}
+        <img src="{{ profile_image }}" alt="Profile Picture" style="width:150px;height:150px;">
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.username.label }} {{ form.username }}
+        </div>
+        <div>
+            {{ form.email.label }} {{ form.email }}
+        </div>
+        <div>
+            {{ form.profile_image.label }} {{ form.profile_image }}
+        </div>
+        <div>
+            {{ form.note.label }} {{ form.note }} 
+        </div>
+        <div>
+            {{ form.submit }}
+        </div>
+    </form>
+</div>
 {% endblock %}

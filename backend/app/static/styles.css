@@ -19,6 +19,28 @@ body {
   background-color: #ad7d35; 
 }
 
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 600px; /* Adjust this value as needed */
+  padding: 20px;
+  background-color: #f9f9f9; /* Optional: add a background color */
+  border-radius: 8px; /* Optional: add rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow */
+}
+
+.profile-container img {
+  margin-bottom: 20px;
+}
+
+.profile-container form div {
+  margin-bottom: 15px;
+}
+
 .date-buttons {
     display: flex;
     justify-content: center;
