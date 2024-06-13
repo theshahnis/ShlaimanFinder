@@ -1,87 +1,93 @@
-<!-- templates/superuser.html -->
-
 {% extends "base.html" %}
 
 {% block title %}ShlaimanFinder - Superuser{% endblock %}
 
 {% block content %}
-<h1>Superuser Page</h1>
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+    <h1>Superuser Page</h1>
 
-<h2>Manage Users</h2>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Group</th>
-        <th>Actions</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.group.name if user.group else 'No group' }}</td>
-        <td>
-            <a href="{{ url_for('superuser_bp.edit_user', user_id=user.id) }}">Edit</a>
-            <form action="{{ url_for('superuser_bp.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <h2>Manage Users</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Group</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.group.name if user.group else 'No group' }}</td>
+                <td>
+                    <a href="{{ url_for('superuser_bp.edit_user', user_id=user.id) }}" class="btn">Edit</a>
+                    <form action="{{ url_for('superuser_bp.delete_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-<h2>Manage Groups</h2>
-<form action="{{ url_for('superuser_bp.add_group') }}" method="POST">
-    <input type="text" name="group_name" placeholder="New group name" required>
-    <input type="text" name="passcode" placeholder="Group passcode (4 digits)" required>
-    <button type="submit">Add Group</button>
-</form>
-<ul>
-    {% for group in groups %}
-    <li>{{ group.name }} - Passcode: {{ group.passcode }}</li>
-    {% endfor %}
-</ul>
+    <h2>Manage Groups</h2>
+    <form action="{{ url_for('superuser_bp.add_group') }}" method="POST" class="form-inline">
+        <input type="text" name="group_name" placeholder="New group name" required class="form-control">
+        <input type="text" name="passcode" placeholder="Group passcode (4 digits)" required class="form-control">
+        <button type="submit" class="btn">Add Group</button>
+    </form>
+    <ul class="group-list">
+        {% for group in groups %}
+        <li>{{ group.name }} - Passcode: {{ group.passcode }}</li>
+        {% endfor %}
+    </ul>
 
-<h2>Manage Meeting Points</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Note</th>
-            <th>Created At</th>
-            <th>Remaining Time</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="meetingPointsTableBody">
-        <!-- Meeting points will be loaded here dynamically -->
-    </tbody>
-</table>
+    <h2>Manage Meeting Points</h2>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Note</th>
+                <th>Created At</th>
+                <th>Remaining Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="meetingPointsTableBody">
+            <!-- Meeting points will be loaded here dynamically -->
+        </tbody>
+    </table>
 
-<h2>Manage Static Locations</h2>
-<form id="addStaticLocationForm" enctype="multipart/form-data">
-    <input type="text" name="name" placeholder="Location Name" required>
-    <input type="number" step="any" name="latitude" placeholder="Latitude" required>
-    <input type="number" step="any" name="longitude" placeholder="Longitude" required>
-    <textarea name="note" placeholder="Note"></textarea>
-    <input type="file" name="image">
-    <button type="submit">Add Location</button>
-</form>
+    <h2>Manage Static Locations</h2>
+    <form id="addStaticLocationForm" enctype="multipart/form-data" class="form-inline">
+        <input type="text" name="name" placeholder="Location Name" required class="form-control">
+        <input type="number" step="any" name="latitude" placeholder="Latitude" required class="form-control">
+        <input type="number" step="any" name="longitude" placeholder="Longitude" required class="form-control">
+        <textarea name="note" placeholder="Note" class="form-control"></textarea>
+        <input type="file" name="image" class="form-control">
+        <button type="submit" class="btn">Add Location</button>
+    </form>
 
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Note</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="staticLocationsTableBody">
-        <!-- Static locations will be loaded here dynamically -->
-    </tbody>
-</table>
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Note</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="staticLocationsTableBody">
+            <!-- Static locations will be loaded here dynamically -->
+        </tbody>
+    </table>
+  </div>
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -104,7 +110,7 @@
                             <td>${location.note}</td>
                             <td>${location.created_at}</td>
                             <td>${location.remaining_time}</td>
-                            <td><button onclick="deleteMeetingPoint(${location.id})">Delete</button></td>
+                            <td><button onclick="deleteMeetingPoint(${location.id})" class="btn btn-danger">Delete</button></td>
                         `;
                         tableBody.appendChild(row);
                     }
@@ -137,19 +143,21 @@
     }
 
     function fetchStaticLocations() {
-        fetch('/static_locations')
+        fetch('/locations')
             .then(response => response.json())
             .then(data => {
                 const tableBody = document.getElementById('staticLocationsTableBody');
                 tableBody.innerHTML = '';
                 data.locations.forEach(location => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${location.name}</td>
-                        <td>${location.note}</td>
-                        <td><button onclick="deleteStaticLocation(${location.id})">Delete</button></td>
-                    `;
-                    tableBody.appendChild(row);
+                    if (!location.isMeetingPoint) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${location.name}</td>
+                            <td>${location.note}</td>
+                            <td><button onclick="deleteStaticLocation(${location.id})" class="btn btn-danger">Delete</button></td>
+                        `;
+                        tableBody.appendChild(row);
+                    }
                 });
             })
             .catch(error => {
