@@ -26,6 +26,10 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+    
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
