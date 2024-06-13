@@ -50,7 +50,7 @@
                 <button class="nav-button" data-page="map_view"><a href="{{ url_for('general_bp.map_view') }}">Maps</a></button>
                 <button class="nav-button" data-page="shows"><a href="{{ url_for('show_bp.shows') }}">Shows</a></button>
                 <button class="nav-button" data-page="friends"><a href="{{ url_for('general_bp.friends') }}">Friends in Group</a></button>
-                <button id=button class="nav-button" data-page="join_group"><a href="{{ url_for('general_bp.join_group') }}">Join Group</a></button>
+                <a href="{{ url_for('general_bp.join_group') }}" class="nav-button" data-page="join_group">Join Group</a>
                 <button id="dark-mode-toggle">Toggle Dark Mode</button>
                 <button id="logout-btn"><a href="{{ url_for('auth_bp.logout') }}">Logout</a></button>
                 <script src="{{ url_for('static', filename='dark-mode.js') }}"></script>
