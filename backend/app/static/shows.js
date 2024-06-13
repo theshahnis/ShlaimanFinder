@@ -50,7 +50,7 @@ function renderShows(shows, showsAttendees) {
         'Raven': document.createElement('div')
     };
 
-    for (const stage in stages) {
+    for (const stage of Object.keys(stages).sort()) {
         stages[stage].classList.add('stage');
         stages[stage].setAttribute('data-stage', stage);
         stages[stage].innerHTML = `<h2>${stage}</h2>`;
