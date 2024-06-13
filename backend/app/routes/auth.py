@@ -5,7 +5,7 @@ from ..models import User
 from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
-
+from ..forms import RequestResetForm
 
 auth_bp = Blueprint('auth_bp', __name__)
 
