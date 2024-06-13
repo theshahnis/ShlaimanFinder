@@ -13,7 +13,7 @@ function loadMyShows() {
 }
 
 function renderMyShows(shows) {
-    const timetable = document.querySelector('.timetable');
+    const timetable = document.querySelector('.my-shows-timetable'); // Use specific class for my-shows
     timetable.innerHTML = ''; // Clear the timetable
 
     let lastDate = null;
