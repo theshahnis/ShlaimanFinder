@@ -133,11 +133,12 @@ body {
 
 @media (max-width: 768px) {
   .timetable {
-    grid-template-columns: 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusted min-width to show more columns */
+      overflow-x: auto; /* Allow horizontal scrolling */
   }
 
   .stage {
-    width: 100%;
+      width: auto; /* Remove fixed width for better flexibility */
   }
 }
 
