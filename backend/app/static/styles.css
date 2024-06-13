@@ -133,30 +133,17 @@ body {
 }
 
 @media (max-width: 768px) {
-  .timetable {
-      grid-template-columns: 1fr;
-  }
-
   .stage {
-      width: 100%;
+    width: 45%; /* Adjust width for smaller screens */
+    margin-bottom: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .stage {
-    width: 100%; /* Full width for very small screens */
+        width: 100%; /* Full width for very small screens */
     margin-bottom: 20px;
   }
-
-@media (min-width: 769px) {
-  .timetable {
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  .stage {
-      width: auto;
-  }
-}
   
   .date-button {
     padding: 8px 16px;
