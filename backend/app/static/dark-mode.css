@@ -1,3 +1,4 @@
+/* General styles */
 body {
     background-color: #121212; /* Dark background */
     color: #E0E0E0; /* Light text */
@@ -45,14 +46,14 @@ button.nav-button {
 
 button.nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
-    color: #E0E0E0; 
+    color: #E0E0E0;
     border: 2px solid #FF5722; /* Orange border */
 }
 
 .button.selected,
 .nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
-    color: #E0E0E0; 
+    color: #E0E0E0;
     border: 2px solid #FF5722; /* Orange border */
 }
 
@@ -65,6 +66,7 @@ button.nav-button.selected {
     padding: 10px;
     margin-bottom: 20px;
     width: 100%;
+    max-width: 600px; /* Set max width for smaller devices */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -199,5 +201,10 @@ button.nav-button.selected {
 
     .stage {
         min-width: 200px; /* Increase minimum width for better readability */
+    }
+
+    .show {
+        width: 90%; /* Reduce width for better appearance on mobile */
+        margin: 0 auto; /* Center the shows */
     }
 }
