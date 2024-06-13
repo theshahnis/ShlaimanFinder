@@ -29,7 +29,7 @@ def update_location():
             if location:
                 location.latitude = latitude
                 location.longitude = longitude
-                location.timestamp = datetime.now()  # Use UTC for consistency
+                location.timestamp = datetime.now()
             else:
                 location = Location(
                     user_id=current_user.id,
