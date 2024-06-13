@@ -56,7 +56,6 @@ button.nav-button.selected {
     border: 2px solid #FF5722; /* Orange border */
 }
 
-/* Show element styling for dark mode */
 .show {
     background-color: #1E1E1E; /* Dark background */
     color: #E0E0E0; /* Light text */
@@ -65,7 +64,7 @@ button.nav-button.selected {
     padding: 20px; /* Padding inside the show box */
     margin-bottom: 20px; /* Space between show boxes */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); /* Subtle shadow */
-    width: 90%; /* Full width inside the timetable */
+    width: 100%; /* Full width inside the timetable */
     max-width: 800px; /* Maximum width for larger screens */
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
 }
@@ -100,66 +99,67 @@ button.nav-button.selected {
 }
 
 /* Timetable styling for dark mode */
-.my-shows-timetable,
 .timetable {
     display: flex;
-    flex-direction: column; /* Stack items vertically */
-    align-items: center; /* Center align items */
-    padding: 20px;
-    margin: 20px;
-    gap: 20px; /* Space between show boxes */
-}
-
-.whos-going {
-    background-color: #673AB7; /* Purple background */
-    color: #E0E0E0;
-    border: 2px solid #FF5722; /* Orange border */
+    justify-content: flex-start; /* Align items to the start for horizontal scroll */
+    overflow-x: auto; /* Allow horizontal scrolling */
     padding: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    margin: 20px 0; /* Adjust margins for better appearance */
+    gap: 10px; /* Add gap between stages */
+    white-space: nowrap; /* Prevent line breaks */
 }
 
-.whos-going:hover {
-    background-color: #FF5722; /* Orange background on hover */
-    border-color: #673AB7; /* Purple border on hover */
-}
-
-/* Modal styling */
-.modal {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    z-index: 1000; /* Ensure modal is on top */
-}
-
-.modal-content {
-    background-color: #1E1E1E;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 90%;
-    max-height: 90%;
-    overflow-y: auto;
+.stage {
+    display: inline-block; /* Ensure stages are displayed in a row */
+    vertical-align: top; /* Align stages to the top */
+    border: 1px solid #FF5722; /* Orange border */
+    padding: 10px;
+    min-width: 250px; /* Set a minimum width for each stage */
+    background-color: #1E1E1E; /* Dark background */
     position: relative;
-    color: #E0E0E0;
 }
 
-.close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 30px;
-    cursor: pointer;
-    color: #FF5722;
+.stage h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #03A9F4; /* Blue for stage titles */
 }
 
-.attendees-list {
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #2E2E2E; /* Dark background */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#formContent {
+    border-radius: 10px;
+    background: #333333; /* Dark background */
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+#formFooter {
+    background-color: #424242; /* Dark footer background */
+    border-top: 1px solid #FF5722; /* Orange border */
+    padding: 25px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+}
+
+/* Friends list styling for dark mode */
+.friends-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -167,32 +167,49 @@ button.nav-button.selected {
     margin-top: 20px;
 }
 
-.attendee {
+.friend {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 20px;
     background-color: #2E2E2E;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     width: 150px;
-    text-align: center;
 }
 
-.attendee-icon {
-    width: 50px;
-    height: 50px;
+.friend-img {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     margin-bottom: 10px;
 }
 
+#location-info {
+    margin-top: 40px;
+}
+
+#location-details {
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
 @media (max-width: 768px) {
-    .my-shows-timetable,
-    .timetable {
+    .my-shows-timetable {
         align-items: center; /* Center align items on smaller screens */
     }
 
     .show {
         width: 90%;
+    }
+
+    .timetable {
+        flex-direction: column; /* Stack stages vertically on smaller screens */
+        gap: 20px; /* Space between stages */
+    }
+
+    .stage {
+        min-width: 100%; /* Full width for stages on smaller screens */
     }
 }

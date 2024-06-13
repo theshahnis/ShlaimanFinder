@@ -42,7 +42,20 @@ function renderShows(shows, showsAttendees) {
     const timetable = document.querySelector('.timetable');
     timetable.innerHTML = '';  // Clear the timetable
 
-    const stages = {};
+    const stages = {
+        'Stage 1': document.createElement('div'),
+        'Stage 2': document.createElement('div'),
+        'Stage 3': document.createElement('div'),
+        'Stage 4': document.createElement('div'),
+        'Stage 5': document.createElement('div')
+    };
+
+    for (const stage in stages) {
+        stages[stage].classList.add('stage');
+        stages[stage].setAttribute('data-stage', stage);
+        stages[stage].innerHTML = `<h2>${stage}</h2>`;
+        timetable.appendChild(stages[stage]);
+    }
 
     shows.forEach(show => {
         const showDate = new Date(show.start_time);
@@ -52,13 +65,6 @@ function renderShows(shows, showsAttendees) {
         }
         if (endDate.getHours() < 6) {
             endDate.setDate(endDate.getDate() - 1);
-        }
-
-        if (!stages[show.stage]) {
-            stages[show.stage] = document.createElement('div');
-            stages[show.stage].classList.add('stage');
-            stages[show.stage].innerHTML = `<h2>${show.stage}</h2>`;
-            timetable.appendChild(stages[show.stage]);
         }
 
         const showElement = document.createElement('div');
@@ -118,7 +124,7 @@ function initializeEventTimetable() {
                     img.alt = user.username;
                     img.title = user.username;
                     img.classList.add('attendee-icon');
-                    attendeesDiv.appendChild(img);
+                    attendeesDiv.append.appendChild(img);
                 });
 
                 // Update button text
