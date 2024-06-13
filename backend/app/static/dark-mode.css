@@ -1,22 +1,27 @@
 body {
     background-color: rgb(39, 39, 39);
-    color: rgb(46, 45, 43);
+    color: rgb(64, 64, 64);
     background-image: url('/images/background.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
     background-attachment: fixed; 
-    background-color: #553c1a;
+    background-color: #2d2b28;
     background-blend-mode: darken;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #583b09;
     color: rgb(64, 64, 64);
     border: none;
     padding: 10px 20px;
     cursor: pointer;
 }
+button.nav-button.selected {
+    background-color: #5c4b5d;
+    color: #3b3b3b; 
+    border: 2px solid #873800; 
+  }
 
 .button.selected,
 .nav-button.selected {
