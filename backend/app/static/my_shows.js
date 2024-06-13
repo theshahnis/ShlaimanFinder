@@ -109,7 +109,7 @@ function renderShows(shows, showsAttendees) {
 
         showElement.innerHTML = `
             <span>${show.name}</span>
-            <span>${showDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             <button class="select-show">${buttonText}</button>
             <div class="attendees"></div>
         `;

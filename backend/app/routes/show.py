@@ -17,31 +17,32 @@ def shows():
 @login_required
 def get_shows():
     date_str = request.args.get('date')
-    if not date_str:
-        return jsonify({'error': 'Date parameter is required'}), 400
-    try:
-        date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
-    except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
-
-    next_day = date + timedelta(days=1)
-    shows = Show.query.filter(
-        Show.start_time >= date,
-        Show.start_time < next_day + timedelta(hours=6)  # Include shows that end up to 6 AM the next day
-    ).all()
-    
-    shows_data = []
-    shows_attendees = {}
-    
-    for show in shows:
-        show_dict = show.to_dict()
-        shows_data.append(show_dict)
+    if date_str:
+        try:
+            date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+        except ValueError:
+            return jsonify({'error': 'Invalid date format'}), 400
         
-        # Fetch attendees for the show
-        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-    
-    return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+        next_day = date + timedelta(days=1)
+        shows = Show.query.filter(
+            Show.start_time >= date,
+            Show.start_time < next_day + timedelta(hours=6)  # Include shows that end up to 6 AM the next day
+        ).all()
+        
+        shows_data = []
+        shows_attendees = {}
+        
+        for show in shows:
+            show_dict = show.to_dict()
+            shows_data.append(show_dict)
+            
+            # Fetch attendees for the show
+            attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+            shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        
+        return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+    else:
+        return jsonify({'error': 'Date parameter is required'}), 400
 
 @show_bp.route('/api/show', methods=['GET'])
 @login_required
