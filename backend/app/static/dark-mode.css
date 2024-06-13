@@ -64,3 +64,40 @@ button.nav-button.selected {
     margin-bottom: 10px;
     color: rgb(20, 20, 20);
 }
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+    max-width: 600px; /* Adjust this value as needed */
+    padding: 20px;
+    background-color: #4a3e2f; /* Optional: add a background color */
+    border-radius: 8px; /* Optional: add rounded corners */
+    box-shadow: 0 2px 4px rgba(180, 179, 179, 0.1); /* Optional: add a subtle shadow */
+}
+
+#formContent {
+    -webkit-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+    background: #c78c55;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    position: relative;
+    padding: 0px;
+    -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    text-align: center;
+}
+  
+  #formFooter {
+    background-color: #a6a39e;
+    border-top: 1px solid #354551;
+    padding: 25px;
+    text-align: center;
+    -webkit-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
+}

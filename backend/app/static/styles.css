@@ -28,7 +28,7 @@ body {
   margin: 0 auto;
   max-width: 600px; /* Adjust this value as needed */
   padding: 20px;
-  background-color: #f9f9f9; /* Optional: add a background color */
+  background-color: #e6ba80; /* Optional: add a background color */
   border-radius: 8px; /* Optional: add rounded corners */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: add a subtle shadow */
 }
@@ -200,7 +200,7 @@ h2 {
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
-  background: #fff;
+  background: #c78c55;
   padding: 30px;
   width: 90%;
   max-width: 450px;
@@ -212,8 +212,8 @@ h2 {
 }
 
 #formFooter {
-  background-color: #f6f6f6;
-  border-top: 1px solid #dce8f1;
+  background-color: #fad791;
+  border-top: 1px solid #354551;
   padding: 25px;
   text-align: center;
   -webkit-border-radius: 0 0 10px 10px;
