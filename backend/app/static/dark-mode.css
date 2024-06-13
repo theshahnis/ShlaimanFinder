@@ -1,8 +1,7 @@
 body {
-    background-color: #000000; /* Dark background */
+    background-color: #121212; /* Dark background */
     color: #E0E0E0; /* Light text */
-    background-blend-mode: luminosity;
-    
+    background-blend-mode: difference;
 }
 
 button {
@@ -17,10 +16,11 @@ button {
 button.nav-button {
     background-color: #1F1F1F;
     color: #FF5722;
-    padding: 0;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-  }
+    border-radius: 5px; /* Add border-radius to match other buttons */
+}
 
 button.nav-button.selected {
     background-color: #673AB7; /* Purple background for selected buttons */
