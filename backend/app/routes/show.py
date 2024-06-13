@@ -22,7 +22,7 @@ def my_shows():
 @login_required
 def get_shows():
     date_str = request.args.get('date')
-    date = datetime.strptime(date_str, '%Y-%m-%d')
+    date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
     next_day = date + timedelta(days=1)
     shows = Show.query.filter(
         Show.start_time >= date,
@@ -42,22 +42,6 @@ def get_shows():
     
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
 
-@show_bp.route('/api/my-shows', methods=['GET'])
-@login_required
-def get_my_shows():
-    user_id = current_user.id
-    now = datetime.now(pytz.timezone('Europe/Amsterdam'))
-    user_shows = UserShow.query.join(Show).filter(
-        UserShow.user_id == user_id,
-        Show.start_time >= now
-    ).order_by(Show.start_time).all()
-
-    shows_data = []
-    for user_show in user_shows:
-        show = user_show.show
-        shows_data.append(show.to_dict())
-
-    return jsonify({'shows': shows_data})
 
 @show_bp.route('/user-shows', methods=['GET'])
 @login_required
@@ -93,3 +77,22 @@ def select_show():
     attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
     
     return jsonify({'attendees': attendees_data})
+
+
+
+@show_bp.route('/api/my-shows', methods=['GET'])
+@login_required
+def get_my_shows():
+    user_id = current_user.id
+    now = datetime.now(pytz.timezone('Europe/Amsterdam'))
+    user_shows = UserShow.query.join(Show).filter(
+        UserShow.user_id == user_id,
+        Show.start_time >= now
+    ).order_by(Show.start_time).all()
+
+    shows_data = []
+    for user_show in user_shows:
+        show = user_show.show
+        shows_data.append(show.to_dict())
+
+    return jsonify({'shows': shows_data})
