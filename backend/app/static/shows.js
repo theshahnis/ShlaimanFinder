@@ -38,6 +38,7 @@ function renderShows(shows, showsAttendees) {
     timetable.innerHTML = '';  // Clear the timetable
 
     const stages = {};
+    const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content')); // Assuming you have a meta tag with user ID
 
     shows.forEach(show => {
         const showDate = new Date(show.start_time);
@@ -59,10 +60,20 @@ function renderShows(shows, showsAttendees) {
         const showElement = document.createElement('div');
         showElement.classList.add('show');
         showElement.setAttribute('data-show-id', show.id);
+
+        let buttonText = 'Attend';
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                if (user.id === currentUserId) {
+                    buttonText = 'Leave';
+                }
+            });
+        }
+
         showElement.innerHTML = `
             <span>${show.name}</span>
             <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-            <button class="select-show">Attend</button>
+            <button class="select-show">${buttonText}</button>
             <div class="attendees"></div>
         `;
         stages[show.stage].appendChild(showElement);
@@ -83,7 +94,6 @@ function renderShows(shows, showsAttendees) {
 
     initializeEventTimetable();
 }
-
 
 function initializeEventTimetable() {
     const selectButtons = document.querySelectorAll('.select-show');
