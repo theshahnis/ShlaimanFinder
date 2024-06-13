@@ -17,7 +17,7 @@ function fetchShowsByIds(showIds, showsAttendees) {
     timetable.innerHTML = ''; // Clear the timetable
 
     showIds.forEach(showId => {
-        fetch(`/show/api/show?id=${showId}`) // Ensure this endpoint exists
+        fetch(`/show/api/shows?id=${showId}`) // Ensure this endpoint exists
             .then(response => response.json())
             .then(data => {
                 renderShow(data, showsAttendees[showId]);
