@@ -65,7 +65,6 @@ button.nav-button.selected {
     padding: 10px;
     margin-bottom: 20px;
     width: 100%;
-    max-width: 600px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
@@ -98,16 +97,18 @@ button.nav-button.selected {
     border: 2px solid #2E2E2E; /* Slightly lighter border */
 }
 
+/* Timetable styling for general view */
 .timetable {
     display: flex;
-    flex-direction: column; /* Column layout for single-column view */
-    gap: 10px; /* Add gap between shows */
+    justify-content: space-around;
+    flex-wrap: wrap; /* Allow wrapping for multiple rows */
     margin: 20px;
 }
 
 .stage {
     border: 1px solid #FF5722; /* Orange border */
     padding: 10px;
+    min-width: 150px; /* Set a minimum width for each stage */
     background-color: #1E1E1E; /* Dark background */
     position: relative;
 }
@@ -192,9 +193,11 @@ button.nav-button.selected {
 @media (max-width: 768px) {
     .timetable {
         justify-content: flex-start;
+        flex-wrap: nowrap; /* Prevent wrapping for smaller screens */
+        overflow-x: auto; /* Allow horizontal scrolling */
     }
 
-    .show {
-        width: 90%; /* Increase width for better readability */
+    .stage {
+        min-width: 200px; /* Increase minimum width for better readability */
     }
 }
