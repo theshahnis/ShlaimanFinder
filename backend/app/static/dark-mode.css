@@ -99,15 +99,17 @@ button.nav-button.selected {
 /* Timetable styling for dark mode */
 .timetable {
     display: flex;
-    justify-content: space-between; /* Space between stages */
+    justify-content: flex-start; /* Align items to the start for horizontal scroll */
     overflow-x: auto; /* Allow horizontal scrolling */
     padding: 10px;
     margin: 20px 0; /* Adjust margins for better appearance */
     gap: 10px; /* Add gap between stages */
+    white-space: nowrap; /* Prevent line breaks */
 }
 
 .stage {
-    flex: 1; /* Make each stage take up equal space */
+    display: inline-block; /* Ensure stages are displayed in a row */
+    vertical-align: top; /* Align stages to the top */
     border: 1px solid #FF5722; /* Orange border */
     padding: 10px;
     min-width: 200px; /* Set a minimum width for each stage */
@@ -193,11 +195,13 @@ button.nav-button.selected {
 
 @media (max-width: 768px) {
     .timetable {
-        flex-direction: column; /* Stack stages vertically on smaller screens */
-        gap: 20px; /* Space between stages */
+        white-space: nowrap; /* Prevent line breaks on smaller screens */
+        overflow-x: scroll; /* Enable horizontal scrolling */
     }
 
     .stage {
-        min-width: 100%; /* Full width for stages on smaller screens */
+        display: inline-block; /* Ensure stages are displayed in a row */
+        vertical-align: top; /* Align stages to the top */
+        min-width: 200px; /* Set a minimum width for each stage */
     }
 }
