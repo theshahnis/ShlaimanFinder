@@ -140,7 +140,7 @@ def verify_reset_token(token, expiration=3600):
         return None
     return email
 
-@app.route('/test-email')
+@auth_bp.route('/test-email')
 def test_email():
     msg = Message('Test Email', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=['theshahnis@gmail.com'])
     msg.body = 'This is a test email sent from Flask-Mail with Postfix as the mail server.'
