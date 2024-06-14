@@ -25,10 +25,12 @@ def get_shows():
         except ValueError:
             return jsonify({'error': 'Invalid date format'}), 400
 
-        next_day = date + timedelta(days=1)
+        start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
+        end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+
         shows = Show.query.filter(
-            (Show.start_time >= date) & 
-            (Show.start_time < next_day + timedelta(hours=6))
+            Show.start_time >= start_time,
+            Show.start_time < end_time
         ).all()
     elif show_id:
         show = Show.query.get(show_id)
@@ -42,13 +44,7 @@ def get_shows():
     shows_attendees = {}
 
     for show in shows:
-        # Adjust the show date for shows that start before 06:00
-        start_time = show.start_time
-        if start_time.hour < 6:
-            start_time -= timedelta(days=1)
-        
         show_dict = show.to_dict()
-        show_dict['adjusted_start_time'] = start_time.isoformat()
         shows_data.append(show_dict)
 
         # Fetch attendees for the show
@@ -114,6 +110,7 @@ def select_show():
 @login_required
 def my_shows():
     return render_template('my_shows.html')
+
 
 @show_bp.route('/api/my-shows', methods=['GET'])
 @login_required

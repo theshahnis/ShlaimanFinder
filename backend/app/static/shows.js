@@ -60,8 +60,13 @@ function renderShows(shows, showsAttendees) {
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
-        const showStartDate = new Date(show.adjusted_start_time);
-        const showEndDate = new Date(show.end_time);
+        const showDate = new Date(show.start_time);
+        const endDate = new Date(show.end_time);
+        
+        // Adjust the show date for shows that start before 06:00
+        if (showDate.getHours() < 6) {
+            showDate.setDate(showDate.getDate() - 1);
+        }
 
         const showElement = document.createElement('div');
         showElement.classList.add('show');
@@ -78,7 +83,7 @@ function renderShows(shows, showsAttendees) {
 
         showElement.innerHTML = `
             <span>${show.name}</span>
-            <span>${showStartDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${showEndDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             <button class="select-show">${buttonText}</button>
             <button class="whos-going">Who's going?</button>
             <div class="attendees"></div>
@@ -101,6 +106,7 @@ function renderShows(shows, showsAttendees) {
 
     initializeEventTimetable();
 }
+
 
 function initializeEventTimetable() {
     const selectButtons = document.querySelectorAll('.select-show');
