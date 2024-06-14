@@ -148,7 +148,7 @@ function createShowElement(show, showsAttendees, currentUserId) {
     }
 
     const showDate = new Date(show.start_time);
-    const endDate = new Date(end_time);
+    const endDate = new Date(show.end_time);
 
     showElement.innerHTML = `
         <span class="show-name">${show.name}</span>
