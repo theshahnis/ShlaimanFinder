@@ -19,17 +19,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     navButtons.forEach(button => {
         const url = button.querySelector('a').getAttribute('href');
-        
-        // Add an exception for the "My Shows" page
-        if (currentPath === url || (currentPath.startsWith(url) && url !== '/show/my-shows')) {
+        if (currentPath === url) {
             button.classList.add('selected');
-        }
-
-        // Explicitly handle the "My Shows" page
-        if (currentPath === '/show/my-shows' && url === '/show/my-shows') {
+        } else if (currentPath.startsWith(url) && !currentPath.includes('/show/my-shows')) {
             button.classList.add('selected');
         }
     });
+
+    // Explicitly handle the "My Shows" page
+    const myShowsButton = document.querySelector('.nav-button a[href="/show/my-shows"]');
+    if (currentPath === '/show/my-shows' && myShowsButton) {
+        myShowsButton.parentElement.classList.add('selected');
+    }
 });
 
 function toggleDarkMode() {
