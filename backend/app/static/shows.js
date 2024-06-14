@@ -60,8 +60,13 @@ function renderShows(shows, showsAttendees) {
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
-        const showStartDate = new Date(show.adjusted_start_time);
-        const showEndDate = new Date(show.end_time);
+        const showStartDate = new Date(show.start_time + 'Z'); // Assuming the time is returned in UTC
+        const showEndDate = new Date(show.end_time + 'Z');
+
+        // Adjust the show date for shows that start before 06:00
+        if (showStartDate.getHours() < 6) {
+            showStartDate.setDate(showStartDate.getDate() - 1);
+        }
 
         const showElement = document.createElement('div');
         showElement.classList.add('show');
