@@ -60,18 +60,8 @@ function renderShows(shows, showsAttendees) {
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
-        const showStartDate = new Date(show.start_time);
+        const showStartDate = new Date(show.adjusted_start_time);
         const showEndDate = new Date(show.end_time);
-
-        // Adjust the showDate for shows that start before 06:00 to be considered part of the previous day
-        if (showStartDate.getHours() < 6) {
-            showStartDate.setDate(showStartDate.getDate() - 1);
-        }
-
-        // Adjust the endDate for shows that end before 06:00 to be considered part of the previous day
-        if (showEndDate.getHours() < 6) {
-            showEndDate.setDate(showEndDate.getDate() - 1);
-        }
 
         const showElement = document.createElement('div');
         showElement.classList.add('show');

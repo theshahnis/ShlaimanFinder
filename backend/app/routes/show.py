@@ -27,8 +27,8 @@ def get_shows():
 
         next_day = date + timedelta(days=1)
         shows = Show.query.filter(
-            Show.start_time >= date,
-            Show.start_time < next_day + timedelta(hours=6)  # Include shows that end up to 6 AM the next day
+            (Show.start_time >= date) & 
+            (Show.start_time < next_day + timedelta(hours=6))
         ).all()
     elif show_id:
         show = Show.query.get(show_id)
@@ -42,7 +42,13 @@ def get_shows():
     shows_attendees = {}
 
     for show in shows:
+        # Adjust the show date for shows that start before 06:00
+        start_time = show.start_time
+        if start_time.hour < 6:
+            start_time -= timedelta(days=1)
+        
         show_dict = show.to_dict()
+        show_dict['adjusted_start_time'] = start_time.isoformat()
         shows_data.append(show_dict)
 
         # Fetch attendees for the show
