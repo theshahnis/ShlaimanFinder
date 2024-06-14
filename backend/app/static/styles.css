@@ -20,21 +20,30 @@ body {
 
 body::before {
   content: '';
-  position: fixed; /* Cover the entire viewport */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.3); /* Semi-transparent overlay */
-  z-index: -1; /* Ensure the overlay is behind other content */
-  pointer-events: none; /* Ensure the overlay does not capture any mouse events */
+  background: rgba(255, 255, 255, 0.3);
+
+  z-index: -1;
+
+  pointer-events: none;
+
 }
 
-
+a {
+  color: #3d454c;
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 400;
+  /* background-color: #1F1F1F; */
+}
 
 button {
-  background-color: #f3b14e; /* Light button background */
-  color: #181818; /* Dark text */
+  background-color: #f3b14e;
+  color: #181818;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -42,7 +51,8 @@ button {
 }
 
 button.nav-button {
-  background-color: #e9a530;;
+  background-color: #e9a530;
+  ;
   color: #000;
   padding: 10px 20px;
   border: none;
@@ -53,50 +63,58 @@ button.nav-button {
 
 .button.selected,
 .nav-button.selected {
-  background-color: #FFC107; /* Light background for selected buttons */
+  background-color: #FFC107;
+  /* Light background for selected buttons */
   color: #000;
-  border: 2px solid #FF5722; /* Dark border */
+  border: 2px solid #FF5722;
+  /* Dark border */
 }
 
+
 .show {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: 0;
-  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Center the content horizontally */
+  justify-content: center;
+  /* Center the content vertically */
+  text-align: center;
+  /* Center the text */
   background-color: #FFF9C4;
+  color: #000;
   border: 1px solid #FBC02D;
   border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 800px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .show:hover {
-  transform: translateY(-5px); /* Slight lift on hover */
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+  transform: translateY(-5px);
+  /* Slight lift on hover */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  /* Stronger shadow on hover */
 }
 
 .show-name {
   font-weight: bold;
   font-size: 1.5em;
-  color: #FF5722; /* Dark for show names */
+  color: #FF5722;
+  /* Dark for show names */
   margin-bottom: 10px;
 }
 
 .show-time,
 .show-stage {
   display: block;
-  color: #757575; /* Grey for show times and stages */
+  color: #757575;
   margin-bottom: 8px;
 }
 
-.attendee-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-right: 5px;
-  border: 2px solid #FBC02D; /* Slightly darker border */
-}
+
 
 .my-shows-timetable {
   display: flex;
@@ -107,27 +125,21 @@ button.nav-button {
   gap: 20px;
 }
 
-.show-time,
-.show-stage,
 .whos-going {
-
-  color: #757575;
-  margin-bottom: 8px;
-}
-
-.whos-going {
-  background-color: #FFC107; /* Light background */
+  background-color: #FFC107;
   color: #000;
-  border: 2px solid #FF5722; /* Dark border */
+  border: 2px solid #FF5722;
   padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .whos-going:hover {
-  background-color: #FF5722; /* Dark background on hover */
-  border-color: #FFC107; /* Light border on hover */
+  background-color: #FF5722;
+  border-color: #FFC107;
 }
 
 .modal {
@@ -140,15 +152,16 @@ button.nav-button {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000; /* Ensure modal is on top */
+  z-index: 1000;
+  /* Ensure modal is on top */
 }
 
 .modal-content {
   background-color: #FFF9C4;
   border-radius: 10px;
   padding: 20px;
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 80%;
+  max-height: 80%;
   overflow-y: auto;
   position: relative;
   color: #000;
@@ -188,18 +201,17 @@ button.nav-button {
   height: 50px;
   border-radius: 50%;
   margin-bottom: 10px;
+  cursor: pointer;
+  /* border: 2px solid #FBC02D; */
 }
 
 .timetable {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* One column per stage */
-  grid-auto-rows: 1fr; /* Each row represents a time slot */
-  gap: 10px; /* Space between grid items */
+  display: flex;
+  justify-content: flex-start;
+  overflow-x: auto;
   padding: 10px;
-}
-.time-slot {
-  border-top: 1px solid #ccc;
-  position: relative;
+  margin: 20px 0;
+  gap: 10px;
 }
 
 .stage {
@@ -211,6 +223,7 @@ button.nav-button {
 }
 
 .stage h2 {
+  text-align: center;
   font-size: 1.5em;
   margin-bottom: 10px;
   color: #FF5722;
@@ -249,18 +262,6 @@ button.nav-button {
   border-radius: 0 0 10px 10px;
 }
 
-/* Additional styles for smaller screens */
-@media (max-width: 768px) {
-  .my-shows-timetable {
-    align-items: center;
-  }
-
-  .show {
-    width: 90%;
-  }
-}
-
-/* Original CSS content below, integrated with new styles */
 .profile-container img {
   margin-bottom: 20px;
 }
@@ -288,29 +289,18 @@ button.nav-button {
   background-color: #f4f4f4;
 }
 
-.timetable {
-  display: flex;
-  justify-content: flex-start; /* Align items to the start for horizontal scroll */
-  overflow-x: auto; /* Allow horizontal scrolling */
-  padding: 10px;
-  margin: 20px 0; /* Adjust margins for better appearance */
-  gap: 10px; /* Add gap between stages */
-}
 
-.stage {
-  border: 1px solid #db7018;
-  padding: 10px;
-  min-width: 150px; /* Set a minimum width for each stage */
-  background-color: #ad9278;
-  position: relative;
-}
 
-.stage h2 {
+
+h2 {
   text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+  margin: 40px 8px 10px 8px;
+  color: #151313;
 }
-
-
-
 .show button {
   margin-top: 10px;
 }
@@ -328,53 +318,17 @@ button.nav-button {
   margin-right: 5px;
 }
 
-.attendee-icon {
-  cursor: pointer;
-}
 
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-}
 
-.modal-content {
-  max-width: 80%;
-  max-height: 80%;
-}
+
+
+
 
 .caption {
   color: white;
   font-size: 1.5em;
   text-align: center;
   margin-top: 10px;
-}
-
-/* Additional styles for smaller screens */
-@media (max-width: 768px) {
-  .timetable {
-    justify-content: flex-start;
-  }
-
-  .stage {
-    min-width: 200px; /* Increase minimum width for better readability */
-  }
-}
-
-@media (min-width: 769px) {
-  .timetable {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  .stage {
-    width: auto;
-  }
 }
 
 button {
@@ -392,22 +346,9 @@ button.nav-button.selected {
   border: 2px solid #0056b3;
 }
 
-a {
-  color: #3d454c;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
-}
 
-h2 {
-  text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-  margin: 40px 8px 10px 8px;
-  color: #151313;
-}
+
+
 
 /* STRUCTURE */
 .wrapper {
@@ -429,8 +370,8 @@ h2 {
   max-width: 450px;
   position: relative;
   padding: 0px;
-  -webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
-  box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+  -webkit-box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 30px 60px 0 rgba(0, 0, 0, 0.3);
   text-align: center;
 }
 
@@ -454,7 +395,9 @@ h2.active {
 }
 
 /* FORM TYPOGRAPHY */
-input[type=button], input[type=submit], input[type=reset] {
+input[type=button],
+input[type=submit],
+input[type=reset] {
   background-color: #56baed;
   border: none;
   color: rgb(52, 42, 42);
@@ -464,8 +407,8 @@ input[type=button], input[type=submit], input[type=reset] {
   display: inline-block;
   text-transform: uppercase;
   font-size: 13px;
-  -webkit-box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-  box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
+  -webkit-box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
+  box-shadow: 0 10px 30px 0 rgba(95, 186, 233, 0.4);
   -webkit-border-radius: 5px 5px 5px 5px;
   border-radius: 5px 5px 5px 5px;
   margin: 5px 20px 40px 20px;
@@ -476,11 +419,15 @@ input[type=button], input[type=submit], input[type=reset] {
   transition: all 0.3s ease-in-out;
 }
 
-input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover {
+input[type=button]:hover,
+input[type=submit]:hover,
+input[type=reset]:hover {
   background-color: #39ace7;
 }
 
-input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
+input[type=button]:active,
+input[type=submit]:active,
+input[type=reset]:active {
   -moz-transform: scale(0.95);
   -webkit-transform: scale(0.95);
   -o-transform: scale(0.95);
@@ -488,7 +435,9 @@ input[type=button]:active, input[type=submit]:active, input[type=reset]:active {
   transform: scale(0.95);
 }
 
-input[type=text], input[type=password], input[type=email] {
+input[type=text],
+input[type=password],
+input[type=email] {
   background-color: #f6f6f6;
   border: none;
   color: #0d0d0d;
@@ -509,12 +458,16 @@ input[type=text], input[type=password], input[type=email] {
   border-radius: 5px 5px 5px 5px;
 }
 
-input[type=text]:focus, input[type=password]:focus, input[type=email]:focus {
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=email]:focus {
   background-color: #fff;
   border-bottom: 2px solid #5fbae9;
 }
 
-input[type=text]::placeholder, input[type=password]::placeholder, input[type=email]::placeholder {
+input[type=text]::placeholder,
+input[type=password]::placeholder,
+input[type=email]::placeholder {
   color: #cccccc;
 }
 
@@ -534,6 +487,7 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
     -webkit-transform: translate3d(0, -100%, 0);
     transform: translate3d(0, -100%, 0);
   }
+
   100% {
     opacity: 1;
     -webkit-transform: none;
@@ -547,6 +501,7 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
     -webkit-transform: translate3d(0, -100%, 0);
     transform: translate3d(0, -100%, 0);
   }
+
   100% {
     opacity: 1;
     -webkit-transform: none;
@@ -554,32 +509,47 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
   }
 }
 
-@-webkit-keyframes fadeIn { 
-  from { opacity:0; } 
-  to { opacity:1; } 
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-@-moz-keyframes fadeIn { 
-  from { opacity:0; } 
-  to { opacity:1; } 
+@-moz-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-@keyframes fadeIn { 
-  from { opacity:0; } 
-  to { opacity:1; } 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .fadeIn {
-  opacity:0;
-  -webkit-animation:fadeIn ease-in 1;
-  -moz-animation:fadeIn ease-in 1;
-  animation:fadeIn ease-in 1;
-  -webkit-animation-fill-mode:forwards;
-  -moz-animation-fill-mode:forwards;
-  animation-fill-mode:forwards;
-  -webkit-animation-duration:0.5s;
-  -moz-animation-duration:0.5s;
-  animation-duration:0.5s;
+  opacity: 0;
+  -webkit-animation: fadeIn ease-in 1;
+  -moz-animation: fadeIn ease-in 1;
+  animation: fadeIn ease-in 1;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-duration: 0.5s;
+  -moz-animation-duration: 0.5s;
+  animation-duration: 0.5s;
 }
 
 .fadeIn.first {
@@ -629,10 +599,10 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
 /* OTHERS */
 *:focus {
   outline: none;
-} 
+}
 
 #icon {
-  width:60%;
+  width: 60%;
 }
 
 * {
@@ -642,8 +612,8 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
 .button.selected,
 .nav-button.selected {
   background-color: #007bff;
-  color: #fff; 
-  border: 2px solid #0056b3; 
+  color: #fff;
+  border: 2px solid #0056b3;
 }
 
 .friends-container {
@@ -681,6 +651,36 @@ input[type=text]::placeholder, input[type=password]::placeholder, input[type=ema
 #location-details {
   font-size: 1.1em;
   margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .my-shows-timetable {
+    align-items: center;
+  }
+  .show {
+    width: 90%;
+  }
+  .timetable {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  .timetable {
+    justify-content: flex-start;
+  }
+
+  .stage {
+    min-width: 200px;
+    width: auto;
+  }
+}
+
+@media (min-width: 769px) {
+  .timetable {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  .stage {
+    width: auto;
+    min-width: 200px;
+  }
 }
 
 /* before */

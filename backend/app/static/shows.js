@@ -42,92 +42,70 @@ function renderShows(shows, showsAttendees) {
     const timetable = document.querySelector('.timetable');
     timetable.innerHTML = '';  // Clear the timetable
 
-    const timeSlots = generateTimeSlots();
-    const stages = [...new Set(shows.map(show => show.stage))]; // Get unique stages
+    const stages = {
+        'Eagle': document.createElement('div'),
+        'Vulture': document.createElement('div'),
+        'Buzzard': document.createElement('div'),
+        'Hawk': document.createElement('div'),
+        'Raven': document.createElement('div')
+    };
 
-    // Create grid columns for each stage
-    stages.forEach(stage => {
-        const stageColumn = document.createElement('div');
-        stageColumn.classList.add('stage-column');
-        stageColumn.dataset.stage = stage;
-
-        const stageHeader = document.createElement('h2');
-        stageHeader.textContent = stage;
-        stageColumn.appendChild(stageHeader);
-
-        // Create grid rows for each time slot within each stage column
-        timeSlots.forEach(slot => {
-            const timeSlot = document.createElement('div');
-            timeSlot.classList.add('time-slot');
-            timeSlot.dataset.time = slot;
-            stageColumn.appendChild(timeSlot);
-        });
-
-        timetable.appendChild(stageColumn);
-    });
+    for (const stage of Object.keys(stages)) {
+        stages[stage].classList.add('stage');
+        stages[stage].setAttribute('data-stage', stage);
+        stages[stage].innerHTML = `<h2>${stage}</h2>`;
+        timetable.appendChild(stages[stage]);
+    }
 
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
-        const showElement = createShowElement(show, showsAttendees, currentUserId);
-        const stageColumn = document.querySelector(`.stage-column[data-stage="${show.stage}"]`);
-        const startSlot = document.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
+        const showDate = new Date(show.start_time);
+        const endDate = new Date(show.end_time);
+        if (showDate.getHours() < 6) {
+            showDate.setDate(showDate.getDate() - 1);
+        }
+        if (endDate.getHours() < 6) {
+            endDate.setDate(endDate.getDate() - 1);
+        }
 
-        if (stageColumn && startSlot) {
-            const timeSlotIndex = Array.from(stageColumn.children).indexOf(startSlot);
-            showElement.style.gridRow = timeSlotIndex + 1; // Adjust row position
-            stageColumn.appendChild(showElement);
+        const showElement = document.createElement('div');
+        showElement.classList.add('show');
+        showElement.setAttribute('data-show-id', show.id);
+
+        let buttonText = 'Attend';
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                if (user.id === currentUserId) {
+                    buttonText = 'Leave';
+                }
+            });
+        }
+
+        showElement.innerHTML = `
+            <span>${show.name}</span>
+            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            <button class="select-show">${buttonText}</button>
+            <button class="whos-going">Who's going?</button>
+            <div class="attendees"></div>
+        `;
+        stages[show.stage].appendChild(showElement);
+
+        // Populate existing attendees
+        const attendeesDiv = showElement.querySelector('.attendees');
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                const img = document.createElement('img');
+                img.src = user.avatarUrl;
+                img.alt = user.username;
+                img.title = user.username;
+                img.classList.add('attendee-icon');
+                attendeesDiv.appendChild(img);
+            });
         }
     });
 
     initializeEventTimetable();
-}
-
-function generateTimeSlots() {
-    const slots = [];
-    const startTime = new Date();
-    startTime.setHours(10, 0, 0, 0); // Start at 10:00
-    const endTime = new Date(startTime);
-    endTime.setDate(endTime.getDate() + 1); // End the next day at 04:00
-    endTime.setHours(4, 0, 0, 0);
-
-    while (startTime <= endTime) {
-        slots.push(startTime.toTimeString().slice(0, 5));
-        startTime.setMinutes(startTime.getMinutes() + 30); // 30-minute intervals
-    }
-    return slots;
-}
-
-function getTimeSlot(time) {
-    const date = new Date(time);
-    return date.toTimeString().slice(0, 5);
-}
-
-function createShowElement(show, showsAttendees, currentUserId) {
-    const showElement = document.createElement('div');
-    showElement.classList.add('show');
-    showElement.setAttribute('data-show-id', show.id);
-
-    let buttonText = 'Attend';
-    if (showsAttendees[show.id]) {
-        showsAttendees[show.id].forEach(user => {
-            if (user.id === currentUserId) {
-                buttonText = 'Leave';
-            }
-        });
-    }
-
-    const showDate = new Date(show.start_time);
-    const endDate = new Date(show.end_time);
-
-    showElement.innerHTML = `
-        <span class="show-name">${show.name}</span>
-        <span class="show-time">${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-        <button class="select-show">${buttonText}</button>
-        <button class="whos-going">Who's going?</button>
-        <div class="attendees"></div>
-    `;
-    return showElement;
 }
 
 function initializeEventTimetable() {
