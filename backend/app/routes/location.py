@@ -84,14 +84,13 @@ def get_locations():
         remaining = expires_at - datetime.now()
         return remaining if remaining.total_seconds() > 0 else timedelta(0)
 
-    users = User.query.filter_by(group_id=current_user.group_id).all()
-    locations = []
-
     # Fetch user locations
+    users = User.query.filter_by(group_id=current_user.group_id).all()
+    user_locations = []
     for user in users:
         location = Location.query.filter_by(user_id=user.id).order_by(Location.timestamp.desc()).first()
         if location:
-            locations.append({
+            user_locations.append({
                 'username': user.username,
                 'latitude': location.latitude,
                 'longitude': location.longitude,
@@ -104,10 +103,11 @@ def get_locations():
 
     # Fetch meeting points
     meeting_points = MeetingPoint.query.filter_by(group_id=current_user.group_id).all()
+    meeting_point_locations = []
     for point in meeting_points:
         remaining_time = calculate_remaining_time(point.created_at, point.duration)
         if remaining_time.total_seconds() > 0:
-            locations.append({
+            meeting_point_locations.append({
                 'username': point.username,
                 'latitude': point.latitude,
                 'longitude': point.longitude,
@@ -120,8 +120,9 @@ def get_locations():
 
     # Fetch static locations
     static_locations = StaticLocation.query.all()
+    static_location_data = []
     for location in static_locations:
-        locations.append({
+        static_location_data.append({
             'username': location.name,
             'latitude': location.latitude,
             'longitude': location.longitude,
@@ -132,13 +133,16 @@ def get_locations():
             'remaining_time': None
         })
 
-    # Debug information
-    print(f"Total users: {len(users)}")
-    print(f"Total meeting points: {len(meeting_points)}")
-    print(f"Total static locations: {len(static_locations)}")
-    print(f"Total locations to return: {len(locations)}")
+    # Combine all locations
+    all_locations = user_locations + meeting_point_locations + static_location_data
 
-    return jsonify({'locations': locations})
+    # Debug information
+    print(f"Total user locations: {len(user_locations)}")
+    print(f"Total meeting points: {len(meeting_point_locations)}")
+    print(f"Total static locations: {len(static_location_data)}")
+    print(f"Total locations to return: {len(all_locations)}")
+
+    return jsonify({'locations': all_locations})
 
 @location_bp.route('/create_location', methods=['POST'])
 @login_required
