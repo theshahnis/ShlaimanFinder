@@ -96,28 +96,20 @@ button.nav-button.selected {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5); /* Stronger shadow on hover */
 }
 
+
 .show-name {
     font-weight: bold;
     font-size: 1.5em;
     color: #FFEB3B;
     margin-bottom: 10px;
-  }
-
-.show-time,
-.show-stage,
-.whos-going {
-    font-size: 1.2em;
-    color: #B0B0B0;
-    margin-bottom: 8px;
-    /* display: block; */
-  }
+}
 
 .show-time,
 .show-stage {
-    
-    font-size: 1.2em; /* Larger font size */
-    color: #B0B0B0; /* Grey for show times and stages */
-    margin-bottom: 8px; /* Space below each line */
+    display: block;
+    font-size: 1.2em;
+    color: #B0B0B0;
+    margin-bottom: 8px;
 }
 
 /* Attendees styling for dark mode */
@@ -147,7 +139,11 @@ button.nav-button.selected {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    font-size: 1.2em;
+    margin-bottom: 8px;
+    display: block;
 }
+
 
 .whos-going:hover {
     background-color: #FF5722; /* Orange background on hover */
@@ -328,5 +324,8 @@ button.nav-button.selected {
     }
 }
 
+.show button {
+    margin-top: 10px;
+  }
 
 /* before */
