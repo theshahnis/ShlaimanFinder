@@ -62,8 +62,6 @@ function renderShows(shows, showsAttendees) {
     shows.forEach(show => {
         const showDate = new Date(show.start_time);
         const endDate = new Date(show.end_time);
-
-        // Adjust dates based on the criteria of ending before 06:00
         if (showDate.getHours() < 6) {
             showDate.setDate(showDate.getDate() - 1);
         }
@@ -71,47 +69,39 @@ function renderShows(shows, showsAttendees) {
             endDate.setDate(endDate.getDate() - 1);
         }
 
-        // Only render shows for the current view day
-        const viewDate = new Date(showDate);
-        viewDate.setHours(6, 0, 0, 0); // Set viewDate to 06:00 of the current show day
-        const currentViewDate = new Date();
-        currentViewDate.setHours(6, 0, 0, 0);
+        const showElement = document.createElement('div');
+        showElement.classList.add('show');
+        showElement.setAttribute('data-show-id', show.id);
 
-        if (viewDate.getTime() === currentViewDate.getTime()) {
-            const showElement = document.createElement('div');
-            showElement.classList.add('show');
-            showElement.setAttribute('data-show-id', show.id);
+        let buttonText = 'Attend';
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                if (user.id === currentUserId) {
+                    buttonText = 'Leave';
+                }
+            });
+        }
 
-            let buttonText = 'Attend';
-            if (showsAttendees[show.id]) {
-                showsAttendees[show.id].forEach(user => {
-                    if (user.id === currentUserId) {
-                        buttonText = 'Leave';
-                    }
-                });
-            }
+        showElement.innerHTML = `
+            <span>${show.name}</span>
+            <span>${showDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            <button class="select-show">${buttonText}</button>
+            <button class="whos-going">Who's going?</button>
+            <div class="attendees"></div>
+        `;
+        stages[show.stage].appendChild(showElement);
 
-            showElement.innerHTML = `
-                <span>${show.name}</span>
-                <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <button class="select-show">${buttonText}</button>
-                <button class="whos-going">Who's going?</button>
-                <div class="attendees"></div>
-            `;
-            stages[show.stage].appendChild(showElement);
-
-            // Populate existing attendees
-            const attendeesDiv = showElement.querySelector('.attendees');
-            if (showsAttendees[show.id]) {
-                showsAttendees[show.id].forEach(user => {
-                    const img = document.createElement('img');
-                    img.src = user.avatarUrl;
-                    img.alt = user.username;
-                    img.title = user.username;
-                    img.classList.add('attendee-icon');
-                    attendeesDiv.appendChild(img);
-                });
-            }
+        // Populate existing attendees
+        const attendeesDiv = showElement.querySelector('.attendees');
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                const img = document.createElement('img');
+                img.src = user.avatarUrl;
+                img.alt = user.username;
+                img.title = user.username;
+                img.classList.add('attendee-icon');
+                attendeesDiv.appendChild(img);
+            });
         }
     });
 
