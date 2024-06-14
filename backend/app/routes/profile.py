@@ -33,6 +33,7 @@ def profile():
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
+
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -44,7 +45,7 @@ def save_picture(form_picture, target_dir):
 
     try:
         with Image.open(form_picture) as img:
-            img.verify()  # Verify the image file
+            img.verify()
             form_picture.seek(0)  # Reset file pointer to the beginning
             img_format = img.format
             print(f"Image format: {img_format}")
@@ -52,9 +53,10 @@ def save_picture(form_picture, target_dir):
             if img_format not in ["JPEG", "JPG", "PNG", "GIF"]:
                 raise ValueError(f"Unsupported image format: {img_format}")
 
+            img = Image.open(form_picture)
             img.save(picture_path)
             print(f"Image saved to {picture_path}")
-        
+
     except (IOError, SyntaxError) as e:
         print(f"Invalid image file: {e}")
         raise ValueError(f"Invalid image file: {e}")
