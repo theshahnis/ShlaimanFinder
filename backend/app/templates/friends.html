@@ -33,17 +33,13 @@
                     const longitude = data.longitude;
                     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
                     const appleMapsUrl = `maps://maps.apple.com/?q=${latitude},${longitude}`;
-
-                    // Check if the device is iOS
+                    const universalMapsUrl = `https://maps.apple.com/?q=${latitude},${longitude}`; 
                     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-                    // Open the appropriate maps app
                     if (isIOS) {
-                        window.open(appleMapsUrl, '_blank');
+                        window.location.href = universalMapsUrl;
                     } else {
                         window.open(googleMapsUrl, '_blank');
                     }
-
                     document.getElementById('location-details').innerHTML = `
                         Latitude: ${latitude}<br>
                         Longitude: ${longitude}<br>
