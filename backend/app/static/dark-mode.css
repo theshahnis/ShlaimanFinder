@@ -34,6 +34,21 @@ button {
     border-radius: 5px;
 }
 
+button.select-show {
+    background-color: #673AB7;
+    color: #E0E0E0;
+    border: 2px solid #FF5722; 
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+button.select-show:hover {
+    background-color: #FF5722; 
+    border-color: #673AB7; 
+}
+
 button.nav-button {
     background-color: #1F1F1F;
     color: #FF5722;
