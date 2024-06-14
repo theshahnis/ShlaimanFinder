@@ -95,10 +95,11 @@ function renderShows(shows, showsAttendees) {
         const startSlot = stageColumn.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
 
         if (stageColumn && startSlot) {
+            const startIndex = Array.from(stageColumn.children).indexOf(startSlot);
             const durationSlots = calculateDurationSlots(show.start_time, show.end_time);
-            startSlot.style.position = 'relative';
+
+            showElement.style.gridRow = `${startIndex + 1} / span ${durationSlots}`;
             startSlot.appendChild(showElement);
-            showElement.style.height = `calc(${durationSlots * 100}px - 10px)`; // Adjust height based on duration slots
         }
     });
 
@@ -114,7 +115,7 @@ function generateTimeSlots() {
     endTime.setHours(4, 0, 0, 0);
 
     while (startTime <= endTime) {
-        slots.push(startTime.toTimeString().slice(0, 5));
+        slots.push(startTime.toISOString().substring(11, 16));
         startTime.setMinutes(startTime.getMinutes() + 30); // 30-minute intervals
     }
     return slots;
@@ -122,7 +123,7 @@ function generateTimeSlots() {
 
 function getTimeSlot(time) {
     const date = new Date(time);
-    return date.toTimeString().slice(0, 5);
+    return date.toISOString().substring(11, 16);
 }
 
 function calculateDurationSlots(startTime, endTime) {
