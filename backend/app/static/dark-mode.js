@@ -1,7 +1,7 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const darkModeToggle = document.getElementById('dark-mode-toggle');
     if (darkModeToggle) {
-        darkModeToggle.addEventListener('click', function() {
+        darkModeToggle.addEventListener('click', function () {
             toggleDarkMode();
         });
     }
@@ -19,7 +19,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     navButtons.forEach(button => {
         const url = button.querySelector('a').getAttribute('href');
-        if (currentPath === url || currentPath.startsWith(url)) {
+        
+        // Add an exception for the "My Shows" page
+        if (currentPath === url || (currentPath.startsWith(url) && url !== '/show/my-shows')) {
+            button.classList.add('selected');
+        }
+
+        // Explicitly handle the "My Shows" page
+        if (currentPath === '/show/my-shows' && url === '/show/my-shows') {
             button.classList.add('selected');
         }
     });
