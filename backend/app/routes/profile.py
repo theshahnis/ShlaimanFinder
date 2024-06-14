@@ -44,10 +44,25 @@ def save_picture(form_picture, target_dir):
 
     try:
         with Image.open(form_picture) as img:
-            img.verify()
-            form_picture.seek(0)
-    except (IOError, SyntaxError) as e:
-        raise ValueError("Invalid image file")
+            img.verify()  # Verify the image file
+            form_picture.seek(0)  # Reset file pointer to the beginning
+            img_format = img.format
+            print(f"Image format: {img_format}")
 
-    form_picture.save(picture_path)
+            if img_format not in ["JPEG", "JPG", "PNG", "GIF"]:
+                raise ValueError(f"Unsupported image format: {img_format}")
+
+            img.save(picture_path)
+            print(f"Image saved to {picture_path}")
+        
+    except (IOError, SyntaxError) as e:
+        print(f"Invalid image file: {e}")
+        raise ValueError(f"Invalid image file: {e}")
+    except ValueError as ve:
+        print(f"Image validation error: {ve}")
+        raise ValueError(f"Image validation error: {ve}")
+    except Exception as ex:
+        print(f"Unexpected error: {ex}")
+        raise ValueError(f"Unexpected error: {ex}")
+
     return picture_fn
