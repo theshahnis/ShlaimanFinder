@@ -234,7 +234,7 @@ def get_locations():
             'username': location.name,
             'latitude': location.latitude,
             'longitude': location.longitude,
-            'profile_image': url_for('static', filename='static_pics/' + (location.image if location.image else 'default_static.png')),
+            'profile_image': url_for('static', filename='static_pics/' + (location.image if location.image else 'static_location.jpg')),
             'note': location.note,
             'isMeetingPoint': False,
             'created_at': None,
@@ -326,7 +326,7 @@ def get_static_locations():
             'latitude': location.latitude,
             'longitude': location.longitude,
             'note': location.note,
-            'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'default_static.png'))
+            'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'static_location.jpg'))
         })
 
     return jsonify({'locations': locations})
