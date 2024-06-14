@@ -58,23 +58,17 @@ button.nav-button {
   border: 2px solid #FF5722; /* Dark border */
 }
 
-
 .show {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center the content horizontally */
-  justify-content: center; /* Center the content vertically */
-  text-align: center; /* Center the text */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 10px;
   background-color: #FFF9C4;
-  color: #000;
   border: 1px solid #FBC02D;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 90%;
-  max-width: 800px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .show:hover {
@@ -197,12 +191,15 @@ button.nav-button {
 }
 
 .timetable {
-  display: flex;
-  justify-content: flex-start;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* One column per stage */
+  grid-auto-rows: 1fr; /* Each row represents a time slot */
+  gap: 10px; /* Space between grid items */
   padding: 10px;
-  margin: 20px 0;
-  gap: 10px;
+}
+.time-slot {
+  border-top: 1px solid #ccc;
+  position: relative;
 }
 
 .stage {
