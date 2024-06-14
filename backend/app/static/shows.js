@@ -60,60 +60,52 @@ function renderShows(shows, showsAttendees) {
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
     shows.forEach(show => {
-        const showDate = new Date(show.start_time);
-        const endDate = new Date(show.end_time);
+        const showStartDate = new Date(show.start_time);
+        const showEndDate = new Date(show.end_time);
 
-        // Adjust startDate for shows that start before 06:00 to be considered part of the previous day
-        if (showDate.getHours() < 6) {
-            showDate.setDate(showDate.getDate() - 1);
+        // Adjust the showDate for shows that start before 06:00 to be considered part of the previous day
+        if (showStartDate.getHours() < 6) {
+            showStartDate.setDate(showStartDate.getDate() - 1);
         }
 
-        // Only render shows for the current view day based on adjusted start date
-        const viewDate = new Date(show.start_time);
-        if (viewDate.getHours() < 6) {
-            viewDate.setDate(viewDate.getDate() - 1);
+        // Adjust the endDate for shows that end before 06:00 to be considered part of the previous day
+        if (showEndDate.getHours() < 6) {
+            showEndDate.setDate(showEndDate.getDate() - 1);
         }
-        const selectedDate = new Date(viewDate.toDateString());
 
-        const selectedDateButton = document.querySelector('.button.selected');
-        const selectedDateAttr = selectedDateButton.getAttribute('data-date');
-        const selectedDateForComparison = new Date(selectedDateAttr);
+        const showElement = document.createElement('div');
+        showElement.classList.add('show');
+        showElement.setAttribute('data-show-id', show.id);
 
-        if (selectedDate.getTime() === selectedDateForComparison.getTime()) {
-            const showElement = document.createElement('div');
-            showElement.classList.add('show');
-            showElement.setAttribute('data-show-id', show.id);
+        let buttonText = 'Attend';
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                if (user.id === currentUserId) {
+                    buttonText = 'Leave';
+                }
+            });
+        }
 
-            let buttonText = 'Attend';
-            if (showsAttendees[show.id]) {
-                showsAttendees[show.id].forEach(user => {
-                    if (user.id === currentUserId) {
-                        buttonText = 'Leave';
-                    }
-                });
-            }
+        showElement.innerHTML = `
+            <span>${show.name}</span>
+            <span>${showStartDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${showEndDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            <button class="select-show">${buttonText}</button>
+            <button class="whos-going">Who's going?</button>
+            <div class="attendees"></div>
+        `;
+        stages[show.stage].appendChild(showElement);
 
-            showElement.innerHTML = `
-                <span>${show.name}</span>
-                <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <button class="select-show">${buttonText}</button>
-                <button class="whos-going">Who's going?</button>
-                <div class="attendees"></div>
-            `;
-            stages[show.stage].appendChild(showElement);
-
-            // Populate existing attendees
-            const attendeesDiv = showElement.querySelector('.attendees');
-            if (showsAttendees[show.id]) {
-                showsAttendees[show.id].forEach(user => {
-                    const img = document.createElement('img');
-                    img.src = user.avatarUrl;
-                    img.alt = user.username;
-                    img.title = user.username;
-                    img.classList.add('attendee-icon');
-                    attendeesDiv.appendChild(img);
-                });
-            }
+        // Populate existing attendees
+        const attendeesDiv = showElement.querySelector('.attendees');
+        if (showsAttendees[show.id]) {
+            showsAttendees[show.id].forEach(user => {
+                const img = document.createElement('img');
+                img.src = user.avatarUrl;
+                img.alt = user.username;
+                img.title = user.username;
+                img.classList.add('attendee-icon');
+                attendeesDiv.appendChild(img);
+            });
         }
     });
 
