@@ -47,10 +47,10 @@ button.select-show {
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-button.select-show:hover {
+/* button.select-show:hover {
     background-color: #FF5722;
     border-color: #673AB7;
-}
+} */
 
 button.nav-button {
     background-color: #1F1F1F;
@@ -81,15 +81,12 @@ button.nav-button.selected {
 
 
 
-.show {
+/* .show {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Center the content horizontally */
     justify-content: center;
-    /* Center the content vertically */
     text-align: center;
-    /* Center the text */
     background-color: #1E1E1E;
     color: #E0E0E0;
     border: 1px solid #2E2E2E;
@@ -100,7 +97,7 @@ button.nav-button.selected {
     width: 90%;
     max-width: 800px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+} */
 
 .show:hover {
     transform: translateY(-5px);
@@ -220,14 +217,65 @@ button.nav-button.selected {
     cursor: pointer;
 }
 
-.timetable {
+/* .timetable {
     display: flex;
     justify-content: flex-start;
     overflow-x: auto;
     padding: 10px;
     margin: 20px 0;
     gap: 10px;
+} */
+
+
+/* TEST NEW SHOW TIME STRUCTURE */
+.timetable {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* One column per stage */
+    grid-auto-rows: 1fr; /* Each row represents a time slot */
+    gap: 10px; /* Space between grid items */
+    padding: 10px;
 }
+.time-slot {
+border-top: 1px solid #ccc;
+position: relative;
+min-height: 50px; /* Adjust as needed for visual spacing */
+}
+
+.show {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+margin: 0;
+padding: 10px;
+background-color: #FFF9C4;
+border: 1px solid #FBC02D;
+border-radius: 8px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.show.dark-mode {
+background-color: #1E1E1E;
+color: #E0E0E0;
+border: 1px solid #2E2E2E;
+}
+
+.stage-column {
+display: flex;
+flex-direction: column;
+}
+
+.stage-header {
+background-color: #FFD54F;
+padding: 5px;
+text-align: center;
+font-weight: bold;
+border-bottom: 1px solid #ccc;
+}
+
+  /* END OF TEST */
+
+
 
 .stage {
     border: 1px solid #FF5722;
@@ -368,7 +416,7 @@ h2 {
     .timetable {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
-    
+
 
     .stage {
         width: auto;

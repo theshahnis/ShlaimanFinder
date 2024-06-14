@@ -51,7 +51,8 @@ function renderShows(shows, showsAttendees) {
         stageColumn.classList.add('stage-column');
         stageColumn.dataset.stage = stage;
 
-        const stageHeader = document.createElement('h2');
+        const stageHeader = document.createElement('div');
+        stageHeader.classList.add('stage-header');
         stageHeader.textContent = stage;
         stageColumn.appendChild(stageHeader);
 
@@ -74,8 +75,10 @@ function renderShows(shows, showsAttendees) {
         const startSlot = document.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
 
         if (stageColumn && startSlot) {
-            const timeSlotIndex = Array.from(stageColumn.children).indexOf(startSlot);
-            showElement.style.gridRow = timeSlotIndex + 1; // Adjust row position
+            const startIndex = Array.from(stageColumn.children).indexOf(startSlot);
+            const durationSlots = calculateDurationSlots(show.start_time, show.end_time);
+
+            showElement.style.gridRow = `${startIndex + 1} / span ${durationSlots}`;
             stageColumn.appendChild(showElement);
         }
     });
@@ -101,6 +104,13 @@ function generateTimeSlots() {
 function getTimeSlot(time) {
     const date = new Date(time);
     return date.toTimeString().slice(0, 5);
+}
+
+function calculateDurationSlots(startTime, endTime) {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const duration = (end - start) / (30 * 60 * 1000); // Duration in 30-minute slots
+    return Math.ceil(duration);
 }
 
 function createShowElement(show, showsAttendees, currentUserId) {
