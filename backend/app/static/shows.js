@@ -43,25 +43,7 @@ function renderShows(shows, showsAttendees) {
     timetable.innerHTML = '';  // Clear the timetable
 
     const timeSlots = generateTimeSlots();
-    const stages = ['Eagle', 'Vulture', 'Buzzard', 'Hawk', 'Raven']; // Explicitly list all stages
-
-    // Create grid columns for each stage plus one for time slots
-    const timetableGrid = document.createElement('div');
-    timetableGrid.classList.add('timetable-grid');
-    timetableGrid.style.gridTemplateColumns = `auto repeat(${stages.length}, 1fr)`;
-
-    // Create time slot column
-    const timeColumn = document.createElement('div');
-    timeColumn.classList.add('time-column');
-
-    timeSlots.forEach(slot => {
-        const timeSlot = document.createElement('div');
-        timeSlot.classList.add('time-slot');
-        timeSlot.textContent = slot;
-        timeColumn.appendChild(timeSlot);
-    });
-
-    timetableGrid.appendChild(timeColumn);
+    const stages = [...new Set(shows.map(show => show.stage))]; // Get unique stages
 
     // Create grid columns for each stage
     stages.forEach(stage => {
@@ -82,10 +64,8 @@ function renderShows(shows, showsAttendees) {
             stageColumn.appendChild(timeSlot);
         });
 
-        timetableGrid.appendChild(stageColumn);
+        timetable.appendChild(stageColumn);
     });
-
-    timetable.appendChild(timetableGrid);
 
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
@@ -115,7 +95,7 @@ function generateTimeSlots() {
     endTime.setHours(4, 0, 0, 0);
 
     while (startTime <= endTime) {
-        slots.push(startTime.toISOString().substring(11, 16));
+        slots.push(startTime.toTimeString().slice(0, 5));
         startTime.setMinutes(startTime.getMinutes() + 30); // 30-minute intervals
     }
     return slots;
@@ -123,7 +103,7 @@ function generateTimeSlots() {
 
 function getTimeSlot(time) {
     const date = new Date(time);
-    return date.toISOString().substring(11, 16);
+    return date.toTimeString().slice(0, 5);
 }
 
 function calculateDurationSlots(startTime, endTime) {
@@ -148,7 +128,7 @@ function createShowElement(show, showsAttendees, currentUserId) {
     }
 
     const showDate = new Date(show.start_time);
-    const endDate = new Date(end_time);
+    const endDate = new Date(show.end_time);
 
     showElement.innerHTML = `
         <span class="show-name">${show.name}</span>
