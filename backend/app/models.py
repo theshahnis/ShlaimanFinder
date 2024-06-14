@@ -73,8 +73,8 @@ class Show(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'start_time': self.start_time.astimezone(amsterdam_tz).strftime('%Y-%m-%d %H:%M'),
-            'end_time': self.end_time.astimezone(amsterdam_tz).strftime('%Y-%m-%d %H:%M'),
+            'start_time': self.start_time.strftime('%Y-%m-%d %H:%M'),
+            'end_time': self.end_time.strftime('%Y-%m-%d %H:%M'),
             'stage': self.stage
         }
 
