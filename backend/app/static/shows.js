@@ -45,6 +45,24 @@ function renderShows(shows, showsAttendees) {
     const timeSlots = generateTimeSlots();
     const stages = [...new Set(shows.map(show => show.stage))]; // Get unique stages
 
+    // Create grid columns for each stage plus one for time slots
+    const timetableGrid = document.createElement('div');
+    timetableGrid.classList.add('timetable-grid');
+    timetableGrid.style.gridTemplateColumns = `repeat(${stages.length + 1}, 1fr)`;
+
+    // Create time slot column
+    const timeColumn = document.createElement('div');
+    timeColumn.classList.add('time-column');
+
+    timeSlots.forEach(slot => {
+        const timeSlot = document.createElement('div');
+        timeSlot.classList.add('time-slot');
+        timeSlot.textContent = slot;
+        timeColumn.appendChild(timeSlot);
+    });
+
+    timetableGrid.appendChild(timeColumn);
+
     // Create grid columns for each stage
     stages.forEach(stage => {
         const stageColumn = document.createElement('div');
@@ -64,8 +82,10 @@ function renderShows(shows, showsAttendees) {
             stageColumn.appendChild(timeSlot);
         });
 
-        timetable.appendChild(stageColumn);
+        timetableGrid.appendChild(stageColumn);
     });
+
+    timetable.appendChild(timetableGrid);
 
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
