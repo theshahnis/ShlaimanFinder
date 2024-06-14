@@ -92,7 +92,6 @@ button.nav-button {
 .show-time,
 .show-stage {
   display: block;
-  font-size: 1.2em;
   color: #757575; /* Grey for show times and stages */
   margin-bottom: 8px;
 }
@@ -117,7 +116,7 @@ button.nav-button {
 .show-time,
 .show-stage,
 .whos-going {
-  font-size: 1.2em;
+
   color: #757575;
   margin-bottom: 8px;
 }
