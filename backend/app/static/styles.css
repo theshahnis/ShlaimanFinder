@@ -30,17 +30,11 @@ body::before {
   pointer-events: none; /* Ensure the overlay does not capture any mouse events */
 }
 
-a {
-  color: #FF5722;
-  display: inline-block;
-  text-decoration: none;
-  font-weight: 400;
-  background-color: #F5F5F5;
-}
+
 
 button {
-  background-color: #FFEB3B; /* Light button background */
-  color: #000; /* Dark text */
+  background-color: #f3b14e; /* Light button background */
+  color: #181818; /* Dark text */
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -48,7 +42,7 @@ button {
 }
 
 button.nav-button {
-  background-color: #FFEB3B;
+  background-color: #e9a530;;
   color: #000;
   padding: 10px 20px;
   border: none;
@@ -56,11 +50,6 @@ button.nav-button {
   border-radius: 5px;
 }
 
-button.nav-button.selected {
-  background-color: #FFC107; /* Light background for selected buttons */
-  color: #000;
-  border: 2px solid #FF5722; /* Dark border */
-}
 
 .button.selected,
 .nav-button.selected {
@@ -80,6 +69,9 @@ button.nav-button.selected {
   width: 90%; /* Full width inside the timetable */
   max-width: 800px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-align: center;
+  position: relative;
+  border-top: 1px solid #ccc;
 }
 
 .show:hover {
@@ -310,13 +302,7 @@ button.nav-button.selected {
   text-align: center;
 }
 
-.show {
-  border-top: 1px solid #ccc;
-  padding: 10px 0;
-  text-align: center;
-  position: relative;
-  margin-bottom: 20px;
-}
+
 
 .show button {
   margin-top: 10px;
@@ -390,11 +376,11 @@ button {
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-  font-weight: bold;
+  border-radius: 5px;
 }
 
 button.nav-button.selected {
-  background-color: #8c8e90;
+  background-color: #007bff;
   color: #fff;
   border: 2px solid #0056b3;
 }
