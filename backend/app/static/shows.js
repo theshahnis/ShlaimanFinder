@@ -72,14 +72,14 @@ function renderShows(shows, showsAttendees) {
     shows.forEach(show => {
         const showElement = createShowElement(show, showsAttendees, currentUserId);
         const stageColumn = document.querySelector(`.stage-column[data-stage="${show.stage}"]`);
-        const startSlot = document.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
+        const startSlot = stageColumn.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
 
         if (stageColumn && startSlot) {
             const startIndex = Array.from(stageColumn.children).indexOf(startSlot);
             const durationSlots = calculateDurationSlots(show.start_time, show.end_time);
 
             showElement.style.gridRow = `${startIndex + 1} / span ${durationSlots}`;
-            stageColumn.appendChild(showElement);
+            startSlot.appendChild(showElement);
         }
     });
 
