@@ -67,9 +67,10 @@ function refreshLocations() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
-    fetch('/location/locations')  // Ensure this URL matches the new route definition
+    fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
+            console.log('Fetched locations:', data.locations);  // Debugging information
             data.locations.forEach(location => {
                 const position = [location.latitude, location.longitude];
                 const iconColorClass = getIconColorClass(location);
@@ -84,7 +85,7 @@ function refreshLocations() {
                 let popupContent = `
                     <b>${location.username}</b><br>
                     <p>${location.note || ''}</p>
-                    <p>Last updated: ${new Date(location.created_at).toLocaleString()}</p>
+                    <p>Last updated: ${location.created_at || 'N/A'}</p>
                 `;
                 if (location.isMeetingPoint) {
                     popupContent += `<p>Remaining time: ${location.remaining_time}</p>`;

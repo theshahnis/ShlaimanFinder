@@ -77,7 +77,7 @@ def get_locations():
         return jsonify({'locations': []})
 
     def format_time(dt):
-        return dt.strftime("%Y-%m-%d %H:%M:%S")
+        return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
 
     def calculate_remaining_time(created_at, duration):
         expires_at = created_at + timedelta(hours=duration)
@@ -86,6 +86,8 @@ def get_locations():
 
     users = User.query.filter_by(group_id=current_user.group_id).all()
     locations = []
+
+    # Fetch user locations
     for user in users:
         location = Location.query.filter_by(user_id=user.id).order_by(Location.timestamp.desc()).first()
         if location:
@@ -100,6 +102,7 @@ def get_locations():
                 'remaining_time': None
             })
 
+    # Fetch meeting points
     meeting_points = MeetingPoint.query.filter_by(group_id=current_user.group_id).all()
     for point in meeting_points:
         remaining_time = calculate_remaining_time(point.created_at, point.duration)
@@ -115,6 +118,7 @@ def get_locations():
                 'remaining_time': str(remaining_time)
             })
 
+    # Fetch static locations
     static_locations = StaticLocation.query.all()
     for location in static_locations:
         locations.append({
@@ -127,6 +131,12 @@ def get_locations():
             'created_at': None,
             'remaining_time': None
         })
+
+    # Debug information
+    print(f"Total users: {len(users)}")
+    print(f"Total meeting points: {len(meeting_points)}")
+    print(f"Total static locations: {len(static_locations)}")
+    print(f"Total locations to return: {len(locations)}")
 
     return jsonify({'locations': locations})
 
