@@ -43,12 +43,12 @@ function renderShows(shows, showsAttendees) {
     timetable.innerHTML = '';  // Clear the timetable
 
     const timeSlots = generateTimeSlots();
-    const stages = [...new Set(shows.map(show => show.stage))]; // Get unique stages
+    const stages = ['Eagle', 'Vulture', 'Buzzard', 'Hawk', 'Raven']; // Explicitly list all stages
 
     // Create grid columns for each stage plus one for time slots
     const timetableGrid = document.createElement('div');
     timetableGrid.classList.add('timetable-grid');
-    timetableGrid.style.gridTemplateColumns = `repeat(${stages.length + 1}, 1fr)`;
+    timetableGrid.style.gridTemplateColumns = `auto repeat(${stages.length}, 1fr)`;
 
     // Create time slot column
     const timeColumn = document.createElement('div');
@@ -99,7 +99,7 @@ function renderShows(shows, showsAttendees) {
             const durationSlots = calculateDurationSlots(show.start_time, show.end_time);
 
             showElement.style.gridRow = `${startIndex + 1} / span ${durationSlots}`;
-            startSlot.appendChild(showElement);
+            stageColumn.appendChild(showElement);
         }
     });
 
@@ -148,7 +148,7 @@ function createShowElement(show, showsAttendees, currentUserId) {
     }
 
     const showDate = new Date(show.start_time);
-    const endDate = new Date(show.end_time);
+    const endDate = new Date(end_time);
 
     showElement.innerHTML = `
         <span class="show-name">${show.name}</span>
