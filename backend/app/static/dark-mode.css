@@ -99,33 +99,31 @@ button.nav-button.selected {
 
 .show:hover {
     transform: translateY(-5px);
-    /* Slight lift on hover */
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.5);
-    /* Stronger shadow on hover */
 }
 
 
 .show-name {
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.2em;
     color: #FFEB3B;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
 .show-time,
 .show-stage {
     display: block;
     color: #B0B0B0;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
-.attendee-icon {
+/* .attendee-icon {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     margin-right: 5px;
     border: 2px solid #2E2E2E;
-}
+} */
 
 .my-shows-timetable {
     display: flex;
@@ -207,13 +205,7 @@ button.nav-button.selected {
     text-align: center;
 }
 
-.attendee-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
+
 
 /* .timetable {
     display: flex;
@@ -235,19 +227,21 @@ button.nav-button.selected {
 }
 
 
+
 .show {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     margin: 0;
-    padding: 10px;
+    padding: 5px;
     background-color: #1E1E1E;
     color: #E0E0E0;
     border: 1px solid #2E2E2E;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 0.9em;
 }
 
 .show.dark-mode {
@@ -256,10 +250,18 @@ color: #E0E0E0;
 border: 1px solid #2E2E2E;
 }
 
+.attendee-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
 
 .timetable-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: auto repeat(auto-fit, minmax(150px, 1fr)); /* First column for times */
     gap: 10px;
     padding: 10px;
 }
@@ -268,12 +270,14 @@ border: 1px solid #2E2E2E;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 20px; /* Increase space between time slots */
 }
 
 .time-slot {
     border-top: 1px solid #ccc;
     position: relative;
-    min-height: 50px;
+    min-height: 70px; /* Increase height for visual spacing */
+    font-size: 0.9em; /* Smaller font size for time slots */
 }
 
 .stage-column {
