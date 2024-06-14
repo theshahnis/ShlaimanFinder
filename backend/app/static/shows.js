@@ -95,11 +95,10 @@ function renderShows(shows, showsAttendees) {
         const startSlot = stageColumn.querySelector(`.time-slot[data-time="${getTimeSlot(show.start_time)}"]`);
 
         if (stageColumn && startSlot) {
-            const startIndex = Array.from(stageColumn.children).indexOf(startSlot);
             const durationSlots = calculateDurationSlots(show.start_time, show.end_time);
-
-            showElement.style.gridRow = `${startIndex + 1} / span ${durationSlots}`;
-            stageColumn.appendChild(showElement);
+            startSlot.style.position = 'relative';
+            startSlot.appendChild(showElement);
+            showElement.style.height = `calc(${durationSlots * 100}px - 10px)`; // Adjust height based on duration slots
         }
     });
 
