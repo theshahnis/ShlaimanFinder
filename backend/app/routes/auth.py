@@ -7,6 +7,8 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
 import smtplib, jwt
+from .auth import token_required
+
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -170,29 +172,10 @@ def api_signup():
     
 
 @auth_bp.route('/api/logout', methods=['POST'])
+@token_required
 def api_logout():
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split()[1]
-
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
-        except:
-            return jsonify({'error': 'Token is invalid or expired'}), 401
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
 
 @auth_bp.route('/api/signup', methods=['POST'])
 def api_signup():
@@ -215,3 +198,25 @@ def api_signup():
     login_user(new_user)
 
     return jsonify({'message': 'Account created successfully!', 'user_id': new_user.id}), 201
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split()[1]
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+
+        try:
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.get(data['user_id'])
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
