@@ -248,7 +248,7 @@ button.nav-button.selected {
 .stage-logo {
     display: block;
     margin: 0 auto 10px auto;
-    width: 50px; /* Adjust the width as needed */
+    width: 100px; /* Adjust the width as needed */
     height: auto;
 }
 
