@@ -7,7 +7,7 @@ from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
 import smtplib, jwt
-
+from functools import wraps
 
 
 auth_bp = Blueprint('auth_bp', __name__)
