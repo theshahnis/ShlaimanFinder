@@ -60,11 +60,12 @@ def signup():
     return redirect(url_for('profile_bp.profile'))
 
 @auth_bp.route('/logout')
-@token_required
+@login_required
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('auth_bp.auth_page'))
+
 
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
