@@ -252,6 +252,12 @@ button.nav-button.selected {
     height: auto;
 }
 
+.additional-attendees-count {
+    font-size: 14px;
+    color: #E0E0E0;
+    margin-left: 5px;
+}
+
 .profile-container {
     display: flex;
     flex-direction: column;

@@ -104,7 +104,8 @@ function renderShows(shows, showsAttendees) {
         // Populate existing attendees
         const attendeesDiv = showElement.querySelector('.attendees');
         if (showsAttendees[show.id]) {
-            showsAttendees[show.id].forEach(user => {
+            const maxVisibleAttendees = 4;
+            showsAttendees[show.id].slice(0, maxVisibleAttendees).forEach(user => {
                 const img = document.createElement('img');
                 img.src = user.avatarUrl;
                 img.alt = user.username;
@@ -112,6 +113,13 @@ function renderShows(shows, showsAttendees) {
                 img.classList.add('attendee-icon');
                 attendeesDiv.appendChild(img);
             });
+            if (showsAttendees[show.id].length > maxVisibleAttendees) {
+                const additionalCount = showsAttendees[show.id].length - maxVisibleAttendees;
+                const additionalCountElement = document.createElement('span');
+                additionalCountElement.classList.add('additional-attendees-count');
+                additionalCountElement.textContent = `+${additionalCount}`;
+                attendeesDiv.appendChild(additionalCountElement);
+            }
         }
     });
 
