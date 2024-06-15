@@ -1,37 +1,42 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request,current_app
+from flask import Blueprint, request, jsonify, url_for, current_app
 from flask_login import login_required, current_user
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
-import secrets,os
+import secrets, os
 from PIL import Image
+from .auth import token_required
 
 profile_bp = Blueprint('profile_bp', __name__)
 
-@profile_bp.route('/', methods=['GET', 'POST'])
-@login_required
-def profile():
-    form = UpdateProfileForm()
-    if form.validate_on_submit():
-        try:
-            if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
-                current_user.profile_image = picture_file
-            current_user.username = form.username.data
-            current_user.email = form.email.data
-            current_user.note = form.note.data
-            db.session.commit()
-            flash('Your account has been updated!', 'success')
-        except Exception as e:
-            flash(f'An error occurred: {str(e)}', 'danger')
-            db.session.rollback()
-        return redirect(url_for('profile_bp.profile'))
+@profile_bp.route('/api/profile', methods=['GET', 'POST'])
+@token_required
+def profile(current_user):
+    if request.method == 'POST':
+        data = request.get_json()
+        form = UpdateProfileForm(data=data, formdata=None)
+        if form.validate():
+            try:
+                if 'profile_image' in data:
+                    picture_file = save_picture(data['profile_image'], 'static/profile_pics')
+                    current_user.profile_image = picture_file
+                current_user.username = form.username.data
+                current_user.email = form.email.data
+                current_user.note = form.note.data
+                db.session.commit()
+                return jsonify({'message': 'Your account has been updated!', 'status': 'success'})
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': f'An error occurred: {str(e)}', 'status': 'danger'}), 500
+        return jsonify({'error': 'Invalid form data'}), 400
     elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.note.data = current_user.note
-    profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
-    return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+        profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
+        return jsonify({
+            'username': current_user.username,
+            'email': current_user.email,
+            'note': current_user.note,
+            'profile_image': profile_image
+        })
 
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
