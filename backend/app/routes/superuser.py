@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 superuser_bp = Blueprint('superuser_bp', __name__)
 
 @superuser_bp.route('/', methods=['GET'])
-@token_required
+@login_required
 def superuser_view():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -19,7 +19,7 @@ def superuser_view():
     return render_template('superuser.html', users=users, groups=groups, static_locations=static_locations, meeting_points=meeting_points)
 
 @superuser_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
-@token_required
+@login_required
 def edit_user(user_id):
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -44,7 +44,7 @@ def edit_user(user_id):
     return render_template('edit_user.html', user=user, groups=groups)
 
 @superuser_bp.route('/delete/<int:user_id>', methods=['POST'])
-@token_required
+@login_required
 def delete_user(user_id):
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -56,7 +56,7 @@ def delete_user(user_id):
     return redirect(url_for('superuser_bp.superuser_view'))
 
 @superuser_bp.route('/add_group', methods=['POST'])
-@token_required
+@login_required
 def add_group():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -70,7 +70,7 @@ def add_group():
     return redirect(url_for('superuser_bp.superuser_view'))
 
 @superuser_bp.route('/delete_static_location/<int:location_id>', methods=['POST'])
-@token_required
+@login_required
 def delete_static_location(location_id):
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -82,7 +82,7 @@ def delete_static_location(location_id):
     return redirect(url_for('superuser_bp.superuser_view'))
 
 @superuser_bp.route('/delete_meeting_point/<int:point_id>', methods=['POST'])
-@token_required
+@login_required
 def delete_meeting_point(point_id):
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
