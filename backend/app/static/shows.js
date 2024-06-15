@@ -50,10 +50,21 @@ function renderShows(shows, showsAttendees) {
         'Raven': document.createElement('div')
     };
 
+    const stageLogos = {
+        'Eagle': 'eagle_logo.png',
+        'Vulture': 'vulture_logo.png',
+        'Buzzard': 'buzzard_logo.png',
+        'Hawk': 'hawk_logo.png',
+        'Raven': 'default_logo.png'  // Add a default logo or leave this out
+    };
+
     for (const stage of Object.keys(stages)) {
         stages[stage].classList.add('stage');
         stages[stage].setAttribute('data-stage', stage);
-        stages[stage].innerHTML = `<h2>${stage}</h2>`;
+        stages[stage].innerHTML = `
+            <img src="/static/images/${stageLogos[stage]}" alt="${stage} Logo" class="stage-logo">
+            <h2>${stage}</h2>
+        `;
         timetable.appendChild(stages[stage]);
     }
 
@@ -106,7 +117,6 @@ function renderShows(shows, showsAttendees) {
 
     initializeEventTimetable();
 }
-
 
 function initializeEventTimetable() {
     const selectButtons = document.querySelectorAll('.select-show');
