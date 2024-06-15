@@ -8,7 +8,11 @@ const urlsToCache = [
   '/static/images/background.png',
   '/static/images/background2.png',
   '/static/images/background3.png',
-  '/static/images/background4.png'
+  '/static/images/background4.png',
+  '/static/images/eagle_logo.png',
+  '/static/images/hawk_logo.png',
+  '/static/images/buzzard_logo.png',
+  '/static/images/vulture_logo.png'
 ];
 
 self.addEventListener('install', function(event) {

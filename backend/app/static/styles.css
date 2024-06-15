@@ -229,6 +229,13 @@ button.nav-button {
   color: #FF5722;
 }
 
+.stage-logo {
+  display: block;
+  margin: 0 auto 10px auto;
+  width: 100px; /* Adjust the width as needed */
+  height: auto;
+}
+
 .profile-container {
   display: flex;
   flex-direction: column;
@@ -682,5 +689,6 @@ input[type=email]::placeholder {
     min-width: 200px;
   }
 }
+
 
 /* before */
