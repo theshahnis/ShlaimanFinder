@@ -13,6 +13,7 @@ from functools import wraps
 auth_bp = Blueprint('auth_bp', __name__)
 
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
