@@ -62,7 +62,7 @@ function renderShows(shows, showsAttendees) {
         stages[stage].classList.add('stage');
         stages[stage].setAttribute('data-stage', stage);
         stages[stage].innerHTML = `
-            <img src="/static/images/${stageLogos[stage]}" alt="${stage} Logo" class="stage-logo">
+            <img src="/images/${stageLogos[stage]}" alt="${stage} Logo" class="stage-logo">
             <h2>${stage}</h2>
         `;
         timetable.appendChild(stages[stage]);
