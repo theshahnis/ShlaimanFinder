@@ -13,6 +13,7 @@ import smtplib, jwt
 auth_bp = Blueprint('auth_bp', __name__)
 
 @auth_bp.route('/', methods=['GET', 'POST'])
+@token_required
 def auth_page():
     if request.method == 'POST':
         if 'login' in request.form:
