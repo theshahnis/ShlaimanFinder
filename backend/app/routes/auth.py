@@ -6,36 +6,9 @@ from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
-import smtplib, jwt
-from functools import wraps
-
+import smtplib
 
 auth_bp = Blueprint('auth_bp', __name__)
-
-
-
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split()[1]
-
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Invalid token'}), 401
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
-
 
 @auth_bp.route('/', methods=['GET', 'POST'])
 def auth_page():
@@ -51,7 +24,14 @@ def login():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
+    print(f"Attempting login for email: {email}")
+
     user = User.query.filter_by(email=email).first()
+
+    if user:
+        print(f"User found: {user.email}")
+    else:
+        print("User not found")
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
@@ -60,7 +40,6 @@ def login():
     else:
         flash('Login failed. Check your email and password.', 'error')
         return redirect(url_for('auth_bp.auth_page'))
-    
 
 def signup():
     email = request.form.get('email')
@@ -90,7 +69,6 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('auth_bp.auth_page'))
-
 
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
@@ -169,59 +147,3 @@ def test_email():
         return 'Email sent successfully!'
     except Exception as e:
         return f'Failed to send email: {e}'
-    
-
-# New json logic
-@auth_bp.route('/api/login', methods=['POST'])
-def api_login():
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password'):
-        return jsonify({'error': 'Email and password are required'}), 400
-
-    user = User.query.filter_by(email=data['email']).first()
-    if user and check_password_hash(user.password, data['password']):
-        token = jwt.encode({
-            'user_id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
-        }, current_app.config['SECRET_KEY'], algorithm='HS256')
-        
-        return jsonify({'token': token})
-    else:
-        return jsonify({'error': 'Invalid email or password'}), 401
-    
-
-@auth_bp.route('/api/signup', methods=['POST'])
-def api_signup():
-    data = request.get_json()
-    if not data or not data.get('email') or not data.get('password') or not data.get('username'):
-        return jsonify({'error': 'Email, password and username are required'}), 400
-    
-
-@auth_bp.route('/api/logout', methods=['POST'])
-@token_required
-def api_logout():
-    logout_user()
-    return jsonify({'message': 'Logged out successfully'})
-
-@auth_bp.route('/api/signup', methods=['POST'])
-def api_signup():
-    data = request.get_json()
-    email = data.get('email')
-    username = data.get('username')
-    password = data.get('password')
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({'error': 'Email already in use. Please choose a different email.'}), 400
-
-    if len(password) < 6:
-        return jsonify({'error': 'Password must be at least 6 characters long.'}), 400
-
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(email=email, username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    login_user(new_user)
-
-    return jsonify({'message': 'Account created successfully!', 'user_id': new_user.id}), 201
-

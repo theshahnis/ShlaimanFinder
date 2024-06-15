@@ -94,7 +94,7 @@ def delete_meeting_point(point_id):
     return redirect(url_for('superuser_bp.superuser_view'))
 
 @superuser_bp.route('/locations', methods=['GET'])
-@token_required
+@login_required
 def get_locations():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
@@ -121,7 +121,7 @@ def get_locations():
     return jsonify({'locations': locations})
 
 @superuser_bp.route('/add_static_location', methods=['POST'])
-@token_required
+@login_required
 def add_static_location():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')

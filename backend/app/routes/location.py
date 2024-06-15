@@ -77,20 +77,19 @@ def get_locations():
         return jsonify({'locations': []})
 
     def format_time(dt):
-        return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
+        return dt.strftime("%Y-%m-%d %H:%M:%S")
 
     def calculate_remaining_time(created_at, duration):
         expires_at = created_at + timedelta(hours=duration)
         remaining = expires_at - datetime.now()
         return remaining if remaining.total_seconds() > 0 else timedelta(0)
 
-    # Fetch user locations
     users = User.query.filter_by(group_id=current_user.group_id).all()
-    user_locations = []
+    locations = []
     for user in users:
         location = Location.query.filter_by(user_id=user.id).order_by(Location.timestamp.desc()).first()
         if location:
-            user_locations.append({
+            locations.append({
                 'username': user.username,
                 'latitude': location.latitude,
                 'longitude': location.longitude,
@@ -101,13 +100,11 @@ def get_locations():
                 'remaining_time': None
             })
 
-    # Fetch meeting points
     meeting_points = MeetingPoint.query.filter_by(group_id=current_user.group_id).all()
-    meeting_point_locations = []
     for point in meeting_points:
         remaining_time = calculate_remaining_time(point.created_at, point.duration)
         if remaining_time.total_seconds() > 0:
-            meeting_point_locations.append({
+            locations.append({
                 'username': point.username,
                 'latitude': point.latitude,
                 'longitude': point.longitude,
@@ -118,31 +115,20 @@ def get_locations():
                 'remaining_time': str(remaining_time)
             })
 
-    # Fetch static locations
     static_locations = StaticLocation.query.all()
-    static_location_data = []
     for location in static_locations:
-        static_location_data.append({
+        locations.append({
             'username': location.name,
             'latitude': location.latitude,
             'longitude': location.longitude,
-            'profile_image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'static_location.jpg')),
+            'profile_image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'default_static.png')),
             'note': location.note,
             'isMeetingPoint': False,
             'created_at': None,
             'remaining_time': None
         })
 
-    # Combine all locations
-    all_locations = user_locations + meeting_point_locations + static_location_data
-
-    # Debug information
-    print(f"Total user locations: {len(user_locations)}")
-    print(f"Total meeting points: {len(meeting_point_locations)}")
-    print(f"Total static locations: {len(static_location_data)}")
-    print(f"Total locations to return: {len(all_locations)}")
-
-    return jsonify({'locations': all_locations})
+    return jsonify({'locations': locations})
 
 @location_bp.route('/create_location', methods=['POST'])
 @login_required
@@ -233,7 +219,7 @@ def get_static_locations():
             'latitude': location.latitude,
             'longitude': location.longitude,
             'note': location.note,
-            'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'static_location.jpg'))
+            'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'default_static.png'))
         })
 
     return jsonify({'locations': locations})
