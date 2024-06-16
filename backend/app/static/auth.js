@@ -1,28 +1,23 @@
-// Function to store tokens in localStorage
 function storeTokens(accessToken, refreshToken) {
     localStorage.setItem('access_token', accessToken);
     localStorage.setItem('refresh_token', refreshToken);
 }
 
-// Function to get the access token from localStorage
 function getAccessToken() {
     return localStorage.getItem('access_token');
 }
 
-// Function to get the refresh token from localStorage
 function getRefreshToken() {
     return localStorage.getItem('refresh_token');
 }
 
-// Function to clear tokens from localStorage
 function clearTokens() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
 }
 
-// Function to handle login
 function login(email, password) {
-    fetch('/auth/login', {
+    fetch('/auth2/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -33,9 +28,7 @@ function login(email, password) {
     .then(data => {
         if (data.access_token) {
             storeTokens(data.access_token, data.refresh_token);
-            const urlParams = new URLSearchParams(window.location.search);
-            const next = urlParams.get('next') || '/profile';
-            window.location.href = next;  // Redirect to profile or another protected page after storing tokens
+            window.location.href = '/home';  // Redirect to home or another protected page
         } else {
             alert(data.msg);  // Handle login error
         }
@@ -43,22 +36,17 @@ function login(email, password) {
     .catch(error => console.error('Error:', error));
 }
 
-// Function to make authenticated requests
 function authenticatedFetch(url, options = {}) {
     const token = getAccessToken();
     if (!token) {
-        window.location.href = '/auth';  // Redirect to login if no token
-        return Promise.reject('No token available');
+        window.location.href = '/auth2';  // Redirect to login if no token
+        return;
     }
 
     options.headers = {
         ...options.headers,
         'Authorization': 'Bearer ' + token
     };
-
-    if (!(options.body instanceof FormData)) {
-        options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
-    }
 
     return fetch(url, options)
         .then(response => {
@@ -69,7 +57,7 @@ function authenticatedFetch(url, options = {}) {
                             options.headers['Authorization'] = 'Bearer ' + newToken;
                             return fetch(url, options);
                         } else {
-                            window.location.href = '/auth';  // Redirect to login if refresh fails
+                            window.location.href = '/auth2';  // Redirect to login if refresh fails
                         }
                     });
             }
@@ -78,15 +66,14 @@ function authenticatedFetch(url, options = {}) {
         .catch(error => console.error('Error:', error));
 }
 
-// Function to refresh access token
 function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
-        window.location.href = '/auth';  // Redirect to login if no refresh token
-        return Promise.reject('No refresh token available');
+        window.location.href = '/auth2';  // Redirect to login if no refresh token
+        return;
     }
 
-    return fetch('/auth/refresh', {
+    return fetch('/auth2/refresh', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + refreshToken
@@ -99,30 +86,17 @@ function refreshAccessToken() {
             return data.access_token;
         } else {
             clearTokens();
-            window.location.href = '/auth';  // Redirect to login if refresh fails
+            window.location.href = '/auth2';  // Redirect to login if refresh fails
         }
     })
     .catch(error => {
         console.error('Error:', error);
         clearTokens();
-        window.location.href = '/auth';  // Redirect to login if refresh fails
+        window.location.href = '/auth2';  // Redirect to login if refresh fails
     });
 }
 
-// Function to handle logout
 function logout() {
-    authenticatedFetch('/auth/logout', {
-        method: 'POST'
-    })
-    .then(response => {
-        if (response.ok) {
-            clearTokens();
-            window.location.href = '/auth';  // Redirect to login
-        } else {
-            console.error('Logout failed');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    clearTokens();
+    window.location.href = '/auth2';  // Redirect to login
 }
