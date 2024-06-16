@@ -27,15 +27,16 @@ def auth_page():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    email = request.json.get('email', None)
-    password = request.json.get('password', None)
-    
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
         return jsonify(access_token=access_token, refresh_token=refresh_token), 200
-    
+
     return jsonify({"msg": "Bad email or password"}), 401
 
 @auth_bp.route('/signup', methods=['POST'])

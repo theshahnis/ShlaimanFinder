@@ -9,7 +9,7 @@
     {% if profile_image %}
         <img src="{{ profile_image }}" alt="Profile Picture" style="width:150px;height:150px;">
     {% endif %}
-    <form method="POST" enctype="multipart/form-data">
+    <form id="profileForm" method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div>
             {{ form.username.label }} {{ form.username }}
@@ -28,31 +28,38 @@
         </div>
     </form>
 </div>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        authenticatedFetch('/profile', {
-            method: 'GET'
-        })
-        .then(response => response.text())
-        .then(html => {
-            document.querySelector('.profile-container').innerHTML = html;
-        })
-        .catch(error => console.error('Error:', error));
-    });
-    
-    document.getElementById('profileForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-    
-        const formData = new FormData(this);
-        authenticatedFetch('/profile', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.text())
-        .then(html => {
-            document.querySelector('.profile-container').innerHTML = html;
-        })
-        .catch(error => console.error('Error:', error));
-    });
-    </script>
+document.addEventListener('DOMContentLoaded', function() {
+    const token = getAccessToken();
+    if (!token) {
+        window.location.href = '/auth';  // Redirect to login if no token
+        return;
+    }
+
+    authenticatedFetch('/profile', {
+        method: 'GET'
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.querySelector('.profile-container').innerHTML = html;
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+document.getElementById('profileForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    authenticatedFetch('/profile', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        document.querySelector('.profile-container').innerHTML = html;
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
 {% endblock %}

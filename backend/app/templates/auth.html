@@ -82,11 +82,11 @@
     document.getElementById('signupTab').classList.remove('inactive');
   }
 
-  document.getElementById('loginFormElement').addEventListener('submit', function(event) {
+  document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     login(email, password);
-  });
+});
 </script>
 {% endblock %}
