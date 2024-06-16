@@ -21,6 +21,7 @@ def auth_page():
     return render_template('auth.html')
 
 def login():
+    data = request.get_json() if request.is_json else request.form
     email = request.form.get('email')
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
@@ -29,10 +30,7 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if user:
-        print(f"User found: {user.email}")
-    else:
-        print("User not found")
+
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
