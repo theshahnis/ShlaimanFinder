@@ -32,7 +32,7 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-        api_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
+        api_token = user.generate_api_token()
         response = jsonify({
             'api_token': api_token,
             'msg': 'Successfully logged in!'
@@ -71,12 +71,12 @@ def signup():
     return response
 
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')
-    return jsonify({"msg": "Successfully logged out"}), 200
+    return redirect(url_for('auth_bp.auth_page'))
 
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
