@@ -24,7 +24,7 @@ def profile():
             current_user.note = form.note.data
             db.session.commit()
             flash('Your account has been updated!', 'success')
-        except Exception as e:
+        } except Exception as e:
             flash(f'An error occurred: {str(e)}', 'danger')
             db.session.rollback()
         return redirect(url_for('profile_bp.profile'))

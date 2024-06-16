@@ -22,7 +22,7 @@
 
     <!-- Login Form -->
     <div id="loginForm">
-      <form method="POST" action="{{ url_for('auth_bp.auth_page') }}">
+        <form id="loginFormElement">
         <input type="hidden" name="login" value="login">
         <input type="email" id="loginEmail" class="fadeIn second" name="email" placeholder="email" required>
         <input type="password" id="loginPassword" class="fadeIn third" name="password" placeholder="password" required>
@@ -87,6 +87,12 @@
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     login(email, password);
-});
+})
+document.getElementById('loginFormElement').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    login(email, password);
+  })
 </script>
 {% endblock %}
