@@ -32,14 +32,14 @@ def login():
     if user and check_password_hash(user.password, password):
         api_token = User.generate_api_token(user, os.getenv('JWT_SECRET_KEY'))
         user.api_token = api_token
-        db.session.commit() 
+        db.session.commit()  # Ensure the token is saved in the database
 
         response = jsonify({
             'api_token': api_token,
             'msg': 'Successfully logged in!',
-            'location': url_for('profile_bp.profile')
+            'location': url_for('profile_bp.profile')  # Include the redirect URL in the JSON response
         })
-        response.set_cookie('api_token', api_token, httponly=True)  
+        response.set_cookie('api_token', api_token, httponly=True, secure=True)  # Set the token as a cookie
         return response
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401

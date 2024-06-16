@@ -81,18 +81,12 @@
     document.getElementById('signupTab').classList.add('active');
     document.getElementById('signupTab').classList.remove('inactive');
   }
-
   document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    login(email, password);
-})
-document.getElementById('loginFormElement').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    login(email, password);
-  })
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const remember = document.getElementById('remember').checked;
+    login(email, password, remember);
+});
 </script>
 {% endblock %}
