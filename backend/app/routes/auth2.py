@@ -32,7 +32,7 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-        api_token = User.generate_api_token()
+        api_token = User.generate_api_token(user,os.getenv('JWT_SECRET_KEY'))
         response = jsonify({
             'api_token': api_token,
             'msg': 'Successfully logged in!'
