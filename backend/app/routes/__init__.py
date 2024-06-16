@@ -1,4 +1,4 @@
-from .auth import auth_bp as auth_blueprint
+#from .auth import auth_bp as auth_blueprint
 from .auth2 import auth2_bp as auth_blueprint
 from .profile import profile_bp as profile_blueprint
 from .superuser import superuser_bp as superuser_blueprint

@@ -11,12 +11,12 @@ import smtplib
 import datetime
 
 
-auth2_bp = Blueprint('auth2_bp', __name__)
+auth_bp = Blueprint('auth_bp', __name__)
 
 # JWT Configuration
 jwt = JWTManager()
 
-@auth2_bp.route('/', methods=['GET', 'POST'])
+@auth_bp.route('/', methods=['GET', 'POST'])
 def auth_page():
     if request.method == 'POST':
         if 'login' in request.form:
@@ -25,7 +25,7 @@ def auth_page():
             return signup()
     return render_template('auth.html')
 
-@auth2_bp.route('/login', methods=['POST'])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     email = request.json.get('email', None)
     password = request.json.get('password', None)
@@ -38,7 +38,7 @@ def login():
     
     return jsonify({"msg": "Bad email or password"}), 401
 
-@auth2_bp.route('/signup', methods=['POST'])
+@auth_bp.route('/signup', methods=['POST'])
 def signup():
     email = request.json.get('email')
     username = request.json.get('username')
@@ -59,7 +59,7 @@ def signup():
     refresh_token = create_refresh_token(identity=email)
     return jsonify(access_token=access_token, refresh_token=refresh_token), 201
 
-@auth2_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
@@ -68,20 +68,20 @@ def logout():
     return jsonify({"msg": "Successfully logged out"}), 200
 
 
-@auth2_bp.route('/refresh', methods=['POST'])
+@auth_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
 def refresh():
     current_user = get_jwt_identity()
     new_access_token = create_access_token(identity=current_user)
     return jsonify(access_token=new_access_token), 200
 
-@auth2_bp.route('/protected', methods=['GET'])
+@auth_bp.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-@auth2_bp.route('/request_reset', methods=['GET', 'POST'])
+@auth_bp.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
     if request.method == 'POST':
         email = request.json.get('email')
@@ -96,7 +96,7 @@ def request_reset():
 def send_reset_email(to, token_id):
     msg = Message('Shlaiman Finder - Password Reset Request', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
-        {url_for('auth2_bp.reset_password', token=token_id, _external=True)}
+        {url_for('auth_bp.reset_password', token=token_id, _external=True)}
         If you did not make this request then simply ignore this email and no changes will be made.
         '''
     try:
@@ -107,7 +107,7 @@ def send_reset_email(to, token_id):
         current_app.logger.error(f"Failed to send email: {e}")
         return False
 
-@auth2_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     email = verify_reset_token(token)
     if not email:
@@ -142,7 +142,7 @@ def verify_reset_token(token, expiration=3600):
         return None
     return email
 
-@auth2_bp.route('/test-email')
+@auth_bp.route('/test-email')
 def test_email():
     msg = Message('Test Email', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=['theshahnis@gmail.com'])
     msg.body = 'This is a test email sent from Flask-Mail with Postfix as the mail server.'
