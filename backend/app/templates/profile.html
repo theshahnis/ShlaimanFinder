@@ -28,4 +28,31 @@
         </div>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        authenticatedFetch('/profile', {
+            method: 'GET'
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.profile-container').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    
+    document.getElementById('profileForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+    
+        const formData = new FormData(this);
+        authenticatedFetch('/profile', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.profile-container').innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+    </script>
 {% endblock %}
