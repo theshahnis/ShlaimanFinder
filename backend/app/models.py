@@ -23,30 +23,15 @@ class User(UserMixin, db.Model):
     note = db.Column(db.Text, nullable=True)
     api_token = db.Column(db.String(256), unique=True, nullable=True) 
 
-    def set_password(self, password):
-        self.password = generate_password_hash(password, method='pbkdf2:sha256')
-
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-    
-    @classmethod
-    def get_user_by_email(cls, email):
-        return cls.query.filter_by(email=email).first()
-    
-    def generate_api_token(self, JWT_SECRET_KEY, expires_in=3600):
+    def generate_api_token(self, secret_key):
         token_data = {
             'user_id': self.id,
-            'exp': datetime.utcnow() + timedelta(seconds=expires_in)
+            'exp': datetime.utcnow() + timedelta(hours=24)
         }
-        token = jwt.encode(token_data, JWT_SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(token_data, secret_key, algorithm='HS256')
+        self.api_token = token
+        db.session.commit()
         return token
-
-    def verify_api_token(self, token, JWT_SECRET_KEY):
-        try:
-            data = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
-            return data['user_id'] == self.id
-        except:
-            return False
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)

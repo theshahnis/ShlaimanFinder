@@ -6,7 +6,7 @@ from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
-import smtplib
+import smtplib,jwt
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -35,8 +35,11 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
+        token = generate_and_save_token(user)
+        response = redirect(url_for('profile_bp.profile'))
+        response.set_cookie('api_token', token, httponly=True, secure=True)
         flash('Successfully logged in!', 'success')
-        return redirect(url_for('profile_bp.profile'))
+        return response
     else:
         flash('Login failed. Check your email and password.', 'error')
         return redirect(url_for('auth_bp.auth_page'))
@@ -62,6 +65,24 @@ def signup():
     login_user(new_user)
     flash('Account created successfully!', 'success')
     return redirect(url_for('profile_bp.profile'))
+
+
+#Test Tokens
+def generate_and_save_token(user):
+    secret_key = current_app.config['SECRET_KEY']
+    token_data = {
+        'user_id': user.id,
+        'exp': datetime.utcnow() + timedelta(hours=24)
+    }
+    token = jwt.encode(token_data, secret_key, algorithm='HS256')
+    user.api_token = token
+    db.session.commit()
+    return token
+
+
+
+
+
 
 @auth_bp.route('/logout')
 @login_required

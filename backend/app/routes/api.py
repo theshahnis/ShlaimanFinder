@@ -21,8 +21,7 @@ api = Api(
     api_bp,
     version='1.0',
     title='Flask API with JWT-Based Authentication',
-    description='Welcome to the Swagger UI documentation site!',
-    doc='/ui',
+    description='Welcome to Shlaiman Finder App!',
     authorizations=authorizations
 )
 
