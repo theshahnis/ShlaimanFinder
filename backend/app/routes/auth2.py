@@ -30,16 +30,16 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
-        
-        api_token = User.generate_api_token(user,os.getenv('JWT_SECRET_KEY'))
+        api_token = User.generate_api_token(user, os.getenv('JWT_SECRET_KEY'))
         user.api_token = api_token
+        db.session.commit() 
+
         response = jsonify({
             'api_token': api_token,
-            'msg': 'Successfully logged in!'
+            'msg': 'Successfully logged in!',
+            'location': url_for('profile_bp.profile')
         })
-        
-        response.headers['Location'] = url_for('profile_bp.profile')
-        login_user(user, remember=remember)
+        response.set_cookie('api_token', api_token, httponly=True)  
         return response
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
