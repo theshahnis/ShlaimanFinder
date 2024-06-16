@@ -32,15 +32,37 @@ def login():
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
         api_token = User.generate_api_token(user,os.getenv('JWT_SECRET_KEY'))
+        user.api_token = api_token
         response = jsonify({
             'api_token': api_token,
             'msg': 'Successfully logged in!'
         })
+        
         response.headers['Location'] = url_for('profile_bp.profile')
         return response
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
 
+# Token required decorator
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split()[1]
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+
+        try:
+            data = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.get(data['user_id'])
+        except Exception as e:
+            return jsonify({'error': 'Token is invalid or expired', 'message': str(e)}), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -112,23 +134,7 @@ def reset_password(token):
     return render_template('reset_password.html', token=token)
 
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split()[1]
 
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
-
-        user = User.query.filter_by(api_token=token).first()
-        if not user or not user.verify_api_token(token, current_app.config['JWT_SECRET_KEY']):
-            return jsonify({'error': 'Token is invalid or expired'}), 401
-
-        return f(user, *args, **kwargs)
-
-    return decorated
 
 
 def send_reset_email(to, token_id):
