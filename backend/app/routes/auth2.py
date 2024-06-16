@@ -105,7 +105,6 @@ def logout_api():
     return jsonify({"msg": "Successfully logged out"}), 200
 
 @auth_bp.route('/logout')
-@jwt_required()
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')
