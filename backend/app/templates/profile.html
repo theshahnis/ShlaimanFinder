@@ -31,12 +31,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const token = getAccessToken();
-    if (!token) {
-        window.location.href = '/auth';  // Redirect to login if no token
-        return;
-    }
-
     authenticatedFetch('/profile', {
         method: 'GET'
     })

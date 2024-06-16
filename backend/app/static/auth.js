@@ -53,6 +53,9 @@ function authenticatedFetch(url, options = {}) {
         ...options.headers,
         'Authorization': 'Bearer ' + token
     };
+    if (!(options.body instanceof FormData)) {
+        options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+    }
 
     return fetch(url, options)
         .then(response => {
