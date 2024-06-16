@@ -12,7 +12,7 @@ profile_bp = Blueprint('profile_bp', __name__)
 @profile_bp.route('/', methods=['GET', 'POST'])
 @login_required
 def profile():
-    current_user_email = get_jwt_identity()
+    #current_user_email = get_jwt_identity()
     current_user = User.query.filter_by(email=current_user_email).first()
 
     form = UpdateProfileForm()
