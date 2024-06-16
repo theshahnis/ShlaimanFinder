@@ -13,7 +13,7 @@ profile_bp = Blueprint('profile_bp', __name__)
 @login_required
 def profile():
     #current_user_email = get_jwt_identity()
-    current_user = User.query.filter_by(email=current_user_email).first()
+    current_user = User.query.filter_by(email=email).first()
 
     form = UpdateProfileForm()
     if form.validate_on_submit():
