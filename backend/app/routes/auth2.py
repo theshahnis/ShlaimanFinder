@@ -38,26 +38,33 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-        access_token = create_access_token(identity=email)
-        refresh_token = create_refresh_token(identity=email)
-
-        if request.is_json:
-            return jsonify(access_token=access_token, refresh_token=refresh_token), 200
-        else:
-            response = jsonify(message="Successfully logged in!")
-            response.status_code = 200
-            response.set_cookie('access_token', access_token)
-            response.set_cookie('refresh_token', refresh_token)
-            next_page = request.args.get('next')
-            response.headers['Location'] = next_page or url_for('profile_bp.profile')
-            return response
+        access_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
+        response = jsonify({
+            'access_token': access_token,
+            'msg': 'Successfully logged in!'
+        })
+        response.headers['Location'] = url_for('profile_bp.profile')
+        return response
     else:
-        if request.is_json:
-            return jsonify({"msg": "Bad email or password"}), 401
-        else:
-            flash('Login failed. Check your email and password.', 'error')
-            return redirect(url_for('auth_bp.auth_page'))
+        return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split()[1]
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), 401
+
+        user = User.query.filter_by(api_token=token).first()
+        if not user or not user.verify_api_token(token, current_app.config['SECRET_KEY']):
+            return jsonify({'error': 'Token is invalid or expired'}), 401
+
+        return f(user, *args, **kwargs)
+
+    return decorated
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
