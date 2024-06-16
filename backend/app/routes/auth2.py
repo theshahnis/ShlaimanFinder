@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, current_app, redirect, url_for, f
 from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 )
+from flask_login import login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, current_user
 from ..models import User
