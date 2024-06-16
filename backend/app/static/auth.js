@@ -26,17 +26,16 @@ function login(email, password, remember = false) {
     })
     .then(response => {
         if (response.ok) {
-            return response.json();
+            return response.json().then(data => {
+                if (data.access_token) {
+                    storeTokens(data.access_token, data.refresh_token);
+                    window.location.href = response.headers.get('Location') || '/profile';  // Redirect to home or another protected page
+                } else {
+                    alert(data.msg);  // Handle login error
+                }
+            });
         } else {
             throw new Error('Login failed');
-        }
-    })
-    .then(data => {
-        if (data.access_token) {
-            storeTokens(data.access_token, data.refresh_token);
-            window.location.href = '/home';  // Redirect to home or another protected page
-        } else {
-            alert(data.msg);  // Handle login error
         }
     })
     .catch(error => console.error('Error:', error));

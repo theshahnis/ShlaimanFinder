@@ -44,16 +44,19 @@ def login():
         if request.is_json:
             return jsonify(access_token=access_token, refresh_token=refresh_token), 200
         else:
-            flash('Successfully logged in!', 'success')
+            response = jsonify(message="Successfully logged in!")
+            response.status_code = 200
+            response.set_cookie('access_token', access_token)
+            response.set_cookie('refresh_token', refresh_token)
             next_page = request.args.get('next')
-            return redirect(next_page or url_for('profile_bp.profile'))
+            response.headers['Location'] = next_page or url_for('profile_bp.profile')
+            return response
     else:
         if request.is_json:
             return jsonify({"msg": "Bad email or password"}), 401
         else:
             flash('Login failed. Check your email and password.', 'error')
             return redirect(url_for('auth_bp.auth_page'))
-
 def login_or_jwt_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
