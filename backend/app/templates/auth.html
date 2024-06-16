@@ -4,6 +4,7 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<script src="{{ url_for('static', filename='auth.js') }}"></script>
 
 {% endblock %}
 
@@ -80,5 +81,12 @@
     document.getElementById('signupTab').classList.add('active');
     document.getElementById('signupTab').classList.remove('inactive');
   }
+
+  document.getElementById('loginFormElement').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    login(email, password);
+  });
 </script>
 {% endblock %}
