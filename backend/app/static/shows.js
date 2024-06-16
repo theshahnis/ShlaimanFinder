@@ -258,12 +258,17 @@ document.addEventListener('click', function(event) {
     }
 });
 function signup(email, username, password) {
+    const formData = new URLSearchParams();
+    formData.append('email', email);
+    formData.append('username', username);
+    formData.append('password', password);
+
     fetch('/auth/signup', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify({ email: email, username: username, password: password })
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
