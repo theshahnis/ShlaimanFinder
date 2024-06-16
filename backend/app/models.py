@@ -38,6 +38,8 @@ class User(UserMixin, db.Model):
             'user_id': self.id,
             'exp': datetime.utcnow() + timedelta(days=1)  # Token expires in 1 day
         }
+        secret_key = current_app.config.get('JWT_SECRET_KEY', 'default_secret_key')
+        print(f"Using JWT_SECRET_KEY: {secret_key}")  # Debug print
         token = jwt.encode(token_data, "012345678901234567890123", algorithm='HS256')
         self.api_token = token
         db.session.commit()

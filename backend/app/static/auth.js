@@ -1,18 +1,17 @@
-function storeTokens(accessToken) {
-    localStorage.setItem('access_token', accessToken);
+function storeTokens(api_token) {
+    localStorage.setItem('api_token', api_token);  // Store the token in local storage
 }
 
-function getStoredToken() {
-    return localStorage.getItem('access_token');
+function getStoredApiToken() {
+    return localStorage.getItem('api_token');
 }
 
-function getRefreshToken() {
-    return localStorage.getItem('refresh_token');
+function clearApiToken() {
+    localStorage.removeItem('api_token');
 }
 
-function clearTokens() {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+function storeApiToken(api_token) {
+    localStorage.setItem('api_token', api_token);
 }
 
 function login(email, password, remember = false) {
@@ -23,20 +22,27 @@ function login(email, password, remember = false) {
         },
         body: JSON.stringify({ email: email, password: password, remember: remember })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.access_token) {
-            storeTokens(data.access_token);
-            window.location.href = '/profile';
+    .then(response => {
+        if (response.ok) {
+            return response.json().then(data => {
+                if (data.api_token) {
+                    storeTokens(data.api_token);  // Ensure this function stores the token
+                    const redirectUrl = response.headers.get('Location') || '/profile';  // Use fallback URL if Location header is not present
+                    console.log(`Redirecting to ${redirectUrl}`);
+                    window.location.href = redirectUrl;  // Redirect to profile or home page
+                } else {
+                    alert(data.msg);  // Handle login error
+                }
+            });
         } else {
-            alert(data.msg);  // Handle login error
+            throw new Error('Login failed');
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
 function authenticatedFetch(url, options = {}) {
-    const token = getAccessToken();
+    const token = getStoredApiToken();
     if (!token) {
         window.location.href = '/auth';  // Redirect to login if no token
         return;
@@ -50,52 +56,15 @@ function authenticatedFetch(url, options = {}) {
     return fetch(url, options)
         .then(response => {
             if (response.status === 401) {
-                return refreshAccessToken()
-                    .then(newToken => {
-                        if (newToken) {
-                            options.headers['Authorization'] = 'Bearer ' + newToken;
-                            return fetch(url, options);
-                        } else {
-                            window.location.href = '/auth';  // Redirect to login if refresh fails
-                        }
-                    });
+                window.location.href = '/auth';  // Redirect to login if unauthorized
+                return;
             }
             return response;
         })
         .catch(error => console.error('Error:', error));
 }
 
-function refreshAccessToken() {
-    const refreshToken = getRefreshToken();
-    if (!refreshToken) {
-        window.location.href = '/auth';  // Redirect to login if no refresh token
-        return;
-    }
-
-    return fetch('/auth/refresh', {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + refreshToken
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.access_token) {
-            storeTokens(data.access_token, refreshToken);  // Refresh only the access token
-            return data.access_token;
-        } else {
-            clearTokens();
-            window.location.href = '/auth';  // Redirect to login if refresh fails
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        clearTokens();
-        window.location.href = '/auth';  // Redirect to login if refresh fails
-    });
-}
-
 function logout() {
-    clearTokens();
+    clearApiToken();
     window.location.href = '/auth';  // Redirect to login
 }

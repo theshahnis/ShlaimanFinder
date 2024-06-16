@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
 
 def create_app():
     load_dotenv()
-
+    print(load_dotenv())
     app = Flask(__name__, static_folder='static', static_url_path='')
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
