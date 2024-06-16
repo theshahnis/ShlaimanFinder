@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request,current_app
-from flask_login import login_required, current_user
+#from flask_login import login_required, current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
@@ -9,8 +10,10 @@ from PIL import Image
 profile_bp = Blueprint('profile_bp', __name__)
 
 @profile_bp.route('/', methods=['GET', 'POST'])
-@login_required
+@jwt_required()
 def profile():
+    current_user_email = get_jwt_identity()
+    current_user = User.query.filter_by(email=current_user_email).first()
     form = UpdateProfileForm()
     if form.validate_on_submit():
         try:

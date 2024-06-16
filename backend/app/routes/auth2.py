@@ -13,6 +13,18 @@ import datetime
 
 auth2_bp = Blueprint('auth2_bp', __name__)
 
+# JWT Configuration
+jwt = JWTManager()
+
+@auth2_bp.route('/', methods=['GET', 'POST'])
+def auth_page():
+    if request.method == 'POST':
+        if 'login' in request.form:
+            return login()
+        elif 'signup' in request.form:
+            return signup()
+    return render_template('auth.html')
+
 @auth2_bp.route('/login', methods=['POST'])
 def login():
     email = request.json.get('email', None)
