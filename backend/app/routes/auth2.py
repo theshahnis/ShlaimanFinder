@@ -27,6 +27,7 @@ def auth_page():
     return render_template('auth.html')
 
 
+# auth2.py
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json() if request.is_json else request.form
@@ -38,6 +39,10 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
+        
+        # Debug print
+        print(f"JWT_SECRET_KEY type: {type(current_app.config['JWT_SECRET_KEY'])}")
+
         access_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
         response = jsonify({
             'access_token': access_token,
@@ -196,8 +201,8 @@ def test_email():
         return 'Email sent successfully!'
     except Exception as e:
         return f'Failed to send email: {e}'
-   
-    
+
+
 @auth_bp.route('/generate_token', methods=['POST'])
 @login_required
 def generate_token():

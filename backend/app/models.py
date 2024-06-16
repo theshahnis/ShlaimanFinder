@@ -33,13 +33,13 @@ class User(UserMixin, db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
     
-    def generate_api_token(self, JWT_SECRET_KEY):
-        import jwt
+    def generate_api_token(self):
         token_data = {
             'user_id': self.id,
-            'exp': datetime.utcnow() + timedelta(days=7)  
+            'exp': datetime.utcnow() + timedelta(days=7)  # Token expires in 1 day
         }
-        token = jwt.encode(token_data, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
+        secret_key = current_app.config['JWT_SECRET_KEY']
+        token = jwt.encode(token_data, secret_key, algorithm='HS256')
         self.api_token = token
         db.session.commit()
         return token
