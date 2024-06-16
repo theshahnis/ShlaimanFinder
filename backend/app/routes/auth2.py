@@ -93,7 +93,8 @@ def signup():
     api_token = new_user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
     response = jsonify({
         'api_token': api_token,
-        'msg': 'Account created successfully!'
+        'msg': 'Account created successfully!',
+        'Location': url_for('profile_bp.profile')
     })
     response.headers['Location'] = url_for('profile_bp.profile')
     return response
