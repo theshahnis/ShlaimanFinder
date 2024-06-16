@@ -27,17 +27,30 @@ def auth_page():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
+    data = request.get_json() if request.is_json else request.form
     email = data.get('email')
     password = data.get('password')
+    remember = True if data.get('remember') else False
 
     user = User.query.filter_by(email=email).first()
+
     if user and check_password_hash(user.password, password):
+        login_user(user, remember=remember)
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
-        return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
-    return jsonify({"msg": "Bad email or password"}), 401
+        if request.is_json:
+            return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+        else:
+            flash('Successfully logged in!', 'success')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('profile_bp.profile'))
+    else:
+        if request.is_json:
+            return jsonify({"msg": "Bad email or password"}), 401
+        else:
+            flash('Login failed. Check your email and password.', 'error')
+            return redirect(url_for('auth_bp.auth_page'))
 
 def login_or_jwt_required(fn):
     @wraps(fn)
