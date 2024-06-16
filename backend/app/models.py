@@ -33,25 +33,21 @@ class User(UserMixin, db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
     
-    def generate_api_token(self):
+    def generate_api_token(self, secret_key):
         token_data = {
             'user_id': self.id,
-            'exp': datetime.utcnow() + timedelta(days=7)  # Token expires in 1 day
+            'exp': datetime.utcnow() + timedelta(days=1)  # Token expires in 1 day
         }
-        secret_key = current_app.config['JWT_SECRET_KEY']
         token = jwt.encode(token_data, secret_key, algorithm='HS256')
         self.api_token = token
         db.session.commit()
         return token
 
-    def verify_api_token(self, token, JWT_SECRET_KEY):
-        import jwt
+    def verify_api_token(self, token, secret_key):
         try:
-            data = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
+            data = jwt.decode(token, secret_key, algorithms=['HS256'])
             return data['user_id'] == self.id
-        except jwt.ExpiredSignatureError:
-            return False
-        except jwt.InvalidTokenError:
+        except:
             return False
 
 class Location(db.Model):

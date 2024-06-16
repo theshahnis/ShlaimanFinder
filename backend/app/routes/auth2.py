@@ -1,21 +1,15 @@
-from flask import Blueprint, request, jsonify, current_app, redirect, url_for, flash,render_template
-from flask_jwt_extended import (
-    JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
-)
+from flask import Blueprint, request, jsonify, current_app, redirect, url_for, flash, render_template
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_required, current_user
+from functools import wraps
 from ..models import User
 from ..extensions import db, mail
-from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 import smtplib
+import jwt
 import datetime
 
 auth_bp = Blueprint('auth_bp', __name__)
-
-jwt = JWTManager()
-
 
 @auth_bp.route('/', methods=['GET', 'POST'])
 def auth_page():
@@ -27,7 +21,6 @@ def auth_page():
     return render_template('auth.html')
 
 
-# auth2.py
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json() if request.is_json else request.form
@@ -39,19 +32,85 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-        
-        # Debug print
-        print(f"JWT_SECRET_KEY type: {type(current_app.config['JWT_SECRET_KEY'])}")
-
-        access_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
+        api_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
         response = jsonify({
-            'access_token': access_token,
+            'api_token': api_token,
             'msg': 'Successfully logged in!'
         })
         response.headers['Location'] = url_for('profile_bp.profile')
         return response
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
+
+
+@auth_bp.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
+
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({"msg": "Email already in use. Please choose a different email."}), 409
+
+    if len(password) < 6:
+        return jsonify({"msg": "Password must be at least 6 characters long."}), 400
+
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+    new_user = User(email=email, username=username, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+    login_user(new_user)
+    api_token = new_user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
+    response = jsonify({
+        'api_token': api_token,
+        'msg': 'Account created successfully!'
+    })
+    response.headers['Location'] = url_for('profile_bp.profile')
+    return response
+
+
+@auth_bp.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return jsonify({"msg": "Successfully logged out"}), 200
+
+
+@auth_bp.route('/request_reset', methods=['GET', 'POST'])
+def request_reset():
+    if request.method == 'POST':
+        email = request.json.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = generate_reset_token(user.email)
+            send_reset_email(user.email, token)
+            return jsonify({"msg": "A password reset email has been sent."}), 200
+        return jsonify({"msg": "Email not found."}), 404
+    return render_template('request_reset.html')
+
+
+@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    email = verify_reset_token(token)
+    if not email:
+        return jsonify({"msg": "Invalid or expired token."}), 400
+
+    if request.method == 'POST':
+        data = request.get_json()
+        password = data.get('password')
+        confirm_password = data.get('confirm_password')
+        if password != confirm_password:
+            return jsonify({"msg": "Passwords do not match."}), 400
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(password, method='pbkdf2:sha256')
+            db.session.commit()
+            return jsonify({"msg": "Your password has been updated!"}), 200
+
+    return render_template('reset_password.html', token=token)
 
 
 def token_required(f):
@@ -73,72 +132,6 @@ def token_required(f):
     return decorated
 
 
-@auth_bp.route('/signup', methods=['POST'])
-def signup():
-    email = request.json.get('email')
-    username = request.json.get('username')
-    password = request.json.get('password')
-
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return jsonify({"msg": "Email already in use. Please choose a different email."}), 409
-
-    if len(password) < 6:
-        return jsonify({"msg": "Password must be at least 6 characters long."}), 400
-
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(email=email, username=username, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    access_token = create_access_token(identity=email)
-    refresh_token = create_refresh_token(identity=email)
-    return jsonify(access_token=access_token, refresh_token=refresh_token), 201
-
-
-@auth_bp.route('/logout_api', methods=['POST'])
-@jwt_required()
-def logout_api():
-    jti = get_jwt()["jti"]
-    # Add jti to a revocation list (implement this in your app if needed)
-    flash('You have been logged out.', 'success')
-    return jsonify({"msg": "Successfully logged out"}), 200
-
-
-@auth_bp.route('/logout')
-def logout():
-    logout_user()
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('auth_bp.auth_page'))
-
-
-@auth_bp.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh():
-    current_user = get_jwt_identity()
-    new_access_token = create_access_token(identity=current_user)
-    return jsonify(access_token=new_access_token), 200
-
-
-@auth_bp.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
-
-
-@auth_bp.route('/request_reset', methods=['GET', 'POST'])
-def request_reset():
-    if request.method == 'POST':
-        email = request.json.get('email')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            token = generate_reset_token(user.email)
-            send_reset_email(user.email, token)
-            return jsonify({"msg": "A password reset email has been sent."}), 200
-        return jsonify({"msg": "Email not found."}), 404
-    return render_template('request_reset.html')
-
-
 def send_reset_email(to, token_id):
     msg = Message('Shlaiman Finder - Password Reset Request', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=[to])
     msg.body = f'''To reset your password, visit the following link:
@@ -152,26 +145,6 @@ def send_reset_email(to, token_id):
     except smtplib.SMTPException as e:
         current_app.logger.error(f"Failed to send email: {e}")
         return False
-
-
-@auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    email = verify_reset_token(token)
-    if not email:
-        return jsonify({"msg": "Invalid or expired token."}), 400
-    
-    if request.method == 'POST':
-        password = request.json.get('password')
-        confirm_password = request.json.get('confirm_password')
-        if password != confirm_password:
-            return jsonify({"msg": "Passwords do not match."}), 400
-        user = User.query.filter_by(email=email).first()
-        if user:
-            user.password = generate_password_hash(password, method='pbkdf2:sha256')
-            db.session.commit()
-            return jsonify({"msg": "Your password has been updated!"}), 200  
-    
-    return render_template('reset_password.html', token=token)
 
 
 def generate_reset_token(email):
