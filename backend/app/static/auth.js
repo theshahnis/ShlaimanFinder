@@ -48,6 +48,8 @@ function authenticatedFetch(url, options = {}) {
         'Authorization': 'Bearer ' + token
     };
 
+    console.log('Request Headers:', options.headers);  // Log headers to verify
+
     return fetch(url, options)
         .then(response => {
             if (response.status === 401) {
@@ -65,7 +67,6 @@ function authenticatedFetch(url, options = {}) {
         })
         .catch(error => console.error('Error:', error));
 }
-
 function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
