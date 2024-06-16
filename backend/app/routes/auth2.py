@@ -12,11 +12,10 @@ from flask_mail import Message
 import smtplib
 import datetime
 
-
 auth_bp = Blueprint('auth_bp', __name__)
 
-# JWT Configuration
 jwt = JWTManager()
+
 
 @auth_bp.route('/', methods=['GET', 'POST'])
 def auth_page():
@@ -26,6 +25,7 @@ def auth_page():
         elif 'signup' in request.form:
             return signup()
     return render_template('auth.html')
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -48,6 +48,7 @@ def login():
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
 
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -59,12 +60,13 @@ def token_required(f):
             return jsonify({'error': 'Token is missing'}), 401
 
         user = User.query.filter_by(api_token=token).first()
-        if not user or not user.verify_api_token(token, current_app.config['SECRET_KEY']):
+        if not user or not user.verify_api_token(token, current_app.config['JWT_SECRET_KEY']):
             return jsonify({'error': 'Token is invalid or expired'}), 401
 
         return f(user, *args, **kwargs)
 
     return decorated
+
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -87,6 +89,7 @@ def signup():
     refresh_token = create_refresh_token(identity=email)
     return jsonify(access_token=access_token, refresh_token=refresh_token), 201
 
+
 @auth_bp.route('/logout_api', methods=['POST'])
 @jwt_required()
 def logout_api():
@@ -94,6 +97,7 @@ def logout_api():
     # Add jti to a revocation list (implement this in your app if needed)
     flash('You have been logged out.', 'success')
     return jsonify({"msg": "Successfully logged out"}), 200
+
 
 @auth_bp.route('/logout')
 def logout():
@@ -109,11 +113,13 @@ def refresh():
     new_access_token = create_access_token(identity=current_user)
     return jsonify(access_token=new_access_token), 200
 
+
 @auth_bp.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
 def request_reset():
@@ -126,6 +132,7 @@ def request_reset():
             return jsonify({"msg": "A password reset email has been sent."}), 200
         return jsonify({"msg": "Email not found."}), 404
     return render_template('request_reset.html')
+
 
 def send_reset_email(to, token_id):
     msg = Message('Shlaiman Finder - Password Reset Request', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=[to])
@@ -140,6 +147,7 @@ def send_reset_email(to, token_id):
     except smtplib.SMTPException as e:
         current_app.logger.error(f"Failed to send email: {e}")
         return False
+
 
 @auth_bp.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -160,9 +168,11 @@ def reset_password(token):
     
     return render_template('reset_password.html', token=token)
 
+
 def generate_reset_token(email):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     return serializer.dumps(email, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+
 
 def verify_reset_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
@@ -176,6 +186,7 @@ def verify_reset_token(token, expiration=3600):
         return None
     return email
 
+
 @auth_bp.route('/test-email')
 def test_email():
     msg = Message('Test Email', sender=current_app.config['MAIL_DEFAULT_SENDER'], recipients=['theshahnis@gmail.com'])
@@ -185,6 +196,7 @@ def test_email():
         return 'Email sent successfully!'
     except Exception as e:
         return f'Failed to send email: {e}'
+   
     
 @auth_bp.route('/generate_token', methods=['POST'])
 @login_required
