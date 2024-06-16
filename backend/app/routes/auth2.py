@@ -95,7 +95,7 @@ def signup():
 
 @auth_bp.route('/logout_api', methods=['POST'])
 @jwt_required()
-def logout():
+def logout_api():
     jti = get_jwt()["jti"]
     # Add jti to a revocation list (implement this in your app if needed)
     flash('You have been logged out.', 'success')
