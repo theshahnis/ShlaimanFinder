@@ -257,3 +257,22 @@ document.addEventListener('click', function(event) {
         });
     }
 });
+function signup(email, username, password) {
+    fetch('/auth/signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, username: username, password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.api_token) {
+            storeTokens(data.api_token);
+            window.location.href = data.Location || '/profile';
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
