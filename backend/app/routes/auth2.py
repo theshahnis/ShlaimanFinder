@@ -62,10 +62,11 @@ def signup():
 @auth2_bp.route('/logout', methods=['POST'])
 @jwt_required()
 def logout():
-    # JWTs are stateless; consider using a token revocation list
     jti = get_jwt()["jti"]
-    # Add jti to a revocation list (implement this in your app)
+    # Add jti to a revocation list (implement this in your app if needed)
+    flash('You have been logged out.', 'success')
     return jsonify({"msg": "Successfully logged out"}), 200
+
 
 @auth2_bp.route('/refresh', methods=['POST'])
 @jwt_required(refresh=True)
