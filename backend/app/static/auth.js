@@ -7,11 +7,15 @@ function getStoredApiToken() {
 }
 
 function clearApiToken() {
-    localStorage.removeItem('api_token');
+    document.cookie = 'api_token=; Max-Age=0; path=/; Secure; HttpOnly';
 }
 
-function storeApiToken(api_token) {
-    localStorage.setItem('api_token', api_token);
+
+function getStoredApiToken() {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; api_token=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
 }
 
 function login(email, password, remember = false) {
@@ -26,9 +30,8 @@ function login(email, password, remember = false) {
         if (response.ok) {
             return response.json().then(data => {
                 if (data.api_token) {
-                    storeTokens(data.api_token);  // Ensure this function stores the token
-                    const redirectUrl = response.headers.get('Location') || '/profile';  // Use fallback URL if Location header is not present
-                    console.log(`Redirecting to ${redirectUrl}`);
+                    storeApiToken(data.api_token);  // Store the token in a cookie
+                    const redirectUrl = data.location || '/profile';  // Use fallback URL if Location header is not present
                     window.location.href = redirectUrl;  // Redirect to profile or home page
                 } else {
                     alert(data.msg);  // Handle login error
