@@ -105,6 +105,18 @@ function refreshAccessToken() {
 
 // Function to handle logout
 function logout() {
-    clearTokens();
-    window.location.href = '/auth';  // Redirect to login
+    authenticatedFetch('/auth/logout', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            clearTokens();
+            window.location.href = '/auth';  // Redirect to login
+        } else {
+            console.error('Logout failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 }
