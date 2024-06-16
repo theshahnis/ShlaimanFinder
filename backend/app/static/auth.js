@@ -16,15 +16,21 @@ function clearTokens() {
     localStorage.removeItem('refresh_token');
 }
 
-function login(email, password) {
-    fetch('/auth2/login', {
+function login(email, password, remember = false) {
+    fetch('/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email: email, password: password })
+        body: JSON.stringify({ email: email, password: password, remember: remember })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Login failed');
+        }
+    })
     .then(data => {
         if (data.access_token) {
             storeTokens(data.access_token, data.refresh_token);
@@ -39,7 +45,7 @@ function login(email, password) {
 function authenticatedFetch(url, options = {}) {
     const token = getAccessToken();
     if (!token) {
-        window.location.href = '/auth2';  // Redirect to login if no token
+        window.location.href = '/auth';  // Redirect to login if no token
         return;
     }
 
@@ -47,8 +53,6 @@ function authenticatedFetch(url, options = {}) {
         ...options.headers,
         'Authorization': 'Bearer ' + token
     };
-
-    console.log('Request Headers:', options.headers);  // Log headers to verify
 
     return fetch(url, options)
         .then(response => {
@@ -59,7 +63,7 @@ function authenticatedFetch(url, options = {}) {
                             options.headers['Authorization'] = 'Bearer ' + newToken;
                             return fetch(url, options);
                         } else {
-                            window.location.href = '/auth2';  // Redirect to login if refresh fails
+                            window.location.href = '/auth';  // Redirect to login if refresh fails
                         }
                     });
             }
@@ -67,14 +71,15 @@ function authenticatedFetch(url, options = {}) {
         })
         .catch(error => console.error('Error:', error));
 }
+
 function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
-        window.location.href = '/auth2';  // Redirect to login if no refresh token
+        window.location.href = '/auth';  // Redirect to login if no refresh token
         return;
     }
 
-    return fetch('/auth2/refresh', {
+    return fetch('/auth/refresh', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + refreshToken
@@ -87,17 +92,17 @@ function refreshAccessToken() {
             return data.access_token;
         } else {
             clearTokens();
-            window.location.href = '/auth2';  // Redirect to login if refresh fails
+            window.location.href = '/auth';  // Redirect to login if refresh fails
         }
     })
     .catch(error => {
         console.error('Error:', error);
         clearTokens();
-        window.location.href = '/auth2';  // Redirect to login if refresh fails
+        window.location.href = '/auth';  // Redirect to login if refresh fails
     });
 }
 
 function logout() {
     clearTokens();
-    window.location.href = '/auth2';  // Redirect to login
+    window.location.href = '/auth';  // Redirect to login
 }

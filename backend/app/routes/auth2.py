@@ -93,13 +93,20 @@ def signup():
     refresh_token = create_refresh_token(identity=email)
     return jsonify(access_token=access_token, refresh_token=refresh_token), 201
 
-@auth_bp.route('/logout', methods=['POST'])
+@auth_bp.route('/logout_api', methods=['POST'])
 @jwt_required()
 def logout():
     jti = get_jwt()["jti"]
     # Add jti to a revocation list (implement this in your app if needed)
     flash('You have been logged out.', 'success')
     return jsonify({"msg": "Successfully logged out"}), 200
+
+@auth_bp.route('/logout')
+@jwt_required()
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('auth_bp.auth_page'))
 
 
 @auth_bp.route('/refresh', methods=['POST'])
