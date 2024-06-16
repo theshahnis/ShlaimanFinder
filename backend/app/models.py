@@ -33,16 +33,12 @@ class User(UserMixin, db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
     
-    def generate_api_token(self, JWT_SECRET_KEY):
+    def generate_api_token(self, JWT_SECRET_KEY, expires_in=3600):
         token_data = {
             'user_id': self.id,
-            'exp': datetime.utcnow() + timedelta(days=1)  # Token expires in 1 day
+            'exp': datetime.utcnow() + timedelta(seconds=expires_in)
         }
-        secret_key = current_app.config.get('JWT_SECRET_KEY', 'default_secret_key')
-        print(f"Using JWT_SECRET_KEY: {secret_key}")  # Debug print
-        token = jwt.encode(token_data, "012345678901234567890123", algorithm='HS256')
-        self.api_token = token
-        db.session.commit()
+        token = jwt.encode(token_data, JWT_SECRET_KEY, algorithm='HS256')
         return token
 
     def verify_api_token(self, token, JWT_SECRET_KEY):

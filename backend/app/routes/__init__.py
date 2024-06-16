@@ -6,6 +6,7 @@ from .location import location_bp as location_blueprint
 from .show import show_bp as show_blueprint
 from .general import general_bp as general_blueprint
 from .map import map_bp as map_blueprint
+from .api import api_bp as api_blueprint
 
 
 def register_blueprints(app):
@@ -17,3 +18,4 @@ def register_blueprints(app):
     app.register_blueprint(show_blueprint, url_prefix='/show')
     app.register_blueprint(general_blueprint, url_prefix='/')
     app.register_blueprint(map_blueprint, url_prefix='/map')
+    app.register_blueprint(api_blueprint, url_prefix='/api/v1')
