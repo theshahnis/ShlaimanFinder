@@ -44,13 +44,17 @@ def token_required(f):
             token = request.headers['Authorization'].split()[1]
 
         if not token:
-            return {'error': 'Token is missing'}, 401
+            return jsonify({'error': 'Token is missing'}), 401
 
         try:
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             current_user = User.query.get(data['user_id'])
-        except:
-            return {'error': 'Token is invalid or expired'}, 401
+            if not current_user:
+                raise jwt.InvalidTokenError
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Token is invalid'}), 401
 
         return f(current_user, *args, **kwargs)
 
@@ -131,3 +135,8 @@ class ValidateTokenResource(Resource):
             return {'msg': 'Token is valid and test parameter is true'}, 200
         else:
             return {'msg': 'Token is valid, but test parameter is not true'}, 400
+@api.route('/protected-endpoint')
+class ProtectedEndpoint(Resource):
+    @token_required
+    def get(self, current_user):
+        return jsonify({'msg': f'Hello, {current_user.username}'})
