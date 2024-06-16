@@ -13,6 +13,7 @@ profile_bp = Blueprint('profile_bp', __name__)
 def profile():
     current_user_email = get_jwt_identity()
     current_user = User.query.filter_by(email=current_user_email).first()
+
     form = UpdateProfileForm()
     if form.validate_on_submit():
         try:
@@ -24,7 +25,7 @@ def profile():
             current_user.note = form.note.data
             db.session.commit()
             flash('Your account has been updated!', 'success')
-        } except Exception as e:
+        except Exception as e:
             flash(f'An error occurred: {str(e)}', 'danger')
             db.session.rollback()
         return redirect(url_for('profile_bp.profile'))
