@@ -38,7 +38,7 @@ class User(UserMixin, db.Model):
             'user_id': self.id,
             'exp': datetime.utcnow() + timedelta(days=1)  # Token expires in 1 day
         }
-        token = jwt.encode(token_data, JWT_SECRET_KEY, algorithm='HS256')
+        token = jwt.encode(token_data, "012345678901234567890123", algorithm='HS256')
         self.api_token = token
         db.session.commit()
         return token
