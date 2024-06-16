@@ -66,10 +66,19 @@ def token_required(f):
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
+    if request.content_type != 'application/json':
+        return jsonify({"msg": "Content type must be application/json"}), 415
+
     data = request.get_json()
+    if not data:
+        return jsonify({"msg": "No JSON data provided"}), 400
+
     email = data.get('email')
     username = data.get('username')
     password = data.get('password')
+
+    if not email or not username or not password:
+        return jsonify({"msg": "Email, username, and password are required"}), 400
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
