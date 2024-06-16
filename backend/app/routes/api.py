@@ -71,7 +71,7 @@ class LoginResource(Resource):
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
-            api_token = user.generate_api_token(current_app.config['SECRET_KEY'])
+            api_token = user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
             response = {
                 'api_token': api_token,
                 'msg': 'Successfully logged in!'
@@ -101,7 +101,7 @@ class SignupResource(Resource):
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
-        api_token = new_user.generate_api_token(current_app.config['SECRET_KEY'])
+        api_token = new_user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
         response = {
             'api_token': api_token,
             'msg': 'Account created successfully!'
