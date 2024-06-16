@@ -7,7 +7,7 @@ from datetime import timedelta
 import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints
-
+from flask_jwt_extended import JWTManager
 
 class Base(DeclarativeBase):
   pass

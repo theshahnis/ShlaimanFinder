@@ -3,6 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, create_refresh_t
 from werkzeug.security import check_password_hash
 from ..models import User
 from ..extensions import db
+from flask_jwt_extended import JWTManager
 
 auth2_bp = Blueprint('auth2_bp', __name__)
 
