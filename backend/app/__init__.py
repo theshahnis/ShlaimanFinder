@@ -36,7 +36,7 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
-    
+    print(app.config)
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.auth_page'
