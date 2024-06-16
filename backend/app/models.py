@@ -33,19 +33,19 @@ class User(UserMixin, db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
     
-    def generate_api_token(self, secret_key):
+    def generate_api_token(self, JWT_SECRET_KEY):
         token_data = {
             'user_id': self.id,
             'exp': datetime.utcnow() + timedelta(days=1)  # Token expires in 1 day
         }
-        token = jwt.encode(token_data, secret_key, algorithm='HS256')
+        token = jwt.encode(token_data, JWT_SECRET_KEY, algorithm='HS256')
         self.api_token = token
         db.session.commit()
         return token
 
-    def verify_api_token(self, token, secret_key):
+    def verify_api_token(self, token, JWT_SECRET_KEY):
         try:
-            data = jwt.decode(token, secret_key, algorithms=['HS256'])
+            data = jwt.decode(token, JWT_SECRET_KEY, algorithms=['HS256'])
             return data['user_id'] == self.id
         except:
             return False
