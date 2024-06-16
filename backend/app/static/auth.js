@@ -22,7 +22,7 @@ function clearTokens() {
 
 // Function to handle login
 function login(email, password) {
-    fetch('/auth2/login', {
+    fetch('/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -45,7 +45,7 @@ function login(email, password) {
 function authenticatedFetch(url, options = {}) {
     const token = getAccessToken();
     if (!token) {
-        window.location.href = '/auth2';  // Redirect to login if no token
+        window.location.href = '/auth';  // Redirect to login if no token
         return;
     }
 
@@ -63,7 +63,7 @@ function authenticatedFetch(url, options = {}) {
                             options.headers['Authorization'] = 'Bearer ' + newToken;
                             return fetch(url, options);
                         } else {
-                            window.location.href = '/auth2';  // Redirect to login if refresh fails
+                            window.location.href = '/auth';  // Redirect to login if refresh fails
                         }
                     });
             }
@@ -76,11 +76,11 @@ function authenticatedFetch(url, options = {}) {
 function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
-        window.location.href = '/auth2';  // Redirect to login if no refresh token
+        window.location.href = '/auth';  // Redirect to login if no refresh token
         return;
     }
 
-    return fetch('/auth2/refresh', {
+    return fetch('/auth/refresh', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + refreshToken
@@ -93,18 +93,18 @@ function refreshAccessToken() {
             return data.access_token;
         } else {
             clearTokens();
-            window.location.href = '/auth2';  // Redirect to login if refresh fails
+            window.location.href = '/auth';  // Redirect to login if refresh fails
         }
     })
     .catch(error => {
         console.error('Error:', error);
         clearTokens();
-        window.location.href = '/auth2';  // Redirect to login if refresh fails
+        window.location.href = '/auth';  // Redirect to login if refresh fails
     });
 }
 
 // Function to handle logout
 function logout() {
     clearTokens();
-    window.location.href = '/auth2';  // Redirect to login
+    window.location.href = '/auth';  // Redirect to login
 }
