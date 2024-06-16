@@ -4,13 +4,14 @@ from flask_login import login_required, current_user
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
+from .auth2 import login_or_jwt_required
 import secrets, os
 from PIL import Image
 
 profile_bp = Blueprint('profile_bp', __name__)
 
 @profile_bp.route('/', methods=['GET', 'POST'])
-@jwt_required()
+@login_or_jwt_required()
 def profile():
     current_user_email = get_jwt_identity()
     current_user = User.query.filter_by(email=current_user_email).first()
