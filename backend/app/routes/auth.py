@@ -30,8 +30,6 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-
-
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
         token = generate_and_save_token(user)
@@ -70,8 +68,8 @@ def signup():
 def generate_and_save_token(user):
     if user.api_token:
         try:
-            data = jwt.decode(user.api_token, current_app.config['JWT_SECRET_KEY'], algorithms=['HS256'])
-            if data['exp'] > datetime.utcnow():
+            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            if data['exp'] > datetime.utcnow().timestamp():
                 return user.api_token
         except jwt.ExpiredSignatureError:
             pass  
@@ -80,9 +78,9 @@ def generate_and_save_token(user):
     
     token_data = {
         'user_id': user.id,
-        'exp': datetime.utcnow() + timedelta(days=3) 
+        'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
-    token = jwt.encode(token_data, current_app.config['JWT_SECRET_KEY'], algorithm='HS256')
+    token = jwt.encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
     user.api_token = token
     db.session.commit()
     return token
