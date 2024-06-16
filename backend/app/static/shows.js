@@ -258,23 +258,20 @@ document.addEventListener('click', function(event) {
     }
 });
 function signup(email, username, password) {
-    const formData = new URLSearchParams();
-    formData.append('email', email);
-    formData.append('username', username);
-    formData.append('password', password);
-
     fetch('/auth/signup', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
         },
-        body: formData
+        body: JSON.stringify({ email: email, username: username, password: password })
     })
     .then(response => response.json())
     .then(data => {
         if (data.api_token) {
             storeTokens(data.api_token);
-            window.location.href = data.Location || '/profile';
+            const redirectUrl = data.Location || '/profile';  // Use fallback URL if Location header is not present
+            console.log(`Redirecting to ${redirectUrl}`);
+            window.location.href = redirectUrl;  // Redirect to profile or home page
         } else {
             alert(data.msg);
         }
