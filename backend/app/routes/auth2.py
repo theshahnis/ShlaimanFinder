@@ -179,3 +179,8 @@ def test_email():
     except Exception as e:
         return f'Failed to send email: {e}'
     
+@auth_bp.route('/generate_token', methods=['POST'])
+@login_required
+def generate_token():
+    token = current_user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
+    return jsonify({'api_token': token})

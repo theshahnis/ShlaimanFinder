@@ -20,6 +20,7 @@ class User(UserMixin, db.Model):
     profile_image = db.Column(db.String(150), nullable=True)
     passcode_attempts = db.Column(db.Integer, default=0, nullable=True)
     note = db.Column(db.Text, nullable=True)
+    api_token = db.Column(db.String(256), unique=True, nullable=True) 
 
     def set_password(self, password):
         self.password = generate_password_hash(password, method='pbkdf2:sha256')
@@ -30,6 +31,27 @@ class User(UserMixin, db.Model):
     @classmethod
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
+    
+    def generate_api_token(self, secret_key):
+        import jwt
+        token_data = {
+            'user_id': self.id,
+            'exp': datetime.utcnow() + timedelta(days=1)  # Token expiration time
+        }
+        token = jwt.encode(token_data, secret_key, algorithm='HS256')
+        self.api_token = token
+        db.session.commit()
+        return token
+
+    def verify_api_token(self, token, secret_key):
+        import jwt
+        try:
+            data = jwt.decode(token, secret_key, algorithms=['HS256'])
+            return data['user_id'] == self.id
+        except jwt.ExpiredSignatureError:
+            return False
+        except jwt.InvalidTokenError:
+            return False
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,9 +1,8 @@
-function storeTokens(accessToken, refreshToken) {
+function storeTokens(accessToken) {
     localStorage.setItem('access_token', accessToken);
-    localStorage.setItem('refresh_token', refreshToken);
 }
 
-function getAccessToken() {
+function getStoredToken() {
     return localStorage.getItem('access_token');
 }
 
@@ -24,18 +23,13 @@ function login(email, password, remember = false) {
         },
         body: JSON.stringify({ email: email, password: password, remember: remember })
     })
-    .then(response => {
-        if (response.ok) {
-            return response.json().then(data => {
-                if (data.access_token) {
-                    storeTokens(data.access_token, data.refresh_token);
-                    window.location.href = response.headers.get('Location') || '/profile';  // Redirect to home or another protected page
-                } else {
-                    alert(data.msg);  // Handle login error
-                }
-            });
+    .then(response => response.json())
+    .then(data => {
+        if (data.access_token) {
+            storeTokens(data.access_token);
+            window.location.href = '/profile';
         } else {
-            throw new Error('Login failed');
+            alert(data.msg);  // Handle login error
         }
     })
     .catch(error => console.error('Error:', error));
