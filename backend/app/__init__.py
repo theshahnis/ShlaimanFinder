@@ -31,12 +31,15 @@ def create_app():
     app.config['MAIL_PASSWORD'] = None
     app.config['MAIL_DEFAULT_SENDER'] = 'Shlaiman Finder <agileprocessuser@gmail.com>'
     app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
+    app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.auth_page'
     mail.init_app(app)
     migrate.init_app(app, db)
+
+    jwt = JWTManager(app) 
 
     register_blueprints(app)
 
