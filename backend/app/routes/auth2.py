@@ -30,7 +30,7 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
-        login_user(user, remember=remember)
+        
         api_token = User.generate_api_token(user,os.getenv('JWT_SECRET_KEY'))
         user.api_token = api_token
         response = jsonify({
@@ -39,6 +39,7 @@ def login():
         })
         
         response.headers['Location'] = url_for('profile_bp.profile')
+        login_user(user, remember=remember)
         return response
     else:
         return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
@@ -89,14 +90,14 @@ def signup():
     new_user = User(email=email, username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
-    login_user(new_user)
+    
     api_token = new_user.generate_api_token(current_app.config['JWT_SECRET_KEY'])
     response = jsonify({
         'api_token': api_token,
         'msg': 'Account created successfully!',
-        'Location': url_for('profile_bp.profile')
     })
     response.headers['Location'] = url_for('profile_bp.profile')
+    login_user(new_user)
     return response
 
 
