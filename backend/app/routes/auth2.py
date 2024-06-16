@@ -66,7 +66,8 @@ def token_required(f):
 
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
-    if request.content_type != 'application/json':
+    print(request.headers)  # Add this line to log headers
+    if not request.is_json:
         return jsonify({"msg": "Content type must be application/json"}), 415
 
     data = request.get_json()
