@@ -32,7 +32,10 @@ def create_app():
     app.config['MAIL_DEFAULT_SENDER'] = 'Shlaiman Finder <agileprocessuser@gmail.com>'
     app.config['SECURITY_PASSWORD_SALT'] = os.getenv('SECURITY_PASSWORD_SALT')
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
-
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.auth_page'

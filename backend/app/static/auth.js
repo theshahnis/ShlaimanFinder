@@ -46,13 +46,14 @@ function authenticatedFetch(url, options = {}) {
     const token = getAccessToken();
     if (!token) {
         window.location.href = '/auth';  // Redirect to login if no token
-        return;
+        return Promise.reject('No token available');
     }
 
     options.headers = {
         ...options.headers,
         'Authorization': 'Bearer ' + token
     };
+
     if (!(options.body instanceof FormData)) {
         options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
     }
@@ -80,7 +81,7 @@ function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) {
         window.location.href = '/auth';  // Redirect to login if no refresh token
-        return;
+        return Promise.reject('No refresh token available');
     }
 
     return fetch('/auth/refresh', {
