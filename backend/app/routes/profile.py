@@ -1,10 +1,9 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request,current_app
-#from flask_login import login_required, current_user
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..models import User
 from ..forms import UpdateProfileForm
 from ..extensions import db
-import secrets,os
+import secrets, os
 from PIL import Image
 
 profile_bp = Blueprint('profile_bp', __name__)

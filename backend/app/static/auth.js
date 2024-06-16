@@ -33,7 +33,7 @@ function login(email, password) {
     .then(data => {
         if (data.access_token) {
             storeTokens(data.access_token, data.refresh_token);
-            window.location.href = '/profile';  // Redirect to profile or another protected page
+            window.location.href = '/profile';  // Redirect to profile or another protected page after storing tokens
         } else {
             alert(data.msg);  // Handle login error
         }

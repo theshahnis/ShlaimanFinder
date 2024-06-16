@@ -39,6 +39,24 @@ def login():
 
     return jsonify({"msg": "Bad email or password"}), 401
 
+def login_or_jwt_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            # Try to verify JWT token
+            verify_jwt_in_request()
+            current_user_email = get_jwt_identity()
+            # If JWT is valid, proceed
+            return fn(*args, **kwargs)
+        except NoAuthorizationError:
+            # If JWT is not valid, fall back to session-based login
+            if current_user.is_authenticated:
+                return fn(*args, **kwargs)
+            else:
+                flash('You need to be logged in to access this page.', 'danger')
+                return redirect(url_for('auth_bp.auth_page'))
+    return wrapper
+
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     email = request.json.get('email')
@@ -153,20 +171,3 @@ def test_email():
     except Exception as e:
         return f'Failed to send email: {e}'
     
-def login_or_jwt_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        try:
-            # Try to verify JWT token
-            verify_jwt_in_request()
-            current_user_email = get_jwt_identity()
-            # If JWT is valid, proceed
-            return fn(*args, **kwargs)
-        except NoAuthorizationError:
-            # If JWT is not valid, fall back to session-based login
-            if current_user.is_authenticated:
-                return fn(*args, **kwargs)
-            else:
-                flash('You need to be logged in to access this page.', 'danger')
-                return redirect(url_for('auth_bp.auth_page'))
-    return wrapper
