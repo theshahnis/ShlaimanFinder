@@ -5,9 +5,8 @@ from functools import wraps
 from ..models import User
 from ..extensions import db, mail
 from flask_mail import Message
-import smtplib
-import jwt
-import datetime
+import smtplib,jwt,os,datetime
+
 
 auth_bp = Blueprint('auth_bp', __name__)
 
