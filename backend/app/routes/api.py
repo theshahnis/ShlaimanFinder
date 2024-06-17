@@ -115,7 +115,7 @@ class SignupResource(Resource):
 @api.route('/logout')
 class LogoutResource(Resource):
     @api.doc(security='Bearer')
-    @token_required
+    @token_or_login_required
     def post(self, current_user):
         logout_user()
         return {'msg': 'Successfully logged out.'}, 200
@@ -123,14 +123,14 @@ class LogoutResource(Resource):
 @api.route('/protected')
 class ProtectedResource(Resource):
     @api.doc(security='Bearer')
-    @token_required
+    @token_or_login_required
     def get(self, current_user):
         return {'msg': f'Hello, {current_user.username}! This is a protected route.'}, 200
     
 @api.route('/validate')
 class ValidateTokenResource(Resource):
     @api.doc(security='Bearer')
-    @token_required
+    @token_or_login_required
     def post(self, current_user):
         data = request.get_json()
         test_param = data.get('test')
@@ -141,7 +141,7 @@ class ValidateTokenResource(Resource):
             return {'msg': 'Token is valid, but test parameter is not true'}, 400
 @api.route('/protected-endpoint')
 class ProtectedEndpoint(Resource):
-    @token_required
+    @token_or_login_required
     def get(self, current_user):
         return jsonify({'msg': f'Hello, {current_user.username}'})
     
