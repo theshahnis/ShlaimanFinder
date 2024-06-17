@@ -52,13 +52,16 @@ def token_or_login_required(f):
                 user = User.query.get(data['user_id'])
                 if not user:
                     raise jwt.InvalidTokenError
-                login_user(user)  # Log in the user
+                login_user(user) 
             except jwt.ExpiredSignatureError:
                 return jsonify({'error': 'Token has expired'}), 401
             except jwt.InvalidTokenError:
                 return jsonify({'error': 'Token is invalid'}), 401
         elif not current_user.is_authenticated:
-            return redirect(url_for('auth_bp.auth_page'))
+            if request.is_json or request.path.startswith('/api/'):
+                return jsonify({'error': 'Token is missing or invalid'}), 401
+            else:
+                return redirect(url_for('auth_bp.auth_page'))
 
         return f(*args, **kwargs)
 
