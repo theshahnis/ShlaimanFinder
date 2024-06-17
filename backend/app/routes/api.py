@@ -37,27 +37,30 @@ signup_model = api.model('Signup', {
     'password': fields.String(required=True, description='The user password')
 })
 
-def token_required(f):
+def token_or_login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
         if 'Authorization' in request.headers:
             token = request.headers['Authorization'].split()[1]
+        elif 'api_token' in request.cookies:
+            token = request.cookies.get('api_token')
 
-        if not token:
-            return jsonify({'error': 'Token is missing'}), 401
+        if token:
+            try:
+                data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+                user = User.query.get(data['user_id'])
+                if not user:
+                    raise jwt.InvalidTokenError
+                login_user(user)  # Log in the user
+            except jwt.ExpiredSignatureError:
+                return jsonify({'error': 'Token has expired'}), 401
+            except jwt.InvalidTokenError:
+                return jsonify({'error': 'Token is invalid'}), 401
+        elif not current_user.is_authenticated:
+            return redirect(url_for('auth_bp.auth_page'))
 
-        try:
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
-            if not current_user:
-                raise jwt.InvalidTokenError
-        except jwt.ExpiredSignatureError:
-            return jsonify({'error': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'error': 'Token is invalid'}), 401
-
-        return f(current_user, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorated
 

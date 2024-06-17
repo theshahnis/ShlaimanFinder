@@ -5,16 +5,16 @@ from ..forms import UpdateProfileForm
 from ..extensions import db
 from datetime import datetime, timedelta
 import pytz
-
+from .api import token_or_login_required
 show_bp = Blueprint('show_bp', __name__)
 
 @show_bp.route('/', methods=['GET'])
-@login_required
+@token_or_login_required
 def shows():
     return render_template('shows.html')
 
 @show_bp.route('/api/shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_shows():
     date_str = request.args.get('date')
     show_id = request.args.get('id')
@@ -54,7 +54,7 @@ def get_shows():
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
 
 @show_bp.route('/api/show', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_show():
     show_id = request.args.get('id')
     if not show_id:
@@ -72,7 +72,7 @@ def get_show():
     return jsonify({'show': show_dict, 'attendees': attendees_data})
 
 @show_bp.route('/user-shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def user_shows():
     user_id = current_user.id
     user_shows = UserShow.query.filter_by(user_id=user_id).all()
@@ -84,7 +84,7 @@ def user_shows():
     return jsonify({'show_ids': show_ids, 'shows_attendees': shows_attendees})
 
 @show_bp.route('/select-show', methods=['POST'])
-@login_required
+@token_or_login_required
 def select_show():
     data = request.json
     show_id = data.get('showId')
@@ -107,13 +107,13 @@ def select_show():
     return jsonify({'attendees': attendees_data})
 
 @show_bp.route('/my-shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def my_shows():
     return render_template('my_shows.html')
 
 
 @show_bp.route('/api/my-shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_my_shows():
     user_id = current_user.id
     now = datetime.now(pytz.timezone('Europe/Amsterdam'))
