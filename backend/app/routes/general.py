@@ -3,16 +3,17 @@ from flask_login import login_required, current_user
 from ..models import User, Group
 from ..forms import JoinGroupForm
 from ..extensions import db
+from .api import token_or_login_required
 
 general_bp = Blueprint('general_bp', __name__)
 
 @general_bp.route('/')
-@login_required
+@token_or_login_required
 def index():
     return redirect(url_for('general_bp.home'))
 
 @general_bp.route('/home')
-@login_required
+@token_or_login_required
 def home():
     return render_template('index.html', name=current_user.username)
 
@@ -22,7 +23,7 @@ def before_request():
         return redirect(url_for('auth_bp.auth_page'))
 
 @general_bp.route('/join_group', methods=['GET', 'POST'])
-@login_required
+@token_or_login_required
 def join_group():
     form = JoinGroupForm()
     if form.validate_on_submit():
@@ -50,7 +51,7 @@ def join_group():
     return render_template('join_group.html', title='Join Group', form=form)
 
 @general_bp.route('/friends', methods=['GET'])
-@login_required
+@token_or_login_required
 def friends():
     if not current_user.group_id:
         flash('You are not part of any group', 'warning')
@@ -61,16 +62,16 @@ def friends():
     return render_template('friends.html', users=users, no_friends=no_friends)
 
 @general_bp.route('/map', methods=['GET'])
-@login_required
+@token_or_login_required
 def map_view():
     return render_template('map.html')
 
 @general_bp.route('/shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def shows():
     return render_template('shows.html')
 
 @general_bp.route('/my-shows', methods=['GET'])
-@login_required
+@token_or_login_required
 def my_shows():
     return render_template('my_shows.html')

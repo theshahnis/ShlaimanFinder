@@ -6,6 +6,7 @@ from ..extensions import db
 from datetime import datetime, timedelta
 import pytz
 from .api import token_or_login_required
+
 show_bp = Blueprint('show_bp', __name__)
 
 @show_bp.route('/', methods=['GET'])

@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from flask_jwt_extended import (
     JWTManager, create_access_token, jwt_required, get_jwt_identity
 )
+from .api import token_or_login_required
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -107,7 +108,7 @@ def generate_and_save_token(user):
     return token
 
 @auth_bp.route('/logout')
-@login_required
+@token_or_login_required
 def logout():
     logout_user()
     flash('You have been logged out.', 'success')

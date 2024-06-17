@@ -7,17 +7,18 @@ import pytz
 import os
 import secrets
 from PIL import Image
+from .api import token_or_login_required
 
 location_bp = Blueprint('location_bp', __name__)
 
 @location_bp.route('/test-location', methods=['GET'])
-@login_required
+@token_or_login_required
 def test_location():
     return render_template('test-location.html')
 
 
 @location_bp.route('/update', methods=['POST'])
-@login_required
+@token_or_login_required
 def update_location():
     try:
         data = request.get_json()
@@ -47,7 +48,7 @@ def update_location():
         return jsonify({'message': 'Internal Server Error'}), 500
 
 @location_bp.route('/data', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_location_data():
     location = Location.query.filter_by(user_id=current_user.id).order_by(Location.timestamp.desc()).first()
     if location:
@@ -59,7 +60,7 @@ def get_location_data():
     return jsonify({'message': 'No location data found'}), 404
 
 @location_bp.route('/<int:user_id>', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_user_location(user_id):
     location = Location.query.filter_by(user_id=user_id).order_by(Location.timestamp.desc()).first()
     if location:
@@ -71,7 +72,7 @@ def get_user_location(user_id):
     return jsonify({'message': 'No location data found'}), 404
 
 @location_bp.route('/locations', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_locations():
     if not current_user.group_id:
         return jsonify({'locations': []})
@@ -145,7 +146,7 @@ def get_locations():
     return jsonify({'locations': all_locations})
 
 @location_bp.route('/create_location', methods=['POST'])
-@login_required
+@token_or_login_required
 def create_location():
     latitude = request.form.get('latitude')
     longitude = request.form.get('longitude')
@@ -200,7 +201,7 @@ def create_location():
         return jsonify({'message': 'Failed to create location', 'error': str(e)}), 500
 
 @location_bp.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
-@login_required
+@token_or_login_required
 def delete_meeting_point(meeting_point_id):
     if not current_user.is_superuser:
         return jsonify({'message': 'Permission denied'}), 403
@@ -211,7 +212,7 @@ def delete_meeting_point(meeting_point_id):
     return jsonify({'message': 'Meeting point deleted successfully'}), 200
 
 @location_bp.route('/delete_static_location/<int:location_id>', methods=['POST'])
-@login_required
+@token_or_login_required
 def delete_static_location(location_id):
     if not current_user.is_superuser:
         return jsonify({'message': 'Permission denied'}), 403
@@ -222,7 +223,7 @@ def delete_static_location(location_id):
     return jsonify({'message': 'Static location deleted successfully'}), 200
 
 @location_bp.route('/static_locations', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_static_locations():
     static_locations = StaticLocation.query.all()
     locations = []

@@ -6,11 +6,12 @@ from ..forms import UpdateProfileForm
 from ..extensions import db
 import secrets, os
 from PIL import Image
+from .api import token_or_login_required
 
 profile_bp = Blueprint('profile_bp', __name__)
 
 @profile_bp.route('/', methods=['GET', 'POST'])
-@login_required
+@token_or_login_required
 def profile():
 
 
