@@ -6,8 +6,11 @@ from ..extensions import db, mail
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from ..forms import RequestResetForm
-import smtplib,jwt
+import smtplib
 from datetime import datetime, timedelta
+from flask_jwt_extended import (
+    JWTManager, create_access_token, jwt_required, get_jwt_identity
+)
 
 auth_bp = Blueprint('auth_bp', __name__)
 
@@ -32,19 +35,30 @@ def login():
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-        token = generate_and_save_token(user)
+
+        # token = generate_and_save_token(user)
+        # response = redirect(url_for('profile_bp.profile'))
+        # response.set_cookie('api_token', token, httponly=True, secure=True)
+        if not user.api_token:
+            access_token = create_access_token(identity=user.id)
+            user.api_token = access_token
+            db.session.commit()
+
         response = redirect(url_for('profile_bp.profile'))
-        response.set_cookie('api_token', token, httponly=True, secure=True)
+        response.set_cookie('api_token', user.api_token, httponly=True, secure=True)
+
         flash('Successfully logged in!', 'success')
         return response
     else:
         flash('Login failed. Check your email and password.', 'error')
         return redirect(url_for('auth_bp.auth_page'))
-
+    
+@auth_bp.route('/signup', methods=['POST'])
 def signup():
-    email = request.form.get('email')
-    username = request.form.get('username')
-    password = request.form.get('password')
+    data = request.get_json() if request.is_json else request.form
+    email = data.get('email')
+    username = data.get('username')
+    password = data.get('password')
 
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
@@ -60,8 +74,15 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
     login_user(new_user)
+    #token = generate_and_save_token(new_user)
+    access_token = create_access_token(identity=new_user.id)
+    new_user.api_token = access_token
+    db.session.commit()
+    
+    response = redirect(url_for('profile_bp.profile'))
+    response.set_cookie('api_token', access_token, httponly=True, secure=True)
     flash('Account created successfully!', 'success')
-    return redirect(url_for('profile_bp.profile'))
+    return response
 
 
 #Test Tokens

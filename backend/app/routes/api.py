@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restx import Api, Resource, fields
 from flask_login import login_user, logout_user, current_user, login_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from functools import wraps
 import jwt
 import datetime
@@ -140,3 +141,16 @@ class ProtectedEndpoint(Resource):
     @token_required
     def get(self, current_user):
         return jsonify({'msg': f'Hello, {current_user.username}'})
+    
+@api_bp.route('/test', methods=['GET'])
+@jwt_required()
+def test_api():
+    user_id = get_jwt_identity()
+    return jsonify({'msg': f'Hello, user {user_id}. Your token is valid!'}), 200
+
+@api_bp.route('/validate_token', methods=['POST'])
+@jwt_required()
+def validate_token():
+    user_id = get_jwt_identity()
+    test_value = request.json.get('test', False)
+    return jsonify({'msg': f'Token is valid for user {user_id} and test value is {test_value}'}), 200
