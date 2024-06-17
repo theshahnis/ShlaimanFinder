@@ -24,6 +24,7 @@ def auth_page():
             return signup()
     return render_template('auth.html')
 
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json() if request.is_json else request.form
     email = request.form.get('email')
