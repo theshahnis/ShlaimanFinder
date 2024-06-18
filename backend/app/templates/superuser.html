@@ -107,9 +107,18 @@
                         <td>${location.note}</td>
                         <td>${location.created_at}</td>
                         <td>${location.remaining_time}</td>
-                        <td><button onclick="deleteMeetingPoint(${location.id})" class="btn btn-danger">Delete</button></td>
+                        <td><button class="delete-meeting-point btn btn-danger" data-id="${location.id}">Delete</button></td>
                     `;
                     tableBody.appendChild(row);
+                });
+
+                // Add event listeners for delete buttons
+                document.querySelectorAll('.delete-meeting-point').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const meetingPointId = this.getAttribute('data-id');
+                        console.log(`Deleting meeting point with ID: ${meetingPointId}`);
+                        deleteMeetingPoint(meetingPointId);
+                    });
                 });
             })
             .catch(error => {
@@ -149,9 +158,18 @@
                     row.innerHTML = `
                         <td>${location.username}</td>
                         <td>${location.note}</td>
-                        <td><button onclick="deleteStaticLocation(${location.id})" class="btn btn-danger">Delete</button></td>
+                        <td><button class="delete-static-location btn btn-danger" data-id="${location.id}">Delete</button></td>
                     `;
                     tableBody.appendChild(row);
+                });
+
+                // Add event listeners for delete buttons
+                document.querySelectorAll('.delete-static-location').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const locationId = this.getAttribute('data-id');
+                        console.log(`Deleting static location with ID: ${locationId}`);
+                        deleteStaticLocation(locationId);
+                    });
                 });
             })
             .catch(error => {
