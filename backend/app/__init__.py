@@ -9,14 +9,14 @@ import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from flask_restx import Api, Resource
+
 
 class Base(DeclarativeBase):
   pass
 
 def create_app():
     load_dotenv()
-    print(load_dotenv())
+
     app = Flask(__name__, static_folder='static', static_url_path='')
     api = Api(app, version='1.0', title='Shlaiman Finder API', description='A simple API')
     
@@ -24,7 +24,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
-    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=180)
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10080)
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/profile_pics')
     #app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024    
     app.config['MAIL_SERVER'] = 'localhost'
@@ -40,7 +40,7 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)
-    print(app.config)
+
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.auth_page'
@@ -80,4 +80,4 @@ def load_user(user_id):
 
 # Import the new API routes to add them to the Flask-RESTX documentation
 from app.routes.api import api as api_namespace
-api.add_namespace(api_namespace)
+api.add_namespace(api_namespace, path='/api/v1')

@@ -176,7 +176,6 @@ class LogoutResource(Resource):
         return {'msg': 'Successfully logged out.'}, 200
 
 @api.route('/protected')
-@api.doc('protected')
 class ProtectedResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
@@ -184,7 +183,6 @@ class ProtectedResource(Resource):
         return {'msg': f'Hello, {current_user.username}! This is a protected route.'}, 200
     
 @api.route('/validate')
-@api.doc('validate')
 class ValidateTokenResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
@@ -197,20 +195,19 @@ class ValidateTokenResource(Resource):
         else:
             return {'msg': 'Token is valid, but test parameter is not true'}, 400
 @api.route('/protected-endpoint')
-@api.doc('protected-endpoint')
 class ProtectedEndpoint(Resource):
     @token_or_login_required
     def get(self, current_user):
         return jsonify({'msg': f'Hello, {current_user.username}'})
     
 @api_bp.route('/test', methods=['GET'])
-@jwt_required()
+@token_or_login_required()
 def test_api():
     user_id = get_jwt_identity()
     return jsonify({'msg': f'Hello, user {user_id}. Your token is valid!'}), 200
 
 @api_bp.route('/validate_token', methods=['POST'])
-@jwt_required()
+@token_or_login_required()
 def validate_token():
     user_id = get_jwt_identity()
     test_value = request.json.get('test', False)
