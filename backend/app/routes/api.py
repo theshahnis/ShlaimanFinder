@@ -51,18 +51,27 @@ def token_or_login_required(f):
         if token:
             try:
                 data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-                user_id = data.get('user_id')
-                if not user_id:
-                    raise jwt.InvalidTokenError
-                
-                user = User.query.get(user_id)
+                user = User.query.get(data['user_id'])
                 if not user:
                     raise jwt.InvalidTokenError
                 login_user(user)
             except jwt.ExpiredSignatureError:
-                return jsonify({'error': 'Token has expired'}), 401
+                user = User.query.filter_by(api_token=token).first()
+                if user:
+                    new_token = generate_and_save_token(user)
+                    response = jsonify({'error': 'Token has expired', 'new_token': new_token})
+                    response.set_cookie('api_token', new_token, httponly=True, secure=True)
+                    return response
+                else:
+                    if request.is_json or request.path.startswith('/api/'):
+                        return jsonify({'error': 'Token has expired'}), 401
+                    else:
+                        return redirect(url_for('auth_bp.auth_page'))
             except jwt.InvalidTokenError:
-                return jsonify({'error': 'Token is invalid'}), 401
+                if request.is_json or request.path.startswith('/api/'):
+                    return jsonify({'error': 'Token is invalid'}), 401
+                else:
+                    return redirect(url_for('auth_bp.auth_page'))
         elif not current_user.is_authenticated:
             if request.is_json or request.path.startswith('/api/'):
                 return jsonify({'error': 'Token is missing or invalid'}), 401
