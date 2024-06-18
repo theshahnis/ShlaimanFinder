@@ -49,7 +49,6 @@ def create_app():
     
     jwt = JWTManager(app) 
 
-    api.init_app(app)
 
     register_blueprints(app)
 
@@ -75,7 +74,7 @@ def create_app():
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
         app.logger.info('ShlaimanFinder startup')
-        
+
     # Import the new API routes to add them to the Flask-RESTX documentation
     from app.routes.api import api as api_namespace
     api.add_namespace(api_namespace, path='/api/v1')
