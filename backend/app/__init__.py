@@ -75,6 +75,10 @@ def create_app():
         app.logger.addHandler(file_handler)
         app.logger.setLevel(logging.INFO)
         app.logger.info('ShlaimanFinder startup')
+        
+    # Import the new API routes to add them to the Flask-RESTX documentation
+    from app.routes.api import api as api_namespace
+    api.add_namespace(api_namespace, path='/api/v1')
 
     return app
 
@@ -83,6 +87,4 @@ def load_user(user_id):
     from .models import User
     return User.query.get(int(user_id))
 
-# Import the new API routes to add them to the Flask-RESTX documentation
-from app.routes.api import api as api_namespace
-api.add_namespace(api_namespace, path='/api/v1')
+
