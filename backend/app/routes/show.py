@@ -60,7 +60,7 @@ def my_shows():
 
 @show_bp.route('/api/shows', methods=['GET'])
 @token_or_login_required
-try:
+    try:
         # Define the date range for the shows
         start_date = datetime.strptime('2024-06-27', '%Y-%m-%d')
         end_date = datetime.strptime('2024-06-30', '%Y-%m-%d') + timedelta(days=1)
