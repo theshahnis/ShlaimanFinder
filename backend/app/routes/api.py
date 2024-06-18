@@ -8,7 +8,8 @@ import jwt
 import datetime
 from ..models import User
 from ..extensions import db
-from .auth import generate_and_save_token
+
+
 api_bp = Blueprint('api', __name__)
 authorizations = {
     'Bearer': {
@@ -73,6 +74,17 @@ def token_or_login_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def generate_and_save_token(user):
+    token_data = {
+        'user_id': user.id,
+        'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
+    }
+    token = jwt.encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
+    user.api_token = token
+    db.session.commit()
+    return token
 
 @api.route('/login')
 class LoginResource(Resource):
