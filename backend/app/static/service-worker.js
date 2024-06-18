@@ -16,6 +16,17 @@ const urlsToCache = [
   '/static/shows.js',
   '/static/my_shows.js',
   '/static/map.js',
+  '/templates/base.html',
+  '/templates/profile.html',
+  '/templates/index.html',
+  '/templates/shows.html',
+  '/templates/my_shows.html',
+  '/templates/map.html',
+  '/templates/maps.html',
+  '/templates/index.html',
+  '/templates/friends.html',
+  '/templates/auth.html',
+  '/templates/join_group.html'
 ];
 
 // Install event - cache specified URLs and skip waiting to activate the new service worker immediately
@@ -29,36 +40,44 @@ self.addEventListener('install', event => {
   self.skipWaiting();  // Forces the waiting service worker to become the active service worker
 });
 
-// Fetch event - serve from cache if available, otherwise fetch from network and cache it
+// Fetch event - serve cached content when offline and cache new requests dynamically
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response => {
+      // Cache hit - return response
       if (response) {
         return response;
       }
-      return fetch(event.request).then(networkResponse => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
-        }
 
-        // Clone the response
-        const responseToCache = networkResponse.clone();
-
-        caches.open(CACHE_NAME).then(cache => {
-          if (event.request.url.includes('/profile_pics/') || event.request.headers.get('accept').includes('text/html')) {
-            cache.put(event.request, responseToCache);
+      // Not in cache - fetch from network
+      return fetch(event.request).then(
+        response => {
+          // Check if we received a valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
           }
-        });
 
-        return networkResponse;
-      });
+          // Important: Clone the response. A response is a stream
+          // and because we want the browser to consume the response
+          // as well as the cache consuming the response, we need
+          // to clone it so we have two streams.
+          const responseToCache = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+
+          return response;
+        }
+      );
     })
   );
 });
 
-// Activate event - delete old caches and claim clients immediately
+// Activate event - cleanup old caches
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
+
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
