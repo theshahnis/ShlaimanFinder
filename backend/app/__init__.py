@@ -55,7 +55,9 @@ def create_app():
 
     @app.route('/')
     def index():
-        return app.send_static_file('auth.html')
+        if current_user.is_authenticated:
+            return redirect(url_for('profile_bp.profile'))
+        return redirect(url_for('auth_bp.auth_page'))
     
     @app.errorhandler(413)
     def request_entity_too_large(error):
