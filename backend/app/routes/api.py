@@ -201,13 +201,13 @@ class ProtectedEndpoint(Resource):
         return jsonify({'msg': f'Hello, {current_user.username}'})
     
 @api_bp.route('/test', methods=['GET'])
-@token_or_login_required()
+@jwt_required()
 def test_api():
     user_id = get_jwt_identity()
     return jsonify({'msg': f'Hello, user {user_id}. Your token is valid!'}), 200
 
 @api_bp.route('/validate_token', methods=['POST'])
-@token_or_login_required()
+@jwt_required()
 def validate_token():
     user_id = get_jwt_identity()
     test_value = request.json.get('test', False)
