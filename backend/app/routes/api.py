@@ -20,13 +20,13 @@ authorizations = {
     }
 }
 
-api = Api(
-    api_bp,
-    version='1.0',
-    title='Flask API with JWT-Based Authentication',
-    description='Welcome to Shlaiman Finder App!',
-    authorizations=authorizations
-)
+api = Namespace('api', description='API operations')
+
+user_model = api.model('User', {
+    'email': fields.String(required=True, description='The user email'),
+    'username': fields.String(required=True, description='The user username'),
+    'password': fields.String(required=True, description='The user password'),
+})
 
 login_model = api.model('Login', {
     'email': fields.String(required=True, description='The email address'),
@@ -118,6 +118,7 @@ def generate_and_save_token(user):
 
 @api.route('/login')
 class LoginResource(Resource):
+    @api.doc('login')
     @api.expect(login_model)
     def post(self):
         data = request.get_json()
@@ -138,6 +139,7 @@ class LoginResource(Resource):
 
 @api.route('/signup')
 class SignupResource(Resource):
+    @api.doc('signup')
     @api.expect(signup_model)
     def post(self):
         data = request.get_json()
@@ -168,11 +170,13 @@ class SignupResource(Resource):
 class LogoutResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
+    @api.doc('logout')
     def post(self, current_user):
         logout_user()
         return {'msg': 'Successfully logged out.'}, 200
 
 @api.route('/protected')
+@api.doc('protected')
 class ProtectedResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
@@ -180,6 +184,7 @@ class ProtectedResource(Resource):
         return {'msg': f'Hello, {current_user.username}! This is a protected route.'}, 200
     
 @api.route('/validate')
+@api.doc('validate')
 class ValidateTokenResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
@@ -192,6 +197,7 @@ class ValidateTokenResource(Resource):
         else:
             return {'msg': 'Token is valid, but test parameter is not true'}, 400
 @api.route('/protected-endpoint')
+@api.doc('protected-endpoint')
 class ProtectedEndpoint(Resource):
     @token_or_login_required
     def get(self, current_user):

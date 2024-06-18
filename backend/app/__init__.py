@@ -1,5 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_restplus import Api
 from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from app.extensions import db, login_manager, mail, migrate
@@ -16,6 +17,8 @@ def create_app():
     load_dotenv()
     print(load_dotenv())
     app = Flask(__name__, static_folder='static', static_url_path='')
+    api = Api(app, version='1.0', title='Shlaiman Finder API', description='A simple API')
+    
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
@@ -73,3 +76,7 @@ def create_app():
 def load_user(user_id):
     from .models import User
     return User.query.get(int(user_id))
+
+# Import the new API routes to add them to the Flask-RESTX documentation
+from app.routes.api import api as api_namespace
+api.add_namespace(api_namespace)
