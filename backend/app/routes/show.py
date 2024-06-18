@@ -90,7 +90,28 @@ def get_shows():
 
     for show in shows:
         show_dict = show.to_dict()
-        shows_data.append(show_dict)
+        stage = show_dict['stage']
+
+     
+        show_start = datetime.strptime(show_dict['start_time'], '%Y-%m-%d %H:%M')
+        show_end = datetime.strptime(show_dict['end_time'], '%Y-%m-%d %H:%M')
+
+        if show_start.hour < 6:
+            show_start -= timedelta(days=1)
+        
+        show_date = show_start.strftime('%Y-%m-%d')  
+
+        if stage not in shows_data:
+            shows_data[stage] = {}
+        if show_date not in shows_data[stage]:
+            shows_data[stage][show_date] = []
+        shows_data[stage][show_date].append({
+            'id': show_dict['id'],
+            'name': show_dict['name'],
+            'start_time': show_dict['start_time'],
+            'end_time': show_dict['end_time'],
+            'stage': show_dict['stage']
+        })
 
         # Fetch attendees for the show
         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
