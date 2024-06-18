@@ -79,13 +79,18 @@
         {% block content %}{% endblock %}
     </div>
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+            var images = [
+                "{{ url_for('static', filename='images/background.png') }}",
+                "{{ url_for('static', filename='images/background2.png') }}",
+                "{{ url_for('static', filename='images/background3.png') }}",
+                "{{ url_for('static', filename='images/background4.png') }}"
+            ];
+            var randomImage = images[Math.floor(Math.random() * images.length)];
+            document.body.style.backgroundImage = 'url(' + randomImage + ')';
+        });
 
+        if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('{{ url_for('static', filename='service-worker.js') }}').then(function(registration) {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -94,7 +99,6 @@
                 });
             });
         }
-
         function isOnline() {
             return navigator.onLine;
         }
@@ -111,15 +115,6 @@
         window.addEventListener('offline', function() {
             alert('You have lost internet connection. Some features may not be available.');
         });
-
-        // Example usage for fetch requests
-        function fetchWithNetworkCheck(url, options) {
-            if (!isOnline()) {
-                showOfflineAlert();
-                return Promise.reject(new Error('No active internet connection'));
-            }
-            return fetch(url, options);
-        }
     </script>
 </body>
 </html>
