@@ -9,7 +9,7 @@ from ..forms import RequestResetForm
 import smtplib
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity
+    JWTManager, create_access_token, jwt_required, get_jwt_identity, decode,encode, ExpiredSignatureError, InvalidTokenError
 )
 from .api import token_or_login_required
 
@@ -87,19 +87,19 @@ def signup():
 def generate_and_save_token(user):
     if user.api_token:
         try:
-            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            data = decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             if data['exp'] > datetime.utcnow().timestamp():
                 return user.api_token
-        except jwt.ExpiredSignatureError:
+        except ExpiredSignatureError:
             pass  
-        except jwt.InvalidTokenError:
+        except InvalidTokenError:
             pass  
     
     token_data = {
         'user_id': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
-    token = jwt.encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
+    token = encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
     user.api_token = token
     db.session.commit()
     return token
