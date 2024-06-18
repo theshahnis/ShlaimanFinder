@@ -89,6 +89,12 @@
     </table>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchMeetingPoints();
+            fetchStaticLocations();
+            document.getElementById('addStaticLocationForm').addEventListener('submit', addStaticLocation);
+        });
+    
         function fetchMeetingPoints() {
             fetch('/location/locations')
                 .then(response => response.json())
@@ -106,7 +112,7 @@
                         `;
                         tableBody.appendChild(row);
                     });
-
+    
                     // Add event listeners for delete buttons
                     document.querySelectorAll('.delete-meeting-point').forEach(button => {
                         button.addEventListener('click', function() {
@@ -119,41 +125,35 @@
                 .catch(error => {
                     console.error('Error fetching meeting points:', error);
                 });
-    }
-
-    function deleteStaticLocation(locationId) {
-    if (!confirm('Are you sure you want to delete this location?')) {
-        return;
-    }
-
-    fetch(`/superuser/delete_static_location`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ location_id: locationId })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Static location deleted:', data);
-        fetchStaticLocations(); // Refresh the list
-    })
-    .catch(error => {
-        console.error('Error deleting static location:', error);
-    });
-}
-
-    document.addEventListener('DOMContentLoaded', function() {
-        fetchMeetingPoints();
-        fetchStaticLocations();
-        document.getElementById('addStaticLocationForm').addEventListener('submit', addStaticLocation);
-    });
-
+    
+        function deleteMeetingPoint(meetingPointId) {
+            if (!confirm('Are you sure you want to delete this meeting point?')) {
+                return;
+            }
+    
+            fetch('/superuser/delete_meeting_point', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location_id: meetingPointId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Meeting point deleted:', data);
+                fetchMeetingPoints(); // Refresh the list
+            })
+            .catch(error => {
+                console.error('Error deleting meeting point:', error);
+            });
+        }
+    
         function fetchStaticLocations() {
             fetch('/location/locations')
                 .then(response => response.json())
@@ -169,7 +169,7 @@
                         `;
                         tableBody.appendChild(row);
                     });
-
+    
                     // Add event listeners for delete buttons
                     document.querySelectorAll('.delete-static-location').forEach(button => {
                         button.addEventListener('click', function() {
@@ -182,27 +182,53 @@
                 .catch(error => {
                     console.error('Error fetching static locations:', error);
                 });
-    }
-
+        }
+    
+        function deleteStaticLocation(locationId) {
+            if (!confirm('Are you sure you want to delete this location?')) {
+                return;
+            }
+    
+            fetch('/superuser/delete_static_location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ location_id: locationId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Static location deleted:', data);
+                fetchStaticLocations(); // Refresh the list
+            })
+            .catch(error => {
+                console.error('Error deleting static location:', error);
+            });
+        }
+    
         function addStaticLocation(event) {
-        event.preventDefault();
-
-        const formData = new FormData(event.target);
-
-        fetch('/superuser/add_static_location', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Static location added:', data);
-            fetchStaticLocations();
-        })
-        .catch(error => {
-            console.error('Error adding static location:', error);
-        });
-    }
-
+            event.preventDefault();
+    
+            const formData = new FormData(event.target);
+    
+            fetch('/superuser/add_static_location', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Static location added:', data);
+                fetchStaticLocations();
+            })
+            .catch(error => {
+                console.error('Error adding static location:', error);
+            });
+        }
     </script>
 
 {% endblock %}
