@@ -75,7 +75,7 @@ def get_user_location(user_id):
 @token_or_login_required
 def get_locations():
     if not current_user.group_id:
-        return jsonify({'locations': []})
+        return jsonify({'users': [], 'static_locations': [], 'meeting_points': []})
 
     def format_time(dt):
         return dt.strftime("%Y-%m-%d %H:%M:%S") if dt else None
@@ -84,6 +84,7 @@ def get_locations():
         expires_at = created_at + timedelta(hours=duration)
         remaining = expires_at - datetime.now()
         return remaining if remaining.total_seconds() > 0 else timedelta(0)
+
 
     # Fetch user locations
     users = User.query.filter_by(group_id=current_user.group_id).all()
@@ -134,16 +135,16 @@ def get_locations():
             'remaining_time': None
         })
 
-    # Combine all locations
-    all_locations = user_locations + meeting_point_locations + static_location_data
-
     # Debug information
     print(f"Total user locations: {len(user_locations)}")
     print(f"Total meeting points: {len(meeting_point_locations)}")
     print(f"Total static locations: {len(static_location_data)}")
-    print(f"Total locations to return: {len(all_locations)}")
 
-    return jsonify({'locations': all_locations})
+    return jsonify({
+        'users': user_locations,
+        'static_locations': static_location_data,
+        'meeting_points': meeting_point_locations
+    })
 
 @location_bp.route('/create_location', methods=['POST'])
 @token_or_login_required

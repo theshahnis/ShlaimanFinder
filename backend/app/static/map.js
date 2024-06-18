@@ -62,7 +62,6 @@ function updateLocation(latitude, longitude) {
     });
 }
 
-
 function refreshLocations() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
@@ -70,41 +69,58 @@ function refreshLocations() {
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
-            console.log('Fetched locations:', data.locations);  // Debugging information
-            data.locations.forEach(location => {
-                const position = [location.latitude, location.longitude];
-                const iconColorClass = getIconColorClass(location);
-                const customIcon = L.divIcon({
-                    className: `custom-marker ${iconColorClass}`,
-                    html: `<div class="marker-image" style="background-image: url('${location.profile_image}');"></div>`,
-                    iconSize: [50, 60],
-                    iconAnchor: [25, 60],
-                    popupAnchor: [0, -60]
-                });
+            console.log('Fetched locations:', data);  // Debugging information
+            
+            // Process user locations
+            data.users.forEach(location => {
+                addMarker(location);
+            });
 
-                let popupContent = `
-                    <b>${location.username}</b><br>
-                    <p>${location.note || ''}</p>
-                    <p>Last updated: ${location.created_at || 'N/A'}</p>
-                `;
-                if (location.isMeetingPoint) {
-                    popupContent += `<p>Remaining time: ${location.remaining_time}</p>`;
-                }
-                popupContent += `
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}" target="_blank">
-                        Navigate to this location
-                    </a>
-                `;
+            // Process static locations
+            data.static_locations.forEach(location => {
+                addMarker(location);
+            });
 
-                const marker = L.marker(position, { icon: customIcon }).addTo(map)
-                    .bindPopup(popupContent);
-                markers.push(marker);
+            // Process meeting points
+            data.meeting_points.forEach(location => {
+                addMarker(location);
             });
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
         });
 }
+
+function addMarker(location) {
+    const position = [location.latitude, location.longitude];
+    const iconColorClass = getIconColorClass(location);
+    const customIcon = L.divIcon({
+        className: `custom-marker ${iconColorClass}`,
+        html: `<div class="marker-image" style="background-image: url('${location.profile_image}');"></div>`,
+        iconSize: [50, 60],
+        iconAnchor: [25, 60],
+        popupAnchor: [0, -60]
+    });
+
+    let popupContent = `
+        <b>${location.username}</b><br>
+        <p>${location.note || ''}</p>
+        <p>Last updated: ${location.created_at || 'N/A'}</p>
+    `;
+    if (location.isMeetingPoint) {
+        popupContent += `<p>Remaining time: ${location.remaining_time}</p>`;
+    }
+    popupContent += `
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}" target="_blank">
+            Navigate to this location
+        </a>
+    `;
+
+    const marker = L.marker(position, { icon: customIcon }).addTo(map)
+        .bindPopup(popupContent);
+    markers.push(marker);
+}
+
 
 function startLocationSelection() {
     alert('Click on the map to set the location.');
@@ -234,7 +250,7 @@ function submitLocation(lat, lng) {
     .then(response => response.json())
     .then(data => {
         console.log('Location created successfully:', data);
-        fetchLocations();
+        refreshLocations();
     })
     .catch(error => {
         console.error('Error creating location:', error);

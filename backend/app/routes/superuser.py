@@ -62,8 +62,16 @@ def add_group():
     if not current_user.superuser:
         flash('Access denied: Superuser only', 'error')
         return redirect(url_for('general_bp.index'))
+    
     group_name = request.form['group_name']
     passcode = request.form['passcode']
+
+    # Check if the group name already exists
+    existing_group = Group.query.filter_by(name=group_name).first()
+    if existing_group:
+        flash('Group name already exists. Please choose a different name.', 'error')
+        return redirect(url_for('superuser_bp.superuser_view'))
+
     new_group = Group(name=group_name, passcode=passcode)
     db.session.add(new_group)
     db.session.commit()
