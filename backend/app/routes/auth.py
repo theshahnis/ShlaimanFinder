@@ -9,7 +9,7 @@ from ..forms import RequestResetForm
 import smtplib
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity
+    JWTManager, create_access_token, jwt_required, get_jwt_identity,create_access_token, set_access_cookies
 )
 from .api import token_or_login_required
 import jwt
@@ -38,21 +38,15 @@ def login():
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
         
-        if request.is_json:
-            token = generate_and_save_token(user)
-            return jsonify({'api_token': token, 'user_id': user.id, 'msg': 'Successfully logged in!'})
-        else:
-            token = generate_and_save_token(user)
-            response = redirect(url_for('profile_bp.profile'))
-            response.set_cookie('api_token', token, httponly=True, secure=True)
-            flash('Successfully logged in!', 'success')
-            return response
+        # Generate token and set it in the cookie
+        token = generate_and_save_token(user)
+        response = redirect(url_for('profile_bp.profile'))
+        set_access_cookies(response, token)  # Set JWT in cookie
+        flash('Successfully logged in!', 'success')
+        return response
     else:
-        if request.is_json:
-            return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
-        else:
-            flash('Login failed. Check your email and password.', 'error')
-            return redirect(url_for('auth_bp.auth_page'))
+        flash('Login failed. Check your email and password.', 'error')
+        return redirect(url_for('auth_bp.auth_page'))
     
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -88,6 +82,7 @@ def signup():
 
 #Test Tokens
 def generate_and_save_token(user):
+    # Check if the current token is valid
     if user.api_token:
         try:
             data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
@@ -97,12 +92,14 @@ def generate_and_save_token(user):
             pass  
         except jwt.InvalidTokenError:
             pass  
-
+    
+    # Generate a new token
     token_data = {
         'user_id': user.id,
+        'sub': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
-    token = jwt.encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
+    token = create_access_token(identity=user.id, additional_claims=token_data)
     user.api_token = token
     db.session.commit()
     return token

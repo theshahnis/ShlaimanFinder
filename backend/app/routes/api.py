@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, current_app, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restx import Api, Resource, fields
 from flask_login import login_user, logout_user, current_user, login_required
-from flask_jwt_extended import jwt_required, get_jwt_identity,decode_token
+from flask_jwt_extended import jwt_required, get_jwt_identity,decode_token,create_access_token, set_access_cookies
 from functools import wraps
 import jwt
 import datetime
@@ -50,11 +50,11 @@ def token_or_login_required(f):
 
         if token:
             try:
-                data = decode_token(token)
-                user_id = data.get('identity')
+                data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+                user_id = data.get('sub')
                 if not user_id:
                     raise jwt.InvalidTokenError
-
+                
                 user = User.query.get(user_id)
                 if not user:
                     raise jwt.InvalidTokenError
@@ -63,14 +63,9 @@ def token_or_login_required(f):
                 user = User.query.filter_by(api_token=token).first()
                 if user:
                     new_token = generate_and_save_token(user)
-                    if request.is_json or request.path.startswith('/api/'):
-                        response = jsonify({'error': 'Token has expired', 'new_token': new_token})
-                        response.set_cookie('api_token', new_token, httponly=True, secure=True)
-                        return response
-                    else:
-                        response = redirect(url_for('profile_bp.profile'))
-                        response.set_cookie('api_token', new_token, httponly=True, secure=True)
-                        return response
+                    response = redirect(url_for('profile_bp.profile'))
+                    set_access_cookies(response, new_token)  # Set new JWT in cookie
+                    return response
                 else:
                     if request.is_json or request.path.startswith('/api/'):
                         return jsonify({'error': 'Token has expired'}), 401
@@ -87,12 +82,20 @@ def token_or_login_required(f):
             else:
                 return redirect(url_for('auth_bp.auth_page'))
 
+        # Check if api_token is missing in the database
+        if not current_user.api_token:
+            new_token = generate_and_save_token(current_user)
+            response = redirect(url_for('profile_bp.profile'))
+            set_access_cookies(response, new_token)  # Set new JWT in cookie
+            return response
+
         return f(*args, **kwargs)
 
     return decorated
 
 
 def generate_and_save_token(user):
+    # Check if the current token is valid
     if user.api_token:
         try:
             data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
@@ -103,11 +106,13 @@ def generate_and_save_token(user):
         except jwt.InvalidTokenError:
             pass  
     
+    # Generate a new token
     token_data = {
         'user_id': user.id,
+        'sub': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
-    token = jwt.encode(token_data, current_app.config['SECRET_KEY'], algorithm='HS256')
+    token = create_access_token(identity=user.id, additional_claims=token_data)
     user.api_token = token
     db.session.commit()
     return token
