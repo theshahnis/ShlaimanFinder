@@ -17,7 +17,7 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__, static_folder='static', static_url_path='')
-    api = Api(app,version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
+    #api = Api(app,version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
 
     
 
@@ -76,8 +76,8 @@ def create_app():
         app.logger.info('ShlaimanFinder startup')
 
     # Import the new API routes to add them to the Flask-RESTX documentation
-    from app.routes.api import api as api_namespace
-    api.add_namespace(api_namespace, path='/api/v1')
+    #from app.routes.api import api as api_namespace
+    #api.add_namespace(api_namespace, path='/api/v1')
 
     return app
 

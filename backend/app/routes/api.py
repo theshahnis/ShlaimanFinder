@@ -12,15 +12,8 @@ from datetime import datetime, timedelta
 
 
 api_bp = Blueprint('api', __name__)
-authorizations = {
-    'Bearer': {
-        'type': 'apiKey',
-        'in': 'header',
-        'name': 'Authorization'
-    }
-}
 
-api = Namespace('api', description='API operations')
+#api = Namespace('api', description='API operations')
 
 user_model = api.model('User', {
     'email': fields.String(required=True, description='The user email'),
