@@ -9,7 +9,7 @@ from .api import token_or_login_required
 from flask_restx import Namespace, Resource, fields
 
 
-show_bp = Blueprint('show_bp', __name__)
+show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
 show_ns = Namespace('show', description='Show related operations')
 
 show_model = show_ns.model('Show', {
@@ -35,6 +35,12 @@ show_attendees_model = show_ns.model('ShowAttendees', {
 @token_or_login_required
 def shows():
     return render_template('shows.html')
+
+
+@show_bp.route('/my-shows', methods=['GET'])
+@token_or_login_required
+def my_shows():
+    return render_template('my_shows.html')
 
 @show_bp.route('/api/shows', methods=['GET'])
 @token_or_login_required
@@ -137,10 +143,7 @@ def select_show():
     attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
     return jsonify({'attendees': attendees_data})
 
-@show_bp.route('/my-shows', methods=['GET'])
-@token_or_login_required
-def my_shows():
-    return render_template('my_shows.html')
+
 
 
 @show_bp.route('/api/my-shows', methods=['GET'])
@@ -182,3 +185,24 @@ class ShowDetail(Resource):
     @token_or_login_required
     def get(self):
         return get_show()
+
+@show_ns.route('/user-shows')
+class UserShows(Resource):
+    @show_ns.doc('user_shows')
+    @token_or_login_required
+    def get(self):
+        return user_shows()
+
+@show_ns.route('/select-show')
+class SelectShow(Resource):
+    @show_ns.doc('select_show')
+    @token_or_login_required
+    def post(self):
+        return select_show()
+
+@show_ns.route('/my-shows')
+class MyShows(Resource):
+    @show_ns.doc('my_shows')
+    @token_or_login_required
+    def get(self):
+        return get_my_shows()
