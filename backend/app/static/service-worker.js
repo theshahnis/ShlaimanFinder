@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shlaiman-cache-v2';
+const CACHE_NAME = 'shlaiman-cache-v3';
 const urlsToCache = [
   '/',
   '/profile/',
