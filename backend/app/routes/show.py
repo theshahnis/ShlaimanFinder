@@ -133,11 +133,12 @@ class ShowList(Resource):
 
             # Fetch attendees for the show
             attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-            # Adding check for attendees in group
+            #adding check for attendees in group
             attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+            #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
             shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
-        return {'shows': shows_data, 'shows_attendees': shows_attendees}
+        return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
 
 
 
