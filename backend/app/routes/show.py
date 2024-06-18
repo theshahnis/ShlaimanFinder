@@ -198,7 +198,7 @@ def select_show():
 @token_or_login_required
 def get_my_shows():
     user_id = current_user.id
-    now = datetime.now(pytz.timezone('Europe/Amsterdam'))
+    now = datetime.now()
     user_shows = UserShow.query.join(Show).filter(
         UserShow.user_id == user_id,
         Show.start_time >= now
