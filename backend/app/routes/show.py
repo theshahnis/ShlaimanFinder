@@ -52,92 +52,92 @@ def shows():
 def my_shows():
     return render_template('my_shows.html')
 
-# @show_bp.route('/api/shows', methods=['GET'])
-# @token_or_login_required
-# def get_shows():
-#     date_str = request.args.get('date')
-#     show_id = request.args.get('id')
+@show_bp.route('/api/shows', methods=['GET'])
+@token_or_login_required
+def get_shows():
+    date_str = request.args.get('date')
+    show_id = request.args.get('id')
 
-#     if date_str:
-#         try:
-#             date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
-#         except ValueError:
-#             return jsonify({'error': 'Invalid date format'}), 400
+    if date_str:
+        try:
+            date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+        except ValueError:
+            return jsonify({'error': 'Invalid date format'}), 400
 
-#         start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
-#         end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+        start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
+        end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
 
-#         shows = Show.query.filter(
-#             Show.start_time >= start_time,
-#             Show.start_time < end_time
-#         ).all()
-#     elif show_id:
-#         show = Show.query.get(show_id)
-#         if not show:
-#             return jsonify({'error': 'Show not found'}), 404
-#         shows = [show]
-#     else:
-#         return jsonify({'error': 'Date or Show ID parameter is required'}), 400
+        shows = Show.query.filter(
+            Show.start_time >= start_time,
+            Show.start_time < end_time
+        ).all()
+    elif show_id:
+        show = Show.query.get(show_id)
+        if not show:
+            return jsonify({'error': 'Show not found'}), 404
+        shows = [show]
+    else:
+        return jsonify({'error': 'Date or Show ID parameter is required'}), 400
 
-#     shows_data = []
-#     shows_attendees = {}
+    shows_data = []
+    shows_attendees = {}
 
-#     for show in shows:
-#         show_dict = show.to_dict()
-#         shows_data.append(show_dict)
+    for show in shows:
+        show_dict = show.to_dict()
+        shows_data.append(show_dict)
 
-#         # Fetch attendees for the show
-#         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-#         #adding check for attendees in group
-#         attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-#         #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-#         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+        # Fetch attendees for the show
+        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+        #adding check for attendees in group
+        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+        #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
-#     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
-@show_ns.route('/api/shows')
-class ShowList(Resource):
-    @show_ns.doc('list_shows', params={'date': 'Date in YYYY-MM-DD format', 'id': 'Show ID'})
-    @show_ns.marshal_with(show_model, as_list=True)
-    @token_or_login_required
-    def get(self):
-        date_str = request.args.get('date')
-        show_id = request.args.get('id')
+    return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+# @show_ns.route('/api/shows')
+# class ShowList(Resource):
+#     @show_ns.doc('list_shows', params={'date': 'Date in YYYY-MM-DD format', 'id': 'Show ID'})
+#     @show_ns.marshal_with(show_model, as_list=True)
+#     @token_or_login_required
+#     def get(self):
+#         date_str = request.args.get('date')
+#         show_id = request.args.get('id')
 
-        if date_str:
-            try:
-                date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
-            except ValueError:
-                return jsonify({'error': 'Invalid date format'}), 400
+#         if date_str:
+#             try:
+#                 date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+#             except ValueError:
+#                 return jsonify({'error': 'Invalid date format'}), 400
 
-            start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
-            end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+#             start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
+#             end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
 
-            shows = Show.query.filter(
-                Show.start_time >= start_time,
-                Show.start_time < end_time
-            ).all()
-        elif show_id:
-            show = Show.query.get(show_id)
-            if not show:
-                return jsonify({'error': 'Show not found'}), 404
-            shows = [show]
-        else:
-            return jsonify({'error': 'Date or Show ID parameter is required'}), 400
+#             shows = Show.query.filter(
+#                 Show.start_time >= start_time,
+#                 Show.start_time < end_time
+#             ).all()
+#         elif show_id:
+#             show = Show.query.get(show_id)
+#             if not show:
+#                 return jsonify({'error': 'Show not found'}), 404
+#             shows = [show]
+#         else:
+#             return jsonify({'error': 'Date or Show ID parameter is required'}), 400
 
-        shows_data = []
-        shows_attendees = {}
+#         shows_data = []
+#         shows_attendees = {}
 
-        for show in shows:
-            show_dict = show.to_dict()
-            shows_data.append(show_dict)
+#         for show in shows:
+#             show_dict = show.to_dict()
+#             shows_data.append(show_dict)
 
-            # Fetch attendees for the show
-            attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-            # Adding check for attendees in group
-            attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-            shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+#             # Fetch attendees for the show
+#             attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+#             # Adding check for attendees in group
+#             attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#             shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
-        return {'shows': shows_data, 'shows_attendees': shows_attendees}
+#         return {'shows': shows_data, 'shows_attendees': shows_attendees}
 
 
 
@@ -273,7 +273,7 @@ class SelectShow(Resource):
 
 
 
-# @show_bp.route('/api/my-shows', methods=['GET'])
+# @show_bp.route('/my-shows', methods=['GET'])
 # @token_or_login_required
 # def get_my_shows():
 #     user_id = current_user.id
@@ -295,7 +295,7 @@ class SelectShow(Resource):
 #         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
 #     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
-@show_ns.route('/api/my-shows')
+@show_ns.route('/my-shows')
 class MyShows(Resource):
     @show_ns.doc('get_my_shows')
     @show_ns.marshal_with(my_shows_model)
