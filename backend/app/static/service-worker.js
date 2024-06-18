@@ -1,6 +1,25 @@
-const CACHE_NAME = 'shlaiman-cache-v1';
+const CACHE_NAME = 'shlaiman-cache-v2';
 const urlsToCache = [
   '/',
+  '/auth/',
+  '/auth',
+  '/auth/logout',
+  '/auth/logout/',
+  '/profile/',
+  '/profile',
+  '/show',
+  '/show/',
+  '/show/my-shows',
+  '/show/my-shows/',
+  '/map',
+  '/map/',
+  '/join_group',
+  '/join_group/',
+  '/friends',
+  '/friends/',
+  '/location/test-location',
+  '/superuser/',
+  '/superuser',
   '/static/styles.css',
   '/static/dark-mode.css',
   '/static/images/favicon.ico',
@@ -42,34 +61,28 @@ self.addEventListener('install', event => {
 
 // Fetch event - serve cached content when offline and cache new requests dynamically
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') {
+    return;  // Only cache GET requests
+  }
+
   event.respondWith(
-    caches.match(event.request).then(response => {
-      // Cache hit - return response
-      if (response) {
-        return response;
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;  // Return cached response if available
       }
 
-      // Not in cache - fetch from network
-      return fetch(event.request).then(
-        response => {
-          // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Important: Clone the response. A response is a stream
-          // and because we want the browser to consume the response
-          // as well as the cache consuming the response, we need
-          // to clone it so we have two streams.
-          const responseToCache = response.clone();
-
+      // Fetch from network and cache the response
+      return fetch(event.request).then(networkResponse => {
+        if (networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
           });
-
-          return response;
         }
-      );
+        return networkResponse;
+      }).catch(() => {
+        // Handle errors if network fetch fails
+      });
     })
   );
 });

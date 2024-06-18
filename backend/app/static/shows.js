@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fetch all shows once on page load
+    if (!isOnline()) {
+        showOfflineAlert();
+        return;
+    }
     fetch('/show/api/shows')
         .then(response => response.json())
         .then(data => {

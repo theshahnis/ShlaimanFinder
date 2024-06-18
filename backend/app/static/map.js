@@ -73,13 +73,14 @@ function updateLocation(latitude, longitude) {
 }
 
 function refreshLocations() {
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+    
     if (!isOnline()) {
         showOfflineAlert();
         return;
     }
 
-    markers.forEach(marker => map.removeLayer(marker));
-    markers = [];
 
     fetch('/location/locations')
         .then(response => response.json())
