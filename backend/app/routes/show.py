@@ -130,8 +130,14 @@ def get_my_shows():
     ).order_by(Show.start_time).all()
 
     shows_data = []
+    shows_attendees = {}
     for user_show in user_shows:
         show = user_show.show
         shows_data.append(show.to_dict())
 
-    return jsonify({'shows': shows_data})
+        # Fetch attendees for the show
+        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+
+    return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
