@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Api, Resource, fields
 from flask_login import login_user, logout_user, current_user, login_required
 from flask_jwt_extended import jwt_required, get_jwt_identity,decode_token,create_access_token, set_access_cookies
 from functools import wraps
@@ -12,25 +12,32 @@ from datetime import datetime, timedelta
 
 
 api_bp = Blueprint('api', __name__)
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization'
+    }
+}
 
-#api = Namespace('api', description='API operations')
+api = Api(
+    api_bp,
+    version='1.0',
+    title='Flask API with JWT-Based Authentication',
+    description='Welcome to Shlaiman Finder App!',
+    authorizations=authorizations
+)
 
-# user_model = api.model('User', {
-#     'email': fields.String(required=True, description='The user email'),
-#     'username': fields.String(required=True, description='The user username'),
-#     'password': fields.String(required=True, description='The user password'),
-# })
+login_model = api.model('Login', {
+    'email': fields.String(required=True, description='The email address'),
+    'password': fields.String(required=True, description='The user password')
+})
 
-# login_model = api.model('Login', {
-#     'email': fields.String(required=True, description='The email address'),
-#     'password': fields.String(required=True, description='The user password')
-# })
-
-# signup_model = api.model('Signup', {
-#     'email': fields.String(required=True, description='The email address'),
-#     'username': fields.String(required=True, description='The username'),
-#     'password': fields.String(required=True, description='The user password')
-# })
+signup_model = api.model('Signup', {
+    'email': fields.String(required=True, description='The email address'),
+    'username': fields.String(required=True, description='The username'),
+    'password': fields.String(required=True, description='The user password')
+})
 
 def token_or_login_required(f):
     @wraps(f)
@@ -111,7 +118,6 @@ def generate_and_save_token(user):
 
 @api.route('/login')
 class LoginResource(Resource):
-    @api.doc('login')
     @api.expect(login_model)
     def post(self):
         data = request.get_json()
@@ -132,7 +138,6 @@ class LoginResource(Resource):
 
 @api.route('/signup')
 class SignupResource(Resource):
-    @api.doc('signup')
     @api.expect(signup_model)
     def post(self):
         data = request.get_json()
@@ -163,7 +168,6 @@ class SignupResource(Resource):
 class LogoutResource(Resource):
     @api.doc(security='Bearer')
     @token_or_login_required
-    @api.doc('logout')
     def post(self, current_user):
         logout_user()
         return {'msg': 'Successfully logged out.'}, 200
