@@ -78,29 +78,39 @@ def add_group():
     flash('Group added successfully', 'success')
     return redirect(url_for('superuser_bp.superuser_view'))
 
-@superuser_bp.route('/delete_static_location/<int:location_id>', methods=['POST'])
+@superuser_bp.route('/delete_static_location', methods=['POST'])
 @token_or_login_required
-def delete_static_location(location_id):
+def delete_static_location():
     if not current_user.superuser:
-        flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('general_bp.index'))
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
+    data = request.get_json()
+    location_id = data.get('location_id')
+
+    if not location_id:
+        return jsonify({'error': 'Missing location_id'}), 400
+
     location = StaticLocation.query.get_or_404(location_id)
     db.session.delete(location)
     db.session.commit()
-    flash('Static location deleted successfully', 'success')
-    return redirect(url_for('superuser_bp.superuser_view'))
+    return jsonify({'msg': 'Static location deleted successfully'}), 200
 
-@superuser_bp.route('/delete_meeting_point/<int:point_id>', methods=['POST'])
+@superuser_bp.route('/delete_meeting_point', methods=['POST'])
 @token_or_login_required
-def delete_meeting_point(point_id):
+def delete_meeting_point():
     if not current_user.superuser:
-        flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('general_bp.index'))
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
+    data = request.get_json()
+    point_id = data.get('location_id')
+
+    if not point_id:
+        return jsonify({'error': 'Missing location_id'}), 400
+
     point = MeetingPoint.query.get_or_404(point_id)
     db.session.delete(point)
     db.session.commit()
-    flash('Meeting point deleted successfully', 'success')
-    return redirect(url_for('superuser_bp.superuser_view'))
+    return jsonify({'msg': 'Meeting point deleted successfully'}), 200
 
 @superuser_bp.route('/locations', methods=['GET'])
 @token_or_login_required
