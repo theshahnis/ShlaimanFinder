@@ -15,22 +15,22 @@ api_bp = Blueprint('api', __name__)
 
 #api = Namespace('api', description='API operations')
 
-user_model = api.model('User', {
-    'email': fields.String(required=True, description='The user email'),
-    'username': fields.String(required=True, description='The user username'),
-    'password': fields.String(required=True, description='The user password'),
-})
+# user_model = api.model('User', {
+#     'email': fields.String(required=True, description='The user email'),
+#     'username': fields.String(required=True, description='The user username'),
+#     'password': fields.String(required=True, description='The user password'),
+# })
 
-login_model = api.model('Login', {
-    'email': fields.String(required=True, description='The email address'),
-    'password': fields.String(required=True, description='The user password')
-})
+# login_model = api.model('Login', {
+#     'email': fields.String(required=True, description='The email address'),
+#     'password': fields.String(required=True, description='The user password')
+# })
 
-signup_model = api.model('Signup', {
-    'email': fields.String(required=True, description='The email address'),
-    'username': fields.String(required=True, description='The username'),
-    'password': fields.String(required=True, description='The user password')
-})
+# signup_model = api.model('Signup', {
+#     'email': fields.String(required=True, description='The email address'),
+#     'username': fields.String(required=True, description='The username'),
+#     'password': fields.String(required=True, description='The user password')
+# })
 
 def token_or_login_required(f):
     @wraps(f)
