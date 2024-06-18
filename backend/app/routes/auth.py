@@ -89,16 +89,6 @@ def signup():
 
 #Test Tokens
 def generate_and_save_token(user):
-    if user.api_token:
-        try:
-            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            if data['exp'] > datetime.utcnow().timestamp():
-                return user.api_token
-        except jwt.ExpiredSignatureError:
-            pass  
-        except jwt.InvalidTokenError:
-            pass  
-    
     token_data = {
         'user_id': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()

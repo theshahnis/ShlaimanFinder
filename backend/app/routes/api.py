@@ -54,7 +54,14 @@ def token_or_login_required(f):
                     raise jwt.InvalidTokenError
                 login_user(user) 
             except jwt.ExpiredSignatureError:
-                return jsonify({'error': 'Token has expired'}), 401
+                user = User.query.filter_by(api_token=token).first()
+                if user:
+                    new_token = generate_and_save_token(user)
+                    response = jsonify({'error': 'Token has expired', 'new_token': new_token})
+                    response.set_cookie('api_token', new_token, httponly=True, secure=True)
+                    return response
+                else:
+                    return jsonify({'error': 'Token is invalid'}), 401
             except jwt.InvalidTokenError:
                 return jsonify({'error': 'Token is invalid'}), 401
         elif not current_user.is_authenticated:
