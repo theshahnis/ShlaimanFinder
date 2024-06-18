@@ -56,6 +56,8 @@ def create_app():
     register_blueprints(app)
 
     api.init_app(app)
+    api.add_namespace(api_namespace, path='/api/v1')
+    api.add_namespace(profile_ns, path='/api/v1/profile')
 
     @app.route('/')
     def index():
@@ -81,8 +83,6 @@ def create_app():
         app.logger.info('ShlaimanFinder startup')
 
 
-    from app.namespaces import register_namespaces
-    register_namespaces(api)
 
     return app
 
