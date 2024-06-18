@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shlaiman-cache-v3';
+const CACHE_NAME = 'shlaiman-cache-v1';
 const urlsToCache = [
   '/',
   '/profile/',
@@ -16,7 +16,7 @@ const urlsToCache = [
   '/location/test-location',
   '/superuser/',
   '/superuser',
-  '/static/fallback.html',
+  '/fallback.html',
   '/static/styles.css',
   '/static/dark-mode.css',
   '/static/images/favicon.ico',
