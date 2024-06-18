@@ -1,3 +1,6 @@
+let allShows = {};
+let allShowsAttendees = {};
+
 document.addEventListener('DOMContentLoaded', function() {
     const dateButtons = document.querySelectorAll('.button');
 
@@ -8,27 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Load shows for the first date by default and highlight the first button
-    const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
-    if (firstButton) {
-        firstButton.classList.add('selected');
-        loadShowsForDate('2024-06-27', firstButton);
-    }
-});
-
-function loadShowsForDate(date, selectedButton) {
-    fetch(`/show/api/shows?date=${date}`)
+    // Fetch all shows once on page load
+    fetch('/show/api/shows')
         .then(response => response.json())
         .then(data => {
             if (data.error) {
                 console.error(data.error);
                 return;
             }
-            const shows = data.shows;
-            const showsAttendees = data.shows_attendees;
-            renderShows(shows, showsAttendees);
+            allShows = data.shows;
+            allShowsAttendees = data.shows_attendees;
+
+            // Load shows for the first date by default and highlight the first button
+            const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+            if (firstButton) {
+                firstButton.classList.add('selected');
+                loadShowsForDate('2024-06-27', firstButton);
+            }
         })
         .catch(error => console.error('Error loading shows:', error));
+});
+
+function loadShowsForDate(date, selectedButton) {
+    // Filter shows by selected date
+    const filteredShows = {};
+    for (const [stage, dates] of Object.entries(allShows)) {
+        filteredShows[stage] = {};
+        if (dates[date]) {
+            filteredShows[stage][date] = dates[date];
+        }
+    }
+
+    renderShows(filteredShows, allShowsAttendees);
 
     // Remove 'selected' class from all buttons
     const dateButtons = document.querySelectorAll('.button');
@@ -70,58 +84,57 @@ function renderShows(shows, showsAttendees) {
 
     const currentUserId = parseInt(document.querySelector('meta[name="user-id"]').getAttribute('content'));
 
-    shows.forEach(show => {
-        const showDate = new Date(show.start_time);
-        const endDate = new Date(show.end_time);
-        
-        // Adjust the show date for shows that start before 06:00
-        if (showDate.getHours() < 6) {
-            showDate.setDate(showDate.getDate() - 1);
-        }
+    for (const [stage, dates] of Object.entries(shows)) {
+        for (const [date, shows] of Object.entries(dates)) {
+            shows.forEach(show => {
+                const showDate = new Date(show.start_time);
+                const endDate = new Date(show.end_time);
+                
+                const showElement = document.createElement('div');
+                showElement.classList.add('show');
+                showElement.setAttribute('data-show-id', show.id);
 
-        const showElement = document.createElement('div');
-        showElement.classList.add('show');
-        showElement.setAttribute('data-show-id', show.id);
+                let buttonText = 'Attend';
+                if (showsAttendees[show.id]) {
+                    showsAttendees[show.id].forEach(user => {
+                        if (user.id === currentUserId) {
+                            buttonText = 'Leave';
+                        }
+                    });
+                }
 
-        let buttonText = 'Attend';
-        if (showsAttendees[show.id]) {
-            showsAttendees[show.id].forEach(user => {
-                if (user.id === currentUserId) {
-                    buttonText = 'Leave';
+                showElement.innerHTML = `
+                    <span>${show.name}</span>
+                    <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <button class="select-show">${buttonText}</button>
+                    <button class="whos-going">Who's going?</button>
+                    <div class="attendees"></div>
+                `;
+                stages[show.stage].appendChild(showElement);
+
+                // Populate existing attendees
+                const attendeesDiv = showElement.querySelector('.attendees');
+                if (showsAttendees[show.id]) {
+                    const maxVisibleAttendees = 4;
+                    showsAttendees[show.id].slice(0, maxVisibleAttendees).forEach(user => {
+                        const img = document.createElement('img');
+                        img.src = user.avatarUrl;
+                        img.alt = user.username;
+                        img.title = user.username;
+                        img.classList.add('attendee-icon');
+                        attendeesDiv.appendChild(img);
+                    });
+                    if (showsAttendees[show.id].length > maxVisibleAttendees) {
+                        const additionalCount = showsAttendees[show.id].length - maxVisibleAttendees;
+                        const additionalCountElement = document.createElement('span');
+                        additionalCountElement.classList.add('additional-attendees-count');
+                        additionalCountElement.textContent = `+${additionalCount}`;
+                        attendeesDiv.appendChild(additionalCountElement);
+                    }
                 }
             });
         }
-
-        showElement.innerHTML = `
-            <span>${show.name}</span>
-            <span>${showDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-            <button class="select-show">${buttonText}</button>
-            <button class="whos-going">Who's going?</button>
-            <div class="attendees"></div>
-        `;
-        stages[show.stage].appendChild(showElement);
-
-        // Populate existing attendees
-        const attendeesDiv = showElement.querySelector('.attendees');
-        if (showsAttendees[show.id]) {
-            const maxVisibleAttendees = 4;
-            showsAttendees[show.id].slice(0, maxVisibleAttendees).forEach(user => {
-                const img = document.createElement('img');
-                img.src = user.avatarUrl;
-                img.alt = user.username;
-                img.title = user.username;
-                img.classList.add('attendee-icon');
-                attendeesDiv.appendChild(img);
-            });
-            if (showsAttendees[show.id].length > maxVisibleAttendees) {
-                const additionalCount = showsAttendees[show.id].length - maxVisibleAttendees;
-                const additionalCountElement = document.createElement('span');
-                additionalCountElement.classList.add('additional-attendees-count');
-                additionalCountElement.textContent = `+${additionalCount}`;
-                attendeesDiv.appendChild(additionalCountElement);
-            }
-        }
-    });
+    }
 
     initializeEventTimetable();
 }
@@ -257,6 +270,7 @@ document.addEventListener('click', function(event) {
         });
     }
 });
+
 function signup(email, username, password) {
     fetch('/auth/signup', {
         method: 'POST',
