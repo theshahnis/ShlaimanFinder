@@ -21,7 +21,7 @@
     }
   ],
   "serviceworker": {
-    "src": "/static/service-worker.js",
+    "src": "/service-worker.js",
     "scope": "/",
     "update_via_cache": "all"
   }

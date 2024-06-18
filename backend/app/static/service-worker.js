@@ -53,41 +53,42 @@ self.addEventListener('install', event => {
       return cache.addAll(urlsToCache);
     })
   );
-  self.skipWaiting();  // Forces the waiting service worker to become the active service worker
+  self.skipWaiting(); // Forces the waiting service worker to become the active service worker
 });
 
 // Fetch event - serve cached content when offline and cache new requests dynamically
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        // Check if we received a valid response
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+    caches.match(event.request).then(response => {
+      // Cache hit - return response
+      if (response) {
+        return response;
+      }
+
+      // Not in cache - fetch from network
+      return fetch(event.request).then(
+        response => {
+          // Check if we received a valid response
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Important: Clone the response. A response is a stream
+          // and because we want the browser to consume the response
+          // as well as the cache consuming the response, we need
+          // to clone it so we have two streams.
+          const responseToCache = response.clone();
+
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+
           return response;
         }
-
-        // Important: Clone the response. A response is a stream
-        // and because we want the browser to consume the response
-        // as well as the cache consuming the response, we need
-        // to clone it so we have two streams.
-        const responseToCache = response.clone();
-
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
-
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request).then(response => {
-          if (response) {
-            return response;
-          } else if (event.request.mode === 'navigate') {
-            // Return the fallback page for navigation requests
-            return caches.match('/static/fallback.html');
-          }
-        });
-      })
+      );
+    }).catch(() => {
+      return caches.match('/static/fallback.html'); // Serve the fallback page when offline
+    })
   );
 });
 
@@ -106,5 +107,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
-  self.clients.claim();  // Ensures that the service worker takes control of all clients as soon as it activates
+  self.clients.claim(); // Ensures that the service worker takes control of all clients as soon as it activates
 });
