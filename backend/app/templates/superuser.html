@@ -65,29 +65,27 @@
     </table>
 
     <h2>Manage Static Locations</h2>
-    <form id="addStaticLocationForm" enctype="multipart/form-data" class="form-inline">
-        <input type="text" name="name" placeholder="Location Name" required class="form-control">
-        <input type="number" step="any" name="latitude" placeholder="Latitude" required class="form-control">
-        <input type="number" step="any" name="longitude" placeholder="Longitude" required class="form-control">
-        <textarea name="note" placeholder="Note" class="form-control"></textarea>
-        <input type="file" name="image" class="form-control">
-        <button type="submit" class="btn">Add Location</button>
-    </form>
+<form id="addStaticLocationForm" enctype="multipart/form-data" class="form-inline">
+    <input type="text" name="name" placeholder="Location Name" required class="form-control">
+    <input type="number" step="any" name="latitude" placeholder="Latitude" required class="form-control">
+    <input type="number" step="any" name="longitude" placeholder="Longitude" required class="form-control">
+    <textarea name="note" placeholder="Note" class="form-control"></textarea>
+    <input type="file" name="image" class="form-control">
+    <button type="submit" class="btn">Add Location</button>
+</form>
 
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Note</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="staticLocationsTableBody">
-            <!-- Static locations will be loaded here dynamically -->
-        </tbody>
-    </table>
-  </div>
-</div>
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Note</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="staticLocationsTableBody">
+        <!-- Static locations will be loaded here dynamically -->
+    </tbody>
+</table>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -102,18 +100,16 @@
             .then(data => {
                 const tableBody = document.getElementById('meetingPointsTableBody');
                 tableBody.innerHTML = '';
-                data.locations.forEach(location => {
-                    if (location.isMeetingPoint) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${location.username}</td>
-                            <td>${location.note}</td>
-                            <td>${location.created_at}</td>
-                            <td>${location.remaining_time}</td>
-                            <td><button onclick="deleteMeetingPoint(${location.id})" class="btn btn-danger">Delete</button></td>
-                        `;
-                        tableBody.appendChild(row);
-                    }
+                data.meeting_points.forEach(location => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${location.username}</td>
+                        <td>${location.note}</td>
+                        <td>${location.created_at}</td>
+                        <td>${location.remaining_time}</td>
+                        <td><button onclick="deleteMeetingPoint(${location.id})" class="btn btn-danger">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
                 });
             })
             .catch(error => {
@@ -148,16 +144,14 @@
             .then(data => {
                 const tableBody = document.getElementById('staticLocationsTableBody');
                 tableBody.innerHTML = '';
-                data.locations.forEach(location => {
-                    if (!location.isMeetingPoint) {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${location.name}</td>
-                            <td>${location.note}</td>
-                            <td><button onclick="deleteStaticLocation(${location.id})" class="btn btn-danger">Delete</button></td>
-                        `;
-                        tableBody.appendChild(row);
-                    }
+                data.static_locations.forEach(location => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${location.username}</td>
+                        <td>${location.note}</td>
+                        <td><button onclick="deleteStaticLocation(${location.id})" class="btn btn-danger">Delete</button></td>
+                    `;
+                    tableBody.appendChild(row);
                 });
             })
             .catch(error => {
