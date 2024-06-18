@@ -12,12 +12,12 @@ from flask_restx import Namespace, Resource, fields
 show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
 show_ns = Namespace('show', description='Show related operations')
 
-show_model = show_ns.model('Show', {
-    'id': fields.Integer(description='The show ID'),
-    'name': fields.String(description='The show name'),
-    'start_time': fields.DateTime(description='Start time of the show'),
-    'end_time': fields.DateTime(description='End time of the show'),
-    'stage': fields.String(description='Stage where the show will be held')
+show_model = api.model('Show', {
+    'id': fields.Integer,
+    'name': fields.String,
+    'start_time': fields.String,  
+    'end_time': fields.String,    
+    'stage': fields.String
 })
 
 attendee_model = show_ns.model('Attendee', {
@@ -97,7 +97,7 @@ def my_shows():
 @show_ns.route('/api/shows')
 class ShowList(Resource):
     @show_ns.doc('list_shows', params={'date': 'Date in YYYY-MM-DD format', 'id': 'Show ID'})
-    @show_ns.marshal_with(show_model, as_list=True)
+    @show_ns.marshal_with(shows_attendees_model)
     @token_or_login_required
     def get(self):
         date_str = request.args.get('date')
