@@ -132,7 +132,7 @@ class LoginResource(Resource):
             response = {
                 'api_token': api_token,
                 'email':email,
-                "user_id":user_id
+                "user_id":user_id,
                 'msg': 'Successfully logged in!'
             }
             return response, 200
