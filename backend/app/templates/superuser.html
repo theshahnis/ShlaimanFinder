@@ -89,12 +89,6 @@
     </table>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchMeetingPoints();
-            fetchStaticLocations();
-            document.getElementById('addStaticLocationForm').addEventListener('submit', addStaticLocation);
-        });
-
         function fetchMeetingPoints() {
             fetch('/location/locations')
                 .then(response => response.json())
@@ -127,32 +121,38 @@
                 });
     }
 
-        function deleteMeetingPoint(meetingPointId) {
-            if (!confirm('Are you sure you want to delete this meeting point?')) {
-                return;
-            }
-
-            fetch('/delete_meeting_point', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ location_id: meetingPointId })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Meeting point deleted:', data);
-                fetchMeetingPoints(); // Refresh the list
-            })
-            .catch(error => {
-                console.error('Error deleting meeting point:', error);
-            });
+    function deleteStaticLocation(locationId) {
+    if (!confirm('Are you sure you want to delete this location?')) {
+        return;
     }
+
+    fetch(`/superuser/delete_static_location`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ location_id: locationId })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Static location deleted:', data);
+        fetchStaticLocations(); // Refresh the list
+    })
+    .catch(error => {
+        console.error('Error deleting static location:', error);
+    });
+}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchMeetingPoints();
+        fetchStaticLocations();
+        document.getElementById('addStaticLocationForm').addEventListener('submit', addStaticLocation);
+    });
 
         function fetchStaticLocations() {
             fetch('/location/locations')
@@ -185,50 +185,24 @@
     }
 
         function addStaticLocation(event) {
-            event.preventDefault();
+        event.preventDefault();
 
-            const formData = new FormData(event.target);
+        const formData = new FormData(event.target);
 
-            fetch('/add_static_location', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Static location added:', data);
-                fetchStaticLocations();
-            })
-            .catch(error => {
-                console.error('Error adding static location:', error);
-        });
-    }
-
-        function deleteStaticLocation(locationId) {
-        if (!confirm('Are you sure you want to delete this location?')) {
-            return;
-        }
-
-        fetch('/delete_static_location', {
+        fetch('/superuser/add_static_location', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ location_id: locationId })
+            body: formData
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('Static location deleted:', data);
-            fetchStaticLocations(); // Refresh the list
+            console.log('Static location added:', data);
+            fetchStaticLocations();
         })
         .catch(error => {
-            console.error('Error deleting static location:', error);
+            console.error('Error adding static location:', error);
         });
     }
+
     </script>
 
 {% endblock %}
