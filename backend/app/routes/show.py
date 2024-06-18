@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import pytz
 from .api import token_or_login_required
 from flask_restx import Namespace, Resource, fields
+from app import api
 
 
 show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
