@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request,jsonify,current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request,jsonify
 from flask_login import login_required, current_user
 from ..models import User,Location, MeetingPoint, StaticLocation, Show, UserShow
 from ..forms import UpdateProfileForm
@@ -12,37 +12,7 @@ from flask_restx import Namespace, Resource, fields, Api
 show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
 show_ns = Namespace('show', description='Show related operations')
 
-# Function to initialize API and models
-def init_api():
-    api = Api(current_app, version='1.0', title='Show API', description='API for managing shows')
 
-    # Define models
-    show_model = api.model('Show', {
-        'id': fields.Integer,
-        'name': fields.String,
-        'start_time': fields.String,  # Adjust as needed
-        'end_time': fields.String,    # Adjust as needed
-        'stage': fields.String
-    })
-
-    attendee_model = api.model('Attendee', {
-        'id': fields.Integer,
-        'avatarUrl': fields.String,
-        'username': fields.String
-    })
-
-    shows_attendees_model = api.model('ShowsAttendees', {
-        'shows': fields.List(fields.Nested(show_model)),
-        'shows_attendees': fields.Raw  # Adjust as needed
-    })
-
-    # Add namespace to API
-    api.add_namespace(show_ns, path='/show')
-
-    return api, show_model, shows_attendees_model
-
-# Initialize API and models
-api, show_model, shows_attendees_model = init_api()
 
 
 @show_bp.route('/', methods=['GET'])
