@@ -51,7 +51,11 @@ def token_or_login_required(f):
         if token:
             try:
                 data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-                user = User.query.get(data['user_id'])
+                user_id = data.get('user_id')
+                if not user_id:
+                    raise jwt.InvalidTokenError
+                
+                user = User.query.get(user_id)
                 if not user:
                     raise jwt.InvalidTokenError
                 login_user(user)
