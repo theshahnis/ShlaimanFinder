@@ -79,18 +79,13 @@
         {% block content %}{% endblock %}
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var images = [
-                "{{ url_for('static', filename='images/background.png') }}",
-                "{{ url_for('static', filename='images/background2.png') }}",
-                "{{ url_for('static', filename='images/background3.png') }}",
-                "{{ url_for('static', filename='images/background4.png') }}"
-            ];
-            var randomImage = images[Math.floor(Math.random() * images.length)];
-            document.body.style.backgroundImage = 'url(' + randomImage + ')';
-        });
-
         if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('{{ url_for('static', filename='service-worker.js') }}').then(function(registration) {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
