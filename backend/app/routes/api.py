@@ -122,7 +122,7 @@ class LoginResource(Resource):
     def post(self):
         data = request.get_json()
         email = data.get('email')
-        user_id = data.get('user_id')
+        
         password = data.get('password')
 
         user = User.query.filter_by(email=email).first()
@@ -132,7 +132,7 @@ class LoginResource(Resource):
             response = {
                 'api_token': api_token,
                 'email':email,
-                "user_id":user_id,
+                "user_id":user.id,
                 'msg': 'Successfully logged in!'
             }
             return response, 200
