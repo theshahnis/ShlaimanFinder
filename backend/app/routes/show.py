@@ -9,7 +9,7 @@ from .api import token_or_login_required
 from flask_restx import Namespace, Resource, fields
 
 
-show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
+show_bp = Blueprint('show_bp', __name__)
 show_ns = Namespace('show', description='Show related operations')
 
 show_model = show_ns.model('Show', {
@@ -85,39 +85,82 @@ def get_shows():
 
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
 
-@show_bp.route('/api/show', methods=['GET'])
-@token_or_login_required
-def get_show():
-    show_id = request.args.get('id')
-    if not show_id:
-        return jsonify({'error': 'Show ID is required'}), 400
+# @show_bp.route('/api/show', methods=['GET'])
+# @token_or_login_required
+# def get_show():
+#     show_id = request.args.get('id')
+#     if not show_id:
+#         return jsonify({'error': 'Show ID is required'}), 400
     
-    show = Show.query.get(show_id)
-    if not show:
-        return jsonify({'error': 'Show not found'}), 404
+#     show = Show.query.get(show_id)
+#     if not show:
+#         return jsonify({'error': 'Show not found'}), 404
     
-    show_dict = show.to_dict()
+#     show_dict = show.to_dict()
     
-    attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-    attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-    #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+#     attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+#     attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#     #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+#     attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
-    return jsonify({'show': show_dict, 'attendees': attendees_data})
-
-@show_bp.route('/user-shows', methods=['GET'])
-@token_or_login_required
-def user_shows():
-    user_id = current_user.id
-    user_shows = UserShow.query.filter_by(user_id=user_id).all()
-    show_ids = [user_show.show_id for user_show in user_shows]
-    shows_attendees = {}
-    for show_id in show_ids:
-        attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
-        #shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+#     return jsonify({'show': show_dict, 'attendees': attendees_data})
+@show_ns.route('/api/show')
+class ShowDetail(Resource):
+    @show_ns.doc('get_show')
+    @show_ns.marshal_with(show_attendees_model)
+    @token_or_login_required
+    def get(self):
+        """Get a specific show's details along with attendees"""
+        show_id = request.args.get('id')
+        if not show_id:
+            return {'error': 'Show ID is required'}, 400
+        
+        show = Show.query.get(show_id)
+        if not show:
+            return {'error': 'Show not found'}, 404
+        
+        show_dict = show.to_dict()
+        
+        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
         attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-        shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
-    return jsonify({'show_ids': show_ids, 'shows_attendees': shows_attendees})
+        attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+
+        return {'show': show_dict, 'attendees': attendees_data}
+
+
+
+
+# @show_bp.route('/user-shows', methods=['GET'])
+# @token_or_login_required
+# def user_shows():
+#     user_id = current_user.id
+#     user_shows = UserShow.query.filter_by(user_id=user_id).all()
+#     show_ids = [user_show.show_id for user_show in user_shows]
+#     shows_attendees = {}
+#     for show_id in show_ids:
+#         attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
+#         #shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+#         attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#         shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+#     return jsonify({'show_ids': show_ids, 'shows_attendees': shows_attendees})
+@show_ns.route('/user-shows')
+class UserShows(Resource):
+    @show_ns.doc('get_user_shows')
+    @show_ns.marshal_with(user_shows_model)
+    @token_or_login_required
+    def get(self):
+        """Get shows the current user is attending"""
+        user_id = current_user.id
+        user_shows = UserShow.query.filter_by(user_id=user_id).all()
+        show_ids = [user_show.show_id for user_show in user_shows]
+        shows_attendees = {}
+        for show_id in show_ids:
+            attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
+            attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+            shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+        return {'show_ids': show_ids, 'shows_attendees': shows_attendees}
+
+
 
 @show_bp.route('/select-show', methods=['POST'])
 @token_or_login_required
