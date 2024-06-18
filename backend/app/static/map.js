@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', function() {
     autoSelectMap();  // Request user's location on load
 
     document.getElementById('refreshButton').addEventListener('click', function() {
+        if (!isOnline()) {
+            showOfflineAlert();
+            return;
+        }
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(position => {
                 const latitude = position.coords.latitude;
@@ -45,6 +50,11 @@ function loadMap(location) {
 }
 
 function updateLocation(latitude, longitude) {
+    if (!isOnline()) {
+        showOfflineAlert();
+        return;
+    }
+
     fetch('/location/update', {  
         method: 'POST',
         headers: {
@@ -63,6 +73,11 @@ function updateLocation(latitude, longitude) {
 }
 
 function refreshLocations() {
+    if (!isOnline()) {
+        showOfflineAlert();
+        return;
+    }
+
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
 
@@ -121,7 +136,6 @@ function addMarker(location) {
     markers.push(marker);
 }
 
-
 function startLocationSelection() {
     alert('Click on the map to set the location.');
     locationMode = true;
@@ -169,8 +183,6 @@ function autoSelectMap() {
         alert('Geolocation is not supported by this browser.');
     }
 }
-
-
 
 function showError(error) {
     switch(error.code) {
@@ -224,6 +236,11 @@ function toggleDurationInput() {
 }
 
 function submitLocation(lat, lng) {
+    if (!isOnline()) {
+        showOfflineAlert();
+        return;
+    }
+
     const username = document.getElementById('locUsername').value;
     const note = document.getElementById('locNote').value;
     const image = document.getElementById('locImage').files[0];

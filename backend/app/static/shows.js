@@ -48,7 +48,7 @@ function loadShowsForDate(date, selectedButton) {
     const dateButtons = document.querySelectorAll('.button');
     dateButtons.forEach(button => button.classList.remove('selected'));
 
-    // Add 'selected' class to the clicked button
+    // Add 'selected' class to the clicked class to the button
     selectedButton.classList.add('selected');
 }
 
@@ -89,7 +89,7 @@ function renderShows(shows, showsAttendees) {
             shows.forEach(show => {
                 const showDate = new Date(show.start_time);
                 const endDate = new Date(show.end_time);
-                
+
                 const showElement = document.createElement('div');
                 showElement.classList.add('show');
                 showElement.setAttribute('data-show-id', show.id);
