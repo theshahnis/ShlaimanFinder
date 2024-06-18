@@ -16,6 +16,7 @@ const urlsToCache = [
   '/location/test-location',
   '/superuser/',
   '/superuser',
+  '/static/fallback.html',
   '/static/styles.css',
   '/static/dark-mode.css',
   '/static/images/favicon.ico',
@@ -57,29 +58,36 @@ self.addEventListener('install', event => {
 
 // Fetch event - serve cached content when offline and cache new requests dynamically
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') {
-    return;  // Only cache GET requests
-  }
-
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;  // Return cached response if available
-      }
-
-      // Fetch from network and cache the response
-      return fetch(event.request).then(networkResponse => {
-        if (networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+    fetch(event.request)
+      .then(response => {
+        // Check if we received a valid response
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
         }
-        return networkResponse;
-      }).catch(() => {
-        // Handle errors if network fetch fails
-      });
-    })
+
+        // Important: Clone the response. A response is a stream
+        // and because we want the browser to consume the response
+        // as well as the cache consuming the response, we need
+        // to clone it so we have two streams.
+        const responseToCache = response.clone();
+
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request).then(response => {
+          if (response) {
+            return response;
+          } else if (event.request.mode === 'navigate') {
+            // Return the fallback page for navigation requests
+            return caches.match('/static/fallback.html');
+          }
+        });
+      })
   );
 });
 
