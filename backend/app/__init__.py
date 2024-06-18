@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
+api = Api(app, version='1.0', title='Shlaiman Finder API', description='A simple API')
 
 class Base(DeclarativeBase):
   pass
@@ -18,7 +19,7 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__, static_folder='static', static_url_path='')
-    api = Api(app, version='1.0', title='Shlaiman Finder API', description='A simple API')
+    
     
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
