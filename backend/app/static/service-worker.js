@@ -1,10 +1,6 @@
 const CACHE_NAME = 'shlaiman-cache-v2';
 const urlsToCache = [
   '/',
-  '/auth/',
-  '/auth',
-  '/auth/logout',
-  '/auth/logout/',
   '/profile/',
   '/profile',
   '/show',
