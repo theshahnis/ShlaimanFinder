@@ -117,8 +117,8 @@ def get_locations():
             'username': mp.username,
             'note': mp.note,
             'created_at': mp.created_at,
-            'remaining_time': mp.duration,  # Assuming you have a way to calculate remaining time
-            'isMeetingPoint': True
+            'remaining_time': mp.duration,  
+            'isMeetingPoint': True,
         })
     for sl in static_locations:
         locations.append({

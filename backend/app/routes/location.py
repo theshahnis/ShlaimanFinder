@@ -100,7 +100,8 @@ def get_locations():
                 'note': user.note,
                 'isMeetingPoint': False,
                 'created_at': format_time(location.timestamp),
-                'remaining_time': None
+                'remaining_time': None,
+                'user_id':user.id
             })
 
     # Fetch meeting points
@@ -117,7 +118,8 @@ def get_locations():
                 'note': point.note,
                 'isMeetingPoint': True,
                 'created_at': format_time(point.created_at),
-                'remaining_time': str(remaining_time)
+                'remaining_time': str(remaining_time),
+                'user_id':user.id
             })
 
     # Fetch static locations
@@ -132,7 +134,8 @@ def get_locations():
             'note': location.note,
             'isMeetingPoint': False,
             'created_at': None,
-            'remaining_time': None
+            'remaining_time': None,
+            'user_id':user.id
         })
 
     # Debug information
