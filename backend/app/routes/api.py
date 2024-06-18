@@ -54,7 +54,7 @@ def token_or_login_required(f):
                 user = User.query.get(data['user_id'])
                 if not user:
                     raise jwt.InvalidTokenError
-                login_user(user) 
+                login_user(user)
             except jwt.ExpiredSignatureError:
                 user = User.query.filter_by(api_token=token).first()
                 if user:
@@ -63,9 +63,15 @@ def token_or_login_required(f):
                     response.set_cookie('api_token', new_token, httponly=True, secure=True)
                     return response
                 else:
-                    return jsonify({'error': 'Token is invalid'}), 401
+                    if request.is_json or request.path.startswith('/api/'):
+                        return jsonify({'error': 'Token has expired'}), 401
+                    else:
+                        return redirect(url_for('auth_bp.auth_page'))
             except jwt.InvalidTokenError:
-                return jsonify({'error': 'Token is invalid'}), 401
+                if request.is_json or request.path.startswith('/api/'):
+                    return jsonify({'error': 'Token is invalid'}), 401
+                else:
+                    return redirect(url_for('auth_bp.auth_page'))
         elif not current_user.is_authenticated:
             if request.is_json or request.path.startswith('/api/'):
                 return jsonify({'error': 'Token is missing or invalid'}), 401

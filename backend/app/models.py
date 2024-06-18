@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     profile_image = db.Column(db.String(150), nullable=True)
     passcode_attempts = db.Column(db.Integer, default=0, nullable=True)
     note = db.Column(db.Text, nullable=True)
-    api_token = db.Column(db.String(256), unique=True, nullable=True) 
+    api_token = db.Column(db.String(512), unique=True, nullable=True) 
 
     def generate_api_token(self, secret_key):
         token_data = {
