@@ -41,14 +41,10 @@ def login():
         # token = generate_and_save_token(user)
         # response = redirect(url_for('profile_bp.profile'))
         # response.set_cookie('api_token', token, httponly=True, secure=True)
-        if not user.api_token:
-            access_token = create_access_token(identity=user.id)
-            user.api_token = access_token
-            db.session.commit()
-
+        login_user(user, remember=remember)
+        token = generate_and_save_token(user)
         response = redirect(url_for('profile_bp.profile'))
-        response.set_cookie('api_token', user.api_token, httponly=True, secure=True)
-
+        response.set_cookie('api_token', token, httponly=True, secure=True)
         flash('Successfully logged in!', 'success')
         return response
     else:
