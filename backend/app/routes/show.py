@@ -60,6 +60,7 @@ def my_shows():
 
 @show_bp.route('/api/shows', methods=['GET'])
 @token_or_login_required
+def get_shows():
     try:
         # Define the date range for the shows
         start_date = datetime.strptime('2024-06-27', '%Y-%m-%d')
@@ -121,7 +122,6 @@ def my_shows():
     except Exception as e:
         logger.exception("Error occurred while getting shows")
         return jsonify({'error': str(e)}), 500
-
 
 
 
