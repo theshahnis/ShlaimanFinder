@@ -20,7 +20,7 @@ show_model = show_ns.model('Show', {
     'stage': fields.String
 })
 
-attendee_model = api.model('Attendee', {
+attendee_model = show_ns.model('Attendee', {
     'id': fields.Integer,
     'avatarUrl': fields.String,
     'username': fields.String
@@ -31,12 +31,12 @@ shows_attendees_model = show_ns.model('ShowsAttendees', {
     'shows_attendees': fields.Raw  
 })
 
-user_shows_model = api.model('UserShows', {
+user_shows_model = show_ns.model('UserShows', {
     'show_ids': fields.List(fields.Integer, description='List of show IDs the user is attending'),
     'shows_attendees': fields.Nested(attendee_model, description='List of attendees for each show')
 })
 
-my_shows_model = api.model('MyShows', {
+my_shows_model = show_ns.model('MyShows', {
     'shows': fields.List(fields.Nested(show_model)),
     'shows_attendees': fields.Raw  
 })
