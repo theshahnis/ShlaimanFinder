@@ -122,6 +122,7 @@ class LoginResource(Resource):
     def post(self):
         data = request.get_json()
         email = data.get('email')
+        user_id = data.get('user_id')
         password = data.get('password')
 
         user = User.query.filter_by(email=email).first()
@@ -130,6 +131,8 @@ class LoginResource(Resource):
             api_token = user.generate_api_token(current_app.config['SECRET_KEY'])
             response = {
                 'api_token': api_token,
+                'email':email,
+                "user_id":user_id
                 'msg': 'Successfully logged in!'
             }
             return response, 200
@@ -142,6 +145,7 @@ class SignupResource(Resource):
     def post(self):
         data = request.get_json()
         email = data.get('email')
+        
         username = data.get('username')
         password = data.get('password')
 
@@ -158,8 +162,11 @@ class SignupResource(Resource):
         db.session.commit()
         login_user(new_user)
         api_token = new_user.generate_api_token(current_app.config['SECRET_KEY'])
+        
         response = {
             'api_token': api_token,
+            'email':email,
+            'user_id': new_user.id,
             'msg': 'Account created successfully!'
         }
         return response, 201
