@@ -31,7 +31,7 @@ shows_attendees_model = show_ns.model('ShowsAttendees', {
     'shows_attendees': fields.Raw  
 })
 
-show_attendees_model = api.model('ShowAttendees', {
+show_attendees_model = show_ns.model('ShowAttendees', {
     'show': fields.Nested(show_model),
     'attendees': fields.List(fields.Nested(attendee_model))
 })
