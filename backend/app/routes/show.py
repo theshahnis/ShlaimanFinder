@@ -36,6 +36,11 @@ user_shows_model = show_ns.model('UserShows', {
     'shows_attendees': fields.Nested(attendee_model, description='List of attendees for each show')
 })
 
+my_shows_model = show_ns.model('MyShows', {
+    'shows': fields.List(fields.Nested(show_model), description='List of shows the user is attending'),
+    'shows_attendees': fields.Nested(attendee_model, description='List of attendees for each show')
+})
+
 @show_bp.route('/', methods=['GET'])
 @token_or_login_required
 def shows():
@@ -47,49 +52,96 @@ def shows():
 def my_shows():
     return render_template('my_shows.html')
 
-@show_bp.route('/api/shows', methods=['GET'])
-@token_or_login_required
-def get_shows():
-    date_str = request.args.get('date')
-    show_id = request.args.get('id')
+# @show_bp.route('/api/shows', methods=['GET'])
+# @token_or_login_required
+# def get_shows():
+#     date_str = request.args.get('date')
+#     show_id = request.args.get('id')
 
-    if date_str:
-        try:
-            date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
-        except ValueError:
-            return jsonify({'error': 'Invalid date format'}), 400
+#     if date_str:
+#         try:
+#             date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+#         except ValueError:
+#             return jsonify({'error': 'Invalid date format'}), 400
 
-        start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
-        end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+#         start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
+#         end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
 
-        shows = Show.query.filter(
-            Show.start_time >= start_time,
-            Show.start_time < end_time
-        ).all()
-    elif show_id:
-        show = Show.query.get(show_id)
-        if not show:
-            return jsonify({'error': 'Show not found'}), 404
-        shows = [show]
-    else:
-        return jsonify({'error': 'Date or Show ID parameter is required'}), 400
+#         shows = Show.query.filter(
+#             Show.start_time >= start_time,
+#             Show.start_time < end_time
+#         ).all()
+#     elif show_id:
+#         show = Show.query.get(show_id)
+#         if not show:
+#             return jsonify({'error': 'Show not found'}), 404
+#         shows = [show]
+#     else:
+#         return jsonify({'error': 'Date or Show ID parameter is required'}), 400
 
-    shows_data = []
-    shows_attendees = {}
+#     shows_data = []
+#     shows_attendees = {}
 
-    for show in shows:
-        show_dict = show.to_dict()
-        shows_data.append(show_dict)
+#     for show in shows:
+#         show_dict = show.to_dict()
+#         shows_data.append(show_dict)
 
-        # Fetch attendees for the show
-        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-        #adding check for attendees in group
-        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-        #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+#         # Fetch attendees for the show
+#         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+#         #adding check for attendees in group
+#         attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#         #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+#         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
-    return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+#     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+@show_ns.route('/api/shows')
+class ShowList(Resource):
+    @show_ns.doc('list_shows', params={'date': 'Date in YYYY-MM-DD format', 'id': 'Show ID'})
+    @show_ns.marshal_with(show_model, as_list=True)
+    @token_or_login_required
+    def get(self):
+        date_str = request.args.get('date')
+        show_id = request.args.get('id')
 
+        if date_str:
+            try:
+                date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+            except ValueError:
+                return jsonify({'error': 'Invalid date format'}), 400
+
+            start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
+            end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+
+            shows = Show.query.filter(
+                Show.start_time >= start_time,
+                Show.start_time < end_time
+            ).all()
+        elif show_id:
+            show = Show.query.get(show_id)
+            if not show:
+                return jsonify({'error': 'Show not found'}), 404
+            shows = [show]
+        else:
+            return jsonify({'error': 'Date or Show ID parameter is required'}), 400
+
+        shows_data = []
+        shows_attendees = {}
+
+        for show in shows:
+            show_dict = show.to_dict()
+            shows_data.append(show_dict)
+
+            # Fetch attendees for the show
+            attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+            # Adding check for attendees in group
+            attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+            shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+
+        return {'shows': shows_data, 'shows_attendees': shows_attendees}
+
+
+
+        
 # @show_bp.route('/api/show', methods=['GET'])
 # @token_or_login_required
 # def get_show():
@@ -167,90 +219,106 @@ class UserShows(Resource):
 
 
 
-@show_bp.route('/select-show', methods=['POST'])
-@token_or_login_required
-def select_show():
-    data = request.json
-    show_id = data.get('showId')
-    action = data.get('action')
-    user_id = current_user.id
+# @show_bp.route('/select-show', methods=['POST'])
+# @token_or_login_required
+# def select_show():
+#     data = request.json
+#     show_id = data.get('showId')
+#     action = data.get('action')
+#     user_id = current_user.id
 
-    user_show = UserShow.query.filter_by(user_id=user_id, show_id=show_id).first()
+#     user_show = UserShow.query.filter_by(user_id=user_id, show_id=show_id).first()
 
-    if action == 'attend' and not user_show:
-        user_show = UserShow(user_id=user_id, show_id=show_id)
-        db.session.add(user_show)
-    elif action == 'leave' and user_show:
-        db.session.delete(user_show)
+#     if action == 'attend' and not user_show:
+#         user_show = UserShow(user_id=user_id, show_id=show_id)
+#         db.session.add(user_show)
+#     elif action == 'leave' and user_show:
+#         db.session.delete(user_show)
     
-    db.session.commit()
+#     db.session.commit()
 
-    attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
-    #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-    attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
-    return jsonify({'attendees': attendees_data})
-
-
-
-
-@show_bp.route('/api/my-shows', methods=['GET'])
-@token_or_login_required
-def get_my_shows():
-    user_id = current_user.id
-    now = datetime.now(pytz.timezone('Europe/Amsterdam'))
-    user_shows = UserShow.query.join(Show).filter(
-        UserShow.user_id == user_id,
-        Show.start_time >= now
-    ).order_by(Show.start_time).all()
-
-    shows_data = []
-    shows_attendees = {}
-    for user_show in user_shows:
-        show = user_show.show
-        shows_data.append(show.to_dict())
-
-        # Fetch attendees for the show
-        attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
-        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
-
-    return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
-
-# New Namespace Routes for API Documentation
-@show_ns.route('/shows')
-class ShowList(Resource):
-    @show_ns.doc('list_shows')
-    @show_ns.marshal_with(show_model, as_list=True)
-    @token_or_login_required
-    def get(self):
-        return get_shows()
-
-@show_ns.route('/show')
-class ShowDetail(Resource):
-    @show_ns.doc('get_show')
-    @show_ns.marshal_with(show_attendees_model)
-    @token_or_login_required
-    def get(self):
-        return get_show()
-
-@show_ns.route('/user-shows')
-class UserShows(Resource):
-    @show_ns.doc('user_shows')
-    @token_or_login_required
-    def get(self):
-        return user_shows()
-
+#     attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
+#     #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+#     attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#     attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+#     return jsonify({'attendees': attendees_data})
 @show_ns.route('/select-show')
 class SelectShow(Resource):
     @show_ns.doc('select_show')
+    @show_ns.expect(show_ns.model('SelectShowPayload', {
+        'showId': fields.Integer(required=True, description='The show ID'),
+        'action': fields.String(required=True, description='Action to perform (attend/leave)')
+    }))
     @token_or_login_required
     def post(self):
-        return select_show()
+        data = request.json
+        show_id = data.get('showId')
+        action = data.get('action')
+        user_id = current_user.id
 
-@show_ns.route('/my-shows')
+        user_show = UserShow.query.filter_by(user_id=user_id, show_id=show_id).first()
+
+        if action == 'attend' and not user_show:
+            user_show = UserShow(user_id=user_id, show_id=show_id)
+            db.session.add(user_show)
+        elif action == 'leave' and user_show:
+            db.session.delete(user_show)
+        
+        db.session.commit()
+
+        attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
+        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+        attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+        return jsonify({'attendees': attendees_data})
+
+
+
+# @show_bp.route('/api/my-shows', methods=['GET'])
+# @token_or_login_required
+# def get_my_shows():
+#     user_id = current_user.id
+#     now = datetime.now(pytz.timezone('Europe/Amsterdam'))
+#     user_shows = UserShow.query.join(Show).filter(
+#         UserShow.user_id == user_id,
+#         Show.start_time >= now
+#     ).order_by(Show.start_time).all()
+
+#     shows_data = []
+#     shows_attendees = {}
+#     for user_show in user_shows:
+#         show = user_show.show
+#         shows_data.append(show.to_dict())
+
+#         # Fetch attendees for the show
+#         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+#         attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+#         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+
+#     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+@show_ns.route('/api/my-shows')
 class MyShows(Resource):
-    @show_ns.doc('my_shows')
+    @show_ns.doc('get_my_shows')
+    @show_ns.marshal_with(my_shows_model)
     @token_or_login_required
     def get(self):
-        return get_my_shows()
+        """Get shows the current user is attending"""
+        user_id = current_user.id
+        now = datetime.now(pytz.timezone('Europe/Amsterdam'))
+        user_shows = UserShow.query.join(Show).filter(
+            UserShow.user_id == user_id,
+            Show.start_time >= now
+        ).order_by(Show.start_time).all()
+
+        shows_data = []
+        shows_attendees = {}
+        for user_show in user_shows:
+            show = user_show.show
+            shows_data.append(show.to_dict())
+
+            # Fetch attendees for the show
+            attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
+            attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+            shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
+
+        return {'shows': shows_data, 'shows_attendees': shows_attendees}
+
