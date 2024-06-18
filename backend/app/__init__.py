@@ -63,8 +63,8 @@ def create_app():
     from app.routes.show import show_ns
 
     api.add_namespace(api_namespace, path='/api/v1')
-    api.add_namespace(profile_ns, path='/api/v1/profile')
-    api.add_namespace(show_ns, path='/api/v1/shows')
+    api.add_namespace(profile_ns, path='/profile')
+    api.add_namespace(show_ns, path='/show')
 
     @app.route('/')
     def index():
