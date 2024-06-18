@@ -204,7 +204,7 @@ def create_location():
         print(f"Error: {e}")
         return jsonify({'message': 'Failed to create location', 'error': str(e)}), 500
 
-@location_bp.route('/delete_meeting_point/<int:meeting_point_id>', methods=['POST'])
+@location_bp.route('/delete_meeting_point', methods=['POST'])
 @token_or_login_required
 def delete_meeting_point(meeting_point_id):
     if not current_user.is_superuser:
