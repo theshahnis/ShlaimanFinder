@@ -80,6 +80,7 @@
     </div>
     <script>
         if ('serviceWorker' in navigator) {
+            console.log('Service Worker is supported');
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
@@ -87,6 +88,9 @@
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
+        }
+        else {
+            console.log('Service Worker is not supported');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
