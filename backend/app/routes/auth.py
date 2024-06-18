@@ -38,10 +38,17 @@ def login():
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
         
-        # Generate token and set it in the cookie
+        # Ensure the token is generated and saved
         token = generate_and_save_token(user)
+        
+        # Create a response object and set the token in the cookie
         response = redirect(url_for('profile_bp.profile'))
-        set_access_cookies(response, token)  # Set JWT in cookie
+        response.set_cookie('api_token', token, httponly=True, secure=True)
+        
+        # If it's an API request, return the token in JSON format
+        if request.is_json or request.path.startswith('/api/'):
+            return jsonify({'api_token': token, 'user_id': user.id, 'msg': 'Successfully logged in!'})
+        
         flash('Successfully logged in!', 'success')
         return response
     else:

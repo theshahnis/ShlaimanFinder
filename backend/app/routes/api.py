@@ -51,7 +51,7 @@ def token_or_login_required(f):
         if token:
             try:
                 data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-                user_id = data.get('sub')
+                user_id = data.get('user_id')
                 if not user_id:
                     raise jwt.InvalidTokenError
                 
@@ -64,7 +64,7 @@ def token_or_login_required(f):
                 if user:
                     new_token = generate_and_save_token(user)
                     response = redirect(url_for('profile_bp.profile'))
-                    set_access_cookies(response, new_token)  # Set new JWT in cookie
+                    response.set_cookie('api_token', new_token, httponly=True, secure=True)
                     return response
                 else:
                     if request.is_json or request.path.startswith('/api/'):
@@ -86,7 +86,7 @@ def token_or_login_required(f):
         if not current_user.api_token:
             new_token = generate_and_save_token(current_user)
             response = redirect(url_for('profile_bp.profile'))
-            set_access_cookies(response, new_token)  # Set new JWT in cookie
+            response.set_cookie('api_token', new_token, httponly=True, secure=True)
             return response
 
         return f(*args, **kwargs)
@@ -109,7 +109,6 @@ def generate_and_save_token(user):
     # Generate a new token
     token_data = {
         'user_id': user.id,
-        'sub': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
     token = create_access_token(identity=user.id, additional_claims=token_data)
