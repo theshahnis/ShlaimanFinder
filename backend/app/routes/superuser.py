@@ -118,7 +118,7 @@ def get_locations():
             'note': mp.note,
             'created_at': mp.created_at,
             'remaining_time': mp.duration,  
-            'isMeetingPoint': True,
+            'isMeetingPoint': True
         })
     for sl in static_locations:
         locations.append({

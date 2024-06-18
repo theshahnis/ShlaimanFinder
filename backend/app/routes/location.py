@@ -119,7 +119,7 @@ def get_locations():
                 'isMeetingPoint': True,
                 'created_at': format_time(point.created_at),
                 'remaining_time': str(remaining_time),
-                'user_id':user.id
+                'location_id':point.id
             })
 
     # Fetch static locations
@@ -135,7 +135,7 @@ def get_locations():
             'isMeetingPoint': False,
             'created_at': None,
             'remaining_time': None,
-            'user_id':user.id
+            'location_id':location.id
         })
 
     # Debug information
@@ -238,6 +238,7 @@ def get_static_locations():
             'latitude': location.latitude,
             'longitude': location.longitude,
             'note': location.note,
+            'location_id':location.id,
             'image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'static_location.jpg'))
         })
 
