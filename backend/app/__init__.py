@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
-from flask_restplus import Api
+from flask_restx import Api, Resource
 from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from app.extensions import db, login_manager, mail, migrate
