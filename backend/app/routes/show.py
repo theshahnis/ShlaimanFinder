@@ -9,8 +9,8 @@ from .api import token_or_login_required
 from flask_restx import Namespace, Resource, fields
 
 
-show_bp = Blueprint('show_bp', __name__)
-show_ns = Namespace('show', description='Show related operations', path'/show')
+show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
+show_ns = Namespace('show', description='Show related operations')
 
 show_model = show_ns.model('Show', {
     'id': fields.Integer(description='The show ID'),
