@@ -8,7 +8,7 @@ import jwt
 import datetime
 from ..models import User
 from ..extensions import db
-
+from ..auth import generate_and_save_token
 api_bp = Blueprint('api', __name__)
 authorizations = {
     'Bearer': {
