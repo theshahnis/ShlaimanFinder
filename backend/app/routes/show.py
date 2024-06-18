@@ -6,8 +6,30 @@ from ..extensions import db
 from datetime import datetime, timedelta
 import pytz
 from .api import token_or_login_required
+from flask_restx import Namespace, Resource, fields
+
 
 show_bp = Blueprint('show_bp', __name__)
+show_ns = Namespace('show', description='Show related operations')
+
+show_model = show_ns.model('Show', {
+    'id': fields.Integer(description='The show ID'),
+    'name': fields.String(description='The show name'),
+    'start_time': fields.DateTime(description='Start time of the show'),
+    'end_time': fields.DateTime(description='End time of the show'),
+    'stage': fields.String(description='Stage where the show will be held')
+})
+
+attendee_model = show_ns.model('Attendee', {
+    'id': fields.Integer(description='The attendee ID'),
+    'avatarUrl': fields.String(description='URL to the profile image'),
+    'username': fields.String(description='The username')
+})
+
+show_attendees_model = show_ns.model('ShowAttendees', {
+    'show': fields.Nested(show_model),
+    'attendees': fields.List(fields.Nested(attendee_model))
+})
 
 @show_bp.route('/', methods=['GET'])
 @token_or_login_required
@@ -143,3 +165,20 @@ def get_my_shows():
         shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
+
+# New Namespace Routes for API Documentation
+@show_ns.route('/shows')
+class ShowList(Resource):
+    @show_ns.doc('list_shows')
+    @show_ns.marshal_with(show_model, as_list=True)
+    @token_or_login_required
+    def get(self):
+        return get_shows()
+
+@show_ns.route('/show')
+class ShowDetail(Resource):
+    @show_ns.doc('get_show')
+    @show_ns.marshal_with(show_attendees_model)
+    @token_or_login_required
+    def get(self):
+        return get_show()

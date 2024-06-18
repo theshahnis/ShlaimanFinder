@@ -60,9 +60,11 @@ def create_app():
 
     from app.routes.api import api as api_namespace
     from app.routes.profile import profile_ns
+    from app.routes.show import show_ns
 
     api.add_namespace(api_namespace, path='/api/v1')
     api.add_namespace(profile_ns, path='/api/v1/profile')
+    api.add_namespace(show_ns, path='/api/v1/shows')
 
     @app.route('/')
     def index():
