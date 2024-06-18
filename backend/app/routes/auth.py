@@ -44,10 +44,12 @@ def login():
         # Create a response object and set the token in the cookie
         response = redirect(url_for('profile_bp.profile'))
         response.set_cookie('api_token', token, httponly=True, secure=True)
+        response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
+        response.set_cookie('email', email, httponly=True, secure=True)
         
         # If it's an API request, return the token in JSON format
         if request.is_json or request.path.startswith('/api/'):
-            return jsonify({'api_token': token, 'user_id': user.id, 'msg': 'Successfully logged in!'})
+            return jsonify({'api_token': token, 'user_id': user.id, 'email': email, 'msg': 'Successfully logged in!'})
         
         flash('Successfully logged in!', 'success')
         return response
