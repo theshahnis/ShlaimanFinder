@@ -15,12 +15,12 @@ show_ns = Namespace('show', description='Show related operations')
 show_model = show_ns.model('Show', {
     'id': fields.Integer,
     'name': fields.String,
-    'start_time': fields.String,  # Adjust as needed
-    'end_time': fields.String,    # Adjust as needed
+    'start_time': fields.String,  
+    'end_time': fields.String,    
     'stage': fields.String
 })
 
-attendee_model = show_ns.model('Attendee', {
+attendee_model = api.model('Attendee', {
     'id': fields.Integer,
     'avatarUrl': fields.String,
     'username': fields.String
@@ -28,7 +28,17 @@ attendee_model = show_ns.model('Attendee', {
 
 shows_attendees_model = show_ns.model('ShowsAttendees', {
     'shows': fields.List(fields.Nested(show_model)),
-    'shows_attendees': fields.Raw  # Adjust as needed
+    'shows_attendees': fields.Raw  
+})
+
+user_shows_model = api.model('UserShows', {
+    'show_ids': fields.List(fields.Integer, description='List of show IDs the user is attending'),
+    'shows_attendees': fields.Nested(attendee_model, description='List of attendees for each show')
+})
+
+my_shows_model = api.model('MyShows', {
+    'shows': fields.List(fields.Nested(show_model)),
+    'shows_attendees': fields.Raw  
 })
 
 
@@ -188,3 +198,34 @@ class ShowListResource(Resource):
     @show_ns.marshal_with(shows_attendees_model)
     def get(self):
         return get_shows()
+
+@show_ns.route('/api/my-shows')
+class MyShowsResource(Resource):
+    @show_ns.doc('get_my_shows')
+    @show_ns.marshal_with(my_shows_model)
+    def get(self):
+        return get_my_shows()
+
+@show_ns.route('/api/show')
+class ShowDetailResource(Resource):
+    @show_ns.doc('get_show', params={'id': 'Show ID'})
+    @show_ns.marshal_with(show_attendees_model)
+    def get(self):
+        return get_show()  
+@show_ns.route('/user-shows')
+class UserShowsResource(Resource):
+    @show_ns.doc('get_user_shows')
+    @show_ns.marshal_with(user_shows_model)
+    def get(self):
+        return user_shows()  
+
+
+@show_ns.route('/select-show')
+class SelectShowResource(Resource):
+    @show_ns.doc('select_show')
+    @show_ns.expect(api.model('SelectShowPayload', {
+        'showId': fields.Integer(required=True, description='The show ID'),
+        'action': fields.String(required=True, description='Action to perform (attend/leave)')
+    }))
+    def post(self):
+        return select_show() 
