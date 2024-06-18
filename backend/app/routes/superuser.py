@@ -5,7 +5,7 @@ from ..extensions import db
 from werkzeug.security import generate_password_hash
 from .api import token_or_login_required
 
-superuser_bp = Blueprint('superuser_bp', __name__)
+superuser_bp = Blueprint('superuser_bp', __name__,url_prefix='/superuser')
 
 @superuser_bp.route('/', methods=['GET'])
 @token_or_login_required
