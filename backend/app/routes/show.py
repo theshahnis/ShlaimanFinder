@@ -6,7 +6,7 @@ from ..extensions import db
 from datetime import datetime, timedelta
 import pytz
 from .api import token_or_login_required
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, Api
 
 
 show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
