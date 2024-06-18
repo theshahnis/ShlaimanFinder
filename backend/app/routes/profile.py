@@ -63,7 +63,6 @@ class UserProfile(Resource):
         return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
 
-
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
