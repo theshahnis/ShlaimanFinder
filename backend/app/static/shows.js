@@ -147,6 +147,11 @@ function initializeEventTimetable() {
         const showId = parseInt(button.parentElement.getAttribute('data-show-id'));
 
         button.addEventListener('click', function() {
+            if (!isOnline()) {
+                showOfflineAlert();
+                return;
+            }
+
             const action = this.textContent === 'Attend' ? 'attend' : 'leave';
             fetch('/show/select-show', {
                 method: 'POST',
@@ -184,6 +189,11 @@ function initializeEventTimetable() {
         const showId = parseInt(button.parentElement.getAttribute('data-show-id'));
 
         button.addEventListener('click', function() {
+            if (!isOnline()) {
+                showOfflineAlert();
+                return;
+            }
+
             fetch(`/show/api/show?id=${showId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -270,25 +280,3 @@ document.addEventListener('click', function(event) {
         });
     }
 });
-
-function signup(email, username, password) {
-    fetch('/auth/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: email, username: username, password: password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.api_token) {
-            storeTokens(data.api_token);
-            const redirectUrl = data.Location || '/profile';  // Use fallback URL if Location header is not present
-            console.log(`Redirecting to ${redirectUrl}`);
-            window.location.href = redirectUrl;  // Redirect to profile or home page
-        } else {
-            alert(data.msg);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}

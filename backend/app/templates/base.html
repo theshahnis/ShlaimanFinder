@@ -94,6 +94,32 @@
                 });
             });
         }
+
+        function isOnline() {
+            return navigator.onLine;
+        }
+
+        function showOfflineAlert() {
+            alert('No active internet connection. Please connect to the internet.');
+        }
+
+        window.addEventListener('online', function() {
+            console.log('Back online');
+            // Optionally refresh data here
+        });
+
+        window.addEventListener('offline', function() {
+            alert('You have lost internet connection. Some features may not be available.');
+        });
+
+        // Example usage for fetch requests
+        function fetchWithNetworkCheck(url, options) {
+            if (!isOnline()) {
+                showOfflineAlert();
+                return Promise.reject(new Error('No active internet connection'));
+            }
+            return fetch(url, options);
+        }
     </script>
 </body>
 </html>
