@@ -50,11 +50,11 @@ def token_or_login_required(f):
 
         if token:
             try:
-                data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-                user_id = data.get('user_id')
+                data = decode_token(token)
+                user_id = data.get('identity')
                 if not user_id:
                     raise jwt.InvalidTokenError
-                
+
                 user = User.query.get(user_id)
                 if not user:
                     raise jwt.InvalidTokenError
@@ -63,10 +63,14 @@ def token_or_login_required(f):
                 user = User.query.filter_by(api_token=token).first()
                 if user:
                     new_token = generate_and_save_token(user)
-                    login_user(user)  # Log in the user after renewing the token
-                    response = redirect(url_for('profile_bp.profile'))
-                    response.set_cookie('api_token', new_token, httponly=True, secure=True)
-                    return response
+                    if request.is_json or request.path.startswith('/api/'):
+                        response = jsonify({'error': 'Token has expired', 'new_token': new_token})
+                        response.set_cookie('api_token', new_token, httponly=True, secure=True)
+                        return response
+                    else:
+                        response = redirect(url_for('profile_bp.profile'))
+                        response.set_cookie('api_token', new_token, httponly=True, secure=True)
+                        return response
                 else:
                     if request.is_json or request.path.startswith('/api/'):
                         return jsonify({'error': 'Token has expired'}), 401

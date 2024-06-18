@@ -25,32 +25,34 @@ def auth_page():
             return signup()
     return render_template('auth.html')
 
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json() if request.is_json else request.form
-    email = request.form.get('email')
-    password = request.form.get('password')
-    remember = True if request.form.get('remember') else False
-
-    print(f"Attempting login for email: {email}")
+    email = data.get('email')
+    password = data.get('password')
+    remember = True if data.get('remember') else False
 
     user = User.query.filter_by(email=email).first()
 
     if user and check_password_hash(user.password, password):
         login_user(user, remember=remember)
-
-        # token = generate_and_save_token(user)
-        # response = redirect(url_for('profile_bp.profile'))
-        # response.set_cookie('api_token', token, httponly=True, secure=True)
-        login_user(user, remember=remember)
-        token = generate_and_save_token(user)
-        response = redirect(url_for('profile_bp.profile'))
-        response.set_cookie('api_token', token, httponly=True, secure=True)
-        flash('Successfully logged in!', 'success')
-        return response
+        
+        if request.is_json:
+            token = generate_and_save_token(user)
+            return jsonify({'api_token': token, 'user_id': user.id, 'msg': 'Successfully logged in!'})
+        else:
+            token = generate_and_save_token(user)
+            response = redirect(url_for('profile_bp.profile'))
+            response.set_cookie('api_token', token, httponly=True, secure=True)
+            flash('Successfully logged in!', 'success')
+            return response
     else:
-        flash('Login failed. Check your email and password.', 'error')
-        return redirect(url_for('auth_bp.auth_page'))
+        if request.is_json:
+            return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
+        else:
+            flash('Login failed. Check your email and password.', 'error')
+            return redirect(url_for('auth_bp.auth_page'))
     
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
@@ -95,7 +97,7 @@ def generate_and_save_token(user):
             pass  
         except jwt.InvalidTokenError:
             pass  
-    
+
     token_data = {
         'user_id': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
@@ -108,9 +110,11 @@ def generate_and_save_token(user):
 @auth_bp.route('/logout')
 @token_or_login_required
 def logout():
+    response = redirect(url_for('auth_bp.auth_page'))
+    response.delete_cookie('api_token')
     logout_user()
     flash('You have been logged out.', 'success')
-    return redirect(url_for('auth_bp.auth_page'))
+    return response
 
 
 @auth_bp.route('/request_reset', methods=['GET', 'POST'])
