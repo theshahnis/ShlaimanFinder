@@ -61,58 +61,49 @@ def my_shows():
 @show_bp.route('/api/shows', methods=['GET'])
 @token_or_login_required
 def get_shows():
-    date_str = request.args.get('date')
-    show_id = request.args.get('id')
+    # Define the date range for the shows
+    start_date = datetime.strptime('2024-06-27', '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
+    end_date = datetime.strptime('2024-06-30', '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam')) + timedelta(days=1)
 
-    if date_str:
-        try:
-            date = datetime.strptime(date_str, '%Y-%m-%d').replace(tzinfo=pytz.timezone('Europe/Amsterdam'))
-        except ValueError:
-            return jsonify({'error': 'Invalid date format'}), 400
-
-        start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
-        end_time = (date + timedelta(days=1)).replace(hour=6, minute=0, second=0, microsecond=0)
-
-        shows = Show.query.filter(
-            Show.start_time >= start_time,
-            Show.start_time < end_time
-        ).all()
-    elif show_id:
-        show = Show.query.get(show_id)
-        if not show:
-            return jsonify({'error': 'Show not found'}), 404
-        shows = [show]
-    else:
-        return jsonify({'error': 'Date or Show ID parameter is required'}), 400
-
+    # Initialize an empty dictionary to store shows grouped by stage and date
     shows_data = {}
     shows_attendees = {}
 
-    for show in shows:
-        show_dict = show.to_dict()
-        stage = show_dict['stage']
+    # Loop through each day in the range and gather shows
+    current_date = start_date
+    while current_date < end_date:
+        day_start = current_date.replace(hour=10, minute=0, second=0, microsecond=0)
+        day_end = (current_date + timedelta(days=1)).replace(hour=6, minute=0, second=0, microsecond=0)
 
-        # Determine the correct day bucket
-        show_start = datetime.strptime(show_dict['start_time'], '%Y-%m-%d %H:%M')
-        show_end = datetime.strptime(show_dict['end_time'], '%Y-%m-%d %H:%M')
+        shows = Show.query.filter(
+            Show.start_time >= day_start,
+            Show.start_time < day_end
+        ).all()
 
-        if show_start.hour < 6:
-            show_start -= timedelta(days=1)
-        
-        show_date = show_start.strftime('%Y-%m-%d') 
+        for show in shows:
+            show_dict = show.to_dict()
+            stage = show_dict['stage']
 
+            # Determine the correct day bucket
+            show_start = datetime.strptime(show_dict['start_time'], '%Y-%m-%d %H:%M')
+            show_end = datetime.strptime(show_dict['end_time'], '%Y-%m-%d %H:%M')
 
-        if stage not in shows_data:
-            shows_data[stage] = {}
-        if show_date not in shows_data[stage]:
-            shows_data[stage][show_date] = []
-        shows_data[stage][show_date].append({
-            'id': show_dict['id'],
-            'name': show_dict['name'],
-            'start_time': show_dict['start_time'],
-            'end_time': show_dict['end_time'],
-            'stage': show_dict['stage']
-        })
+            if show_start.hour < 6:
+                show_start -= timedelta(days=1)
+            
+            show_date = show_start.strftime('%Y-%m-%d')  # Extract the date in YYYY-MM-DD format
+
+            if stage not in shows_data:
+                shows_data[stage] = {}
+            if show_date not in shows_data[stage]:
+                shows_data[stage][show_date] = []
+            shows_data[stage][show_date].append({
+                'id': show_dict['id'],
+                'name': show_dict['name'],
+                'start_time': show_dict['start_time'],
+                'end_time': show_dict['end_time'],
+                'stage': show_dict['stage']
+            })
 
         # Fetch attendees for the show
         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
