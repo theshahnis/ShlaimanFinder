@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, jsonify, flash,url_for
+from flask import Flask, render_template, redirect, request, jsonify, flash,url_for,flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api, Resource
 from flask_login import LoginManager
@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 
-api = Api(version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
 class Base(DeclarativeBase):
   pass
 
@@ -18,7 +17,8 @@ def create_app():
     load_dotenv()
 
     app = Flask(__name__, static_folder='static', static_url_path='')
-    
+    api = Api(app,version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
+
     
 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -46,10 +46,10 @@ def create_app():
     login_manager.login_view = 'auth_bp.auth_page'
     mail.init_app(app)
     migrate.init_app(app, db)
-    api.init_app(app)
+    
     jwt = JWTManager(app) 
 
-    
+    api.init_app(app)
 
     register_blueprints(app)
 
