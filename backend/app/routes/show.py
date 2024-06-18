@@ -71,7 +71,9 @@ def get_show():
     show_dict = show.to_dict()
     
     attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+    attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+    #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
     return jsonify({'show': show_dict, 'attendees': attendees_data})
 
