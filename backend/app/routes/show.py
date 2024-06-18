@@ -71,7 +71,7 @@ def get_shows():
             return jsonify({'error': 'Invalid date format'}), 400
 
         start_time = date.replace(hour=10, minute=0, second=0, microsecond=0)
-        end_time = (date + timedelta(days=1)).replace(hour=4, minute=0, second=0, microsecond=0)
+        end_time = (date + timedelta(days=1)).replace(hour=6, minute=0, second=0, microsecond=0)
 
         shows = Show.query.filter(
             Show.start_time >= start_time,
@@ -85,21 +85,22 @@ def get_shows():
     else:
         return jsonify({'error': 'Date or Show ID parameter is required'}), 400
 
-    shows_data = []
+    shows_data = {}
     shows_attendees = {}
 
     for show in shows:
         show_dict = show.to_dict()
         stage = show_dict['stage']
 
-     
+        # Determine the correct day bucket
         show_start = datetime.strptime(show_dict['start_time'], '%Y-%m-%d %H:%M')
         show_end = datetime.strptime(show_dict['end_time'], '%Y-%m-%d %H:%M')
 
         if show_start.hour < 6:
             show_start -= timedelta(days=1)
         
-        show_date = show_start.strftime('%Y-%m-%d')  
+        show_date = show_start.strftime('%Y-%m-%d') 
+
 
         if stage not in shows_data:
             shows_data[stage] = {}
