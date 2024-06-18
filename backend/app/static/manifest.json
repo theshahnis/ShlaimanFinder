@@ -1,21 +1,28 @@
 {
-    "name": "Shlaiman Finder",
-    "short_name": "Shlaiman",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#121212",  
-    "theme_color": "#FF5722",      
-    "icons": [
-      {
-        "src": "/static/images/android-chrome-192x192.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      },
-      {
-        "src": "/static/images/android-chrome-512x512.png",
-        "type": "image/png",
-        "sizes": "512x512"
-      }
-    ]
+  "name": "Shlaiman Finder",
+  "short_name": "Shlaiman",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#FF5722",
+  "description": "Find your Shlaiman friend and enjoy shows together with Shlaiman Finder.",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/static/images/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/images/android-chrome-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "serviceworker": {
+    "src": "/static/service-worker.js",
+    "scope": "/",
+    "update_via_cache": "all"
   }
-  
+}
