@@ -9,8 +9,7 @@ import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from app.routes.api import api as api_namespace
-from app.routes.profile import profile_ns
+
 
 
 api = Api(version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
@@ -58,6 +57,10 @@ def create_app():
     register_blueprints(app)
 
     api.init_app(app)
+
+    from app.routes.api import api as api_namespace
+    from app.routes.profile import profile_ns
+
     api.add_namespace(api_namespace, path='/api/v1')
     api.add_namespace(profile_ns, path='/api/v1/profile')
 
