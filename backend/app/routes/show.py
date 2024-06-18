@@ -10,7 +10,7 @@ from flask_restx import Namespace, Resource, fields
 
 
 show_bp = Blueprint('show_bp', __name__)
-show_ns = Namespace('show', description='Show related operations')
+show_ns = Namespace('show', description='Show related operations', path'/show')
 
 show_model = show_ns.model('Show', {
     'id': fields.Integer(description='The show ID'),
@@ -141,7 +141,7 @@ class ShowList(Resource):
 
 
 
-        
+
 # @show_bp.route('/api/show', methods=['GET'])
 # @token_or_login_required
 # def get_show():
