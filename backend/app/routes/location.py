@@ -130,7 +130,7 @@ def get_locations():
             'username': location.name,
             'latitude': location.latitude,
             'longitude': location.longitude,
-            'profile_image': url_for('static', filename='static/static_pics/' + (location.image if location.image else 'static_location.jpg')),
+            'profile_image': url_for('static', filename='static_pics/' + (location.image if location.image else 'static_location.jpg')),
             'note': location.note,
             'isMeetingPoint': False,
             'created_at': None,
