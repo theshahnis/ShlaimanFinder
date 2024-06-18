@@ -12,7 +12,24 @@ from flask_restx import Namespace, Resource, fields, Api
 show_bp = Blueprint('show_bp', __name__, url_prefix='/show')
 show_ns = Namespace('show', description='Show related operations')
 
+show_model = show_ns.model('Show', {
+    'id': fields.Integer,
+    'name': fields.String,
+    'start_time': fields.String,  # Adjust as needed
+    'end_time': fields.String,    # Adjust as needed
+    'stage': fields.String
+})
 
+attendee_model = show_ns.model('Attendee', {
+    'id': fields.Integer,
+    'avatarUrl': fields.String,
+    'username': fields.String
+})
+
+shows_attendees_model = show_ns.model('ShowsAttendees', {
+    'shows': fields.List(fields.Nested(show_model)),
+    'shows_attendees': fields.Raw  # Adjust as needed
+})
 
 
 @show_bp.route('/', methods=['GET'])
