@@ -228,7 +228,7 @@ class UserShowsResource(Resource):
 @show_ns.route('/select-show')
 class SelectShowResource(Resource):
     @show_ns.doc('select_show')
-    @show_ns.expect(api.model('SelectShowPayload', {
+    @show_ns.expect(show_ns.model('SelectShowPayload', {
         'showId': fields.Integer(required=True, description='The show ID'),
         'action': fields.String(required=True, description='Action to perform (attend/leave)')
     }))
