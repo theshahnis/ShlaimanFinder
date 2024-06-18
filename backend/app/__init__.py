@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, jsonify, flash
+from flask import Flask, render_template, redirect, request, jsonify, flash,url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api, Resource
 from flask_login import LoginManager
@@ -46,10 +46,10 @@ def create_app():
     login_manager.login_view = 'auth_bp.auth_page'
     mail.init_app(app)
     migrate.init_app(app, db)
-
+    api.init_app(app)
     jwt = JWTManager(app) 
 
-    api.init_app(app)
+    
 
     register_blueprints(app)
 
@@ -57,7 +57,8 @@ def create_app():
     def index():
         if current_user.is_authenticated:
             return redirect(url_for('profile_bp.profile'))
-        return redirect(url_for('auth_bp.auth_page'))
+        else:
+            return redirect(url_for('auth_bp.auth_page'))
     
     @app.errorhandler(413)
     def request_entity_too_large(error):
