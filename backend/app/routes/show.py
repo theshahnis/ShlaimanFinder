@@ -50,7 +50,10 @@ def get_shows():
 
         # Fetch attendees for the show
         attendees = User.query.join(UserShow).filter(UserShow.show_id == show.id).all()
-        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        #adding check for attendees in group
+        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+        #shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        shows_attendees[show.id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
 
     return jsonify({'shows': shows_data, 'shows_attendees': shows_attendees})
 
@@ -81,7 +84,9 @@ def user_shows():
     shows_attendees = {}
     for show_id in show_ids:
         attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
-        shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        #shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+        attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+        shows_attendees[show_id] = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
     return jsonify({'show_ids': show_ids, 'shows_attendees': shows_attendees})
 
 @show_bp.route('/select-show', methods=['POST'])
@@ -103,8 +108,9 @@ def select_show():
     db.session.commit()
 
     attendees = User.query.join(UserShow).filter(UserShow.show_id == show_id).all()
-    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
-    
+    #attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees]
+    attendees_in_group = [user for user in attendees if user.group_id == current_user.group_id]
+    attendees_data = [{'id': user.id, 'avatarUrl': f"/profile_pics/{user.profile_image}", 'username': user.username} for user in attendees_in_group]
     return jsonify({'attendees': attendees_data})
 
 @show_bp.route('/my-shows', methods=['GET'])
