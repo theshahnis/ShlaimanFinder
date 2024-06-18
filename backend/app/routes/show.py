@@ -158,7 +158,7 @@ def select_show():
 
 
 
-@show_bp.route('/my-shows', methods=['GET'])
+@show_bp.route('api/my-shows', methods=['GET'])
 @token_or_login_required
 def get_my_shows():
     user_id = current_user.id
