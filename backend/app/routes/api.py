@@ -63,7 +63,8 @@ def token_or_login_required(f):
                 user = User.query.filter_by(api_token=token).first()
                 if user:
                     new_token = generate_and_save_token(user)
-                    response = jsonify({'error': 'Token has expired', 'new_token': new_token})
+                    login_user(user)  # Log in the user after renewing the token
+                    response = redirect(url_for('profile_bp.profile'))
                     response.set_cookie('api_token', new_token, httponly=True, secure=True)
                     return response
                 else:
