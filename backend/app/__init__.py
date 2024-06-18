@@ -50,6 +50,8 @@ def create_app():
 
     jwt = JWTManager(app) 
 
+    api.init_app(app)
+
     register_blueprints(app)
 
     @app.route('/')
