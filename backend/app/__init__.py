@@ -9,6 +9,7 @@ import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_restx import Api, Resource
 
 class Base(DeclarativeBase):
   pass
