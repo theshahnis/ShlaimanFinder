@@ -1,53 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soundboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-            background-color: #f0f0f0;
-        }
+{% extends "base.html" %}
 
-        h1, h2 {
-            text-align: center;
-        }
+{% block title %}Soundboard{% endblock %}
 
-        form, select, button {
-            margin: 10px;
-        }
-
-        .play-button {
-            background-color: red;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            padding: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            user-select: none;
-            outline: none;
-            width: 100px;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .play-button:active {
-            background-color: darkred;
-        }
-    </style>
-</head>
-<body>
+{% block content %}
+<div class="container">
     <h1>Soundboard</h1>
 
     <form id="uploadForm" enctype="multipart/form-data">
@@ -63,65 +19,105 @@
     <button id="playButton" class="play-button">Play Sound</button>
 
     <audio id="audioPlayer" controls style="display:none;"></audio>
+</div>
+{% endblock %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchSounds();
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchSounds();
 
-            document.getElementById('uploadForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const formData = new FormData();
-                const fileInput = document.getElementById('soundFile');
-                formData.append('file', fileInput.files[0]);
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('soundFile');
+            formData.append('file', fileInput.files[0]);
 
-                fetch('/sounds/upload', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    fetchSounds();
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+            fetch('/sounds/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchSounds();
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
+        });
 
-            const playButton = document.getElementById('playButton');
-            playButton.addEventListener('mousedown', handlePlaySound);
-            playButton.addEventListener('touchstart', handlePlaySound);
-
-            function handlePlaySound() {
-                const soundSelect = document.getElementById('soundSelect');
-                const selectedSound = soundSelect.value;
-                if (selectedSound) {
-                    const audioPlayer = document.getElementById('audioPlayer');
-                    audioPlayer.src = `/static/sounds/${selectedSound}`;
-                    audioPlayer.play();
-                } else {
-                    alert('Please select a sound');
-                }
+        document.getElementById('soundSelect').addEventListener('change', function() {
+            const selectedSound = this.value;
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (selectedSound) {
+                audioPlayer.src = `/static/sounds/${selectedSound}`;
+                audioPlayer.load(); // Preload the selected audio
             }
         });
 
-        function fetchSounds() {
-            fetch('/sounds/sounds')
-                .then(response => response.json())
-                .then(data => {
-                    const soundSelect = document.getElementById('soundSelect');
-                    soundSelect.innerHTML = '<option value="">Select a sound</option>';
-                    data.sounds.forEach(sound => {
-                        const option = document.createElement('option');
-                        option.value = sound;
-                        option.textContent = sound;
-                        soundSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        const playButton = document.getElementById('playButton');
+        playButton.addEventListener('mousedown', handlePlaySound);
+        playButton.addEventListener('touchstart', handlePlaySound);
+
+        function handlePlaySound() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (audioPlayer.src) {
+                audioPlayer.play();
+            } else {
+                alert('Please select a sound');
+            }
         }
-    </script>
-</body>
-</html>
+    });
+
+    function fetchSounds() {
+        fetch('/sounds/sounds')
+            .then(response => response.json())
+            .then(data => {
+                const soundSelect = document.getElementById('soundSelect');
+                soundSelect.innerHTML = '<option value="">Select a sound</option>';
+                data.sounds.forEach(sound => {
+                    const option = document.createElement('option');
+                    option.value = sound;
+                    option.textContent = sound;
+                    soundSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+{% endblock %}
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .play-button {
+        background-color: red;
+        border: none;
+        border-radius: 50%;
+        color: white;
+        padding: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        user-select: none;
+        outline: none;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .play-button:active {
+        background-color: darkred;
+    }
+</style>
