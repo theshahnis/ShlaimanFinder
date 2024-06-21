@@ -20,7 +20,7 @@ profile_model = profile_ns.model('Profile', {
 })
 
 # HTML Profile Route
-@profile_bp.route('/profile', methods=['GET', 'POST'])
+@profile_bp.route('/', methods=['GET', 'POST'])
 @token_or_login_required
 def profile():
     form = UpdateProfileForm()
@@ -46,7 +46,7 @@ def profile():
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
 # API Profile Routes
-@profile_bp.route('/profile/api', methods=['GET'])
+@profile_bp.route('/api', methods=['GET'])
 @token_or_login_required
 def get_profile_api():
     """Get the current user's profile (API)"""
@@ -59,7 +59,7 @@ def get_profile_api():
         'profile_image': profile_image
     }), 200
 
-@profile_bp.route('/profile/api', methods=['PUT'])
+@profile_bp.route('/api', methods=['PUT'])
 @token_or_login_required
 def update_profile_api():
     """Update the current user's profile (API)"""
