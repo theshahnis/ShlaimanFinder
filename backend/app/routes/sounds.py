@@ -5,7 +5,7 @@ from .api import token_or_login_required
 
 sounds_bp = Blueprint('sounds_bp', __name__)
 
-SOUND_UPLOAD_FOLDER = 'static/sounds/'
+SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 
 
