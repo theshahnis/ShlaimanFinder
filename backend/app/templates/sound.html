@@ -26,6 +26,7 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('Document loaded');
         fetchSounds();
 
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
