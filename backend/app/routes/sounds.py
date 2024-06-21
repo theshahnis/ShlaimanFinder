@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory
+from flask import Blueprint, render_template, jsonify, current_app, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
@@ -27,11 +27,8 @@ def upload_sound():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER, filename)
-        try:
-            file.save(filepath)
-            return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
-        except Exception as e:
-            return jsonify({'message': 'File upload failed', 'error': str(e)}), 500
+        file.save(filepath)
+        return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
     return jsonify({'message': 'Invalid file type'}), 400
 
 @sounds_bp.route('/get_sounds', methods=['GET'])
@@ -43,7 +40,7 @@ def list_sounds():
     except Exception as e:
         return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
 
-@sounds_bp.route('/<filename>', methods=['GET'])
+@sounds_bp.route('/get_sounds/<filename>', methods=['GET'])
 @token_or_login_required
 def get_sound(filename):
     try:

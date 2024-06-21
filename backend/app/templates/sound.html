@@ -53,22 +53,17 @@
             const selectedSound = soundSelect.value;
             if (selectedSound) {
                 const audioPlayer = document.getElementById('audioPlayer');
-                audioPlayer.src = `/sounds/${selectedSound}`;
+                audioPlayer.src = `/sounds/get_sounds/${selectedSound}`;
                 audioPlayer.play();
             } else {
                 alert('Please select a sound');
             }
         });
 
-        const refreshButton = document.getElementById('refreshSoundsButton');
-        if (refreshButton) {
-            refreshButton.addEventListener('click', function() {
-                console.log('Refresh button clicked');
-                fetchSounds();
-            });
-        } else {
-            console.error('Refresh button not found');
-        }
+        document.getElementById('refreshSoundsButton').addEventListener('click', function() {
+            console.log('Refresh button clicked');
+            fetchSounds();
+        });
     });
 
     function fetchSounds() {
