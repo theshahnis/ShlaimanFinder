@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soundboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .play-button {
+            background-color: red;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            user-select: none;
+            outline: none;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+        }
+
+        .play-button:active {
+            background-color: darkred;
+        }
+
+        .play-button:disabled {
+            background-color: grey;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
     <h1>Soundboard</h1>
@@ -19,7 +48,7 @@
         <option value="">Select a sound</option>
     </select>
 
-    <button id="playButton">Play Sound</button>
+    <button id="playButton" class="play-button">Play Sound</button>
 
     <audio id="audioPlayer" controls style="display:none;"></audio>
 
@@ -47,17 +76,25 @@
                 });
             });
 
-            document.getElementById('playButton').addEventListener('click', function() {
+            const playButton = document.getElementById('playButton');
+            playButton.addEventListener('mousedown', handlePlaySound);
+            playButton.addEventListener('touchstart', handlePlaySound);
+
+            function handlePlaySound() {
                 const soundSelect = document.getElementById('soundSelect');
                 const selectedSound = soundSelect.value;
                 if (selectedSound) {
                     const audioPlayer = document.getElementById('audioPlayer');
                     audioPlayer.src = `/static/sounds/${selectedSound}`;
                     audioPlayer.play();
+                    playButton.disabled = true;
+                    audioPlayer.onended = () => {
+                        playButton.disabled = false;
+                    };
                 } else {
                     alert('Please select a sound');
                 }
-            });
+            }
         });
 
         function fetchSounds() {
