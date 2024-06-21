@@ -47,43 +47,51 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  console.log('Service Worker: Installing');
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('Opened cache');
-      return cache.addAll(urlsToCache);
+      return cache.addAll(urlsToCache).then(() => {
+        console.log('All resources cached successfully');
+      }).catch(error => {
+        console.error('Failed to cache resources:', error);
+      });
     })
   );
-  self.skipWaiting(); 
+  self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {
+  console.log('Service Worker: Fetching', event.request.url);
   event.respondWith(
     caches.match(event.request).then(response => {
       if (response) {
+        console.log('Returning cached response for', event.request.url);
         return response;
       }
 
-      return fetch(event.request).then(
-        response => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
-
+      return fetch(event.request).then(response => {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
-      );
-    }).catch(() => {
-      return caches.match('/fallback.html'); 
+
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          console.log('Caching new resource', event.request.url);
+          cache.put(event.request, responseToCache);
+        });
+
+        return response;
+      });
+    }).catch(error => {
+      console.error('Fetching failed, returning fallback page:', error);
+      return caches.match('/fallback.html');
     })
   );
 });
 
 self.addEventListener('activate', event => {
+  console.log('Service Worker: Activating');
   const cacheWhitelist = [CACHE_NAME];
 
   event.waitUntil(
@@ -91,11 +99,12 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (!cacheWhitelist.includes(cacheName)) {
+            console.log('Deleting old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  self.clients.claim(); 
+  self.clients.claim();
 });
