@@ -15,6 +15,7 @@
     <select id="soundSelect">
         <option value="">Select a sound</option>
     </select>
+    <button id="refreshSoundsButton">Refresh Sounds</button>
 
     <button id="playButton">Play Sound</button>
 
@@ -58,6 +59,8 @@
                 alert('Please select a sound');
             }
         });
+
+        document.getElementById('refreshSoundsButton').addEventListener('click', fetchSounds);
     });
 
     function fetchSounds() {
