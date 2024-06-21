@@ -9,7 +9,7 @@ from ..forms import RequestResetForm
 import smtplib
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity,create_access_token, set_access_cookies,decode_token
+    JWTManager, create_access_token, jwt_required, get_jwt_identity,create_access_token, set_access_cookies
 )
 from .api import token_or_login_required
 import jwt
@@ -50,7 +50,7 @@ def login():
             return response
         
         # Create a response object for HTML response and set the token in the cookie
-        response = redirect(url_for('profile_bp.profile'))
+        response = redirect(url_for('profile_bp.get_profile'))
         response.set_cookie('api_token', token, httponly=True, secure=True)
         response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
         response.set_cookie('email', email, httponly=True, secure=True)
@@ -85,6 +85,7 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
     login_user(new_user)
+    #token = generate_and_save_token(new_user)
     access_token = create_access_token(identity=new_user.id)
     new_user.api_token = access_token
     db.session.commit()
@@ -100,17 +101,18 @@ def generate_and_save_token(user):
     # Check if the current token is valid
     if user.api_token:
         try:
-            data = decode_token(user.api_token)
+            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             if data['exp'] > datetime.utcnow().timestamp():
                 return user.api_token
         except jwt.ExpiredSignatureError:
-            pass
+            pass  
         except jwt.InvalidTokenError:
-            pass
-
+            pass  
+    
     # Generate a new token
     token_data = {
         'user_id': user.id,
+        'sub': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
     token = create_access_token(identity=user.id, additional_claims=token_data)
