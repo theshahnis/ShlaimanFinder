@@ -52,7 +52,7 @@
             const selectedSound = soundSelect.value;
             if (selectedSound) {
                 const audioPlayer = document.getElementById('audioPlayer');
-                audioPlayer.src = `/sounds/sounds/${selectedSound}`;
+                audioPlayer.src = `/sounds/${selectedSound}`;
                 audioPlayer.play();
             } else {
                 alert('Please select a sound');
