@@ -36,7 +36,7 @@ def upload_sound():
             return jsonify({'message': 'File upload failed', 'error': str(e)}), 500
     return jsonify({'message': 'Invalid file type'}), 400
 
-@sounds_bp.route('/sounds', methods=['GET'])
+@sounds_bp.route('/get_sounds', methods=['GET'])
 @token_or_login_required
 def list_sounds():
     try:
@@ -45,7 +45,7 @@ def list_sounds():
     except Exception as e:
         return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
 
-@sounds_bp.route('/sounds/<filename>', methods=['GET'])
+@sounds_bp.route('/<filename>', methods=['GET'])
 @token_or_login_required
 def get_sound(filename):
     try:
