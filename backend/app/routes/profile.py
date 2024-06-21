@@ -86,27 +86,27 @@ def save_picture(form_picture, target_dir):
     form_picture.save(picture_path)
     return picture_fn
 
-# @profile_bp.route('/', methods=['GET', 'POST'])
-# @token_or_login_required
-# def profile():
-#     form = UpdateProfileForm()
-#     if form.validate_on_submit():
-#         try:
-#             if form.profile_image.data:
-#                 picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
-#                 current_user.profile_image = picture_file
-#             current_user.username = form.username.data
-#             current_user.email = form.email.data
-#             current_user.note = form.note.data
-#             db.session.commit()
-#             flash('Your account has been updated!', 'success')
-#         except Exception as e:
-#             flash(f'An error occurred: {str(e)}', 'danger')
-#             db.session.rollback()
-#         return redirect(url_for('profile_bp.profile'))
-#     elif request.method == 'GET':
-#         form.username.data = current_user.username
-#         form.email.data = current_user.email
-#         form.note.data = current_user.note
-#     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
-#     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+@profile_bp.route('/', methods=['GET', 'POST'])
+@token_or_login_required
+def profile():
+    form = UpdateProfileForm()
+    if form.validate_on_submit():
+        try:
+            if form.profile_image.data:
+                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
+                current_user.profile_image = picture_file
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.note = form.note.data
+            db.session.commit()
+            flash('Your account has been updated!', 'success')
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}', 'danger')
+            db.session.rollback()
+        return redirect(url_for('profile_bp.profile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.note.data = current_user.note
+    profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
+    return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
