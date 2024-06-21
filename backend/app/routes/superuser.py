@@ -104,7 +104,7 @@ def delete_static_location():
     db.session.commit()
     return jsonify({'message': 'Static location deleted successfully'}), 200
 
-@superuser_bp.route('/delete_meeting_point', methods=['POST'])
+@superuser_bp.route('/delete_meeting_point', methods=['DELETE'])
 @token_or_login_required
 def delete_meeting_point():
     if not current_user.superuser:

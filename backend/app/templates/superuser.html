@@ -133,17 +133,12 @@
         }
     
         function deleteMeetingPoint(meetingPointId) {
-            if (!isOnline()) {
-                showOfflineAlert();
-                return;
-            }
-
             if (!confirm('Are you sure you want to delete this meeting point?')) {
                 return;
             }
 
-            fetchWithNetworkCheck(`/superuser/delete_meeting_point`, {
-                method: 'POST',
+            fetch('/superuser/delete_meeting_point', {
+                method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
