@@ -38,29 +38,33 @@ class UserProfile(Resource):
     @profile_ns.doc('update_profile')
     @profile_ns.expect(profile_model)
     @token_or_login_required
-    def post(self):
+    def put(self):
         """Update the current user's profile"""
-        form = UpdateProfileForm()
-        if form.validate_on_submit():
-            try:
-                if form.profile_image.data:
-                    picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
-                    current_user.profile_image = picture_file
-                current_user.username = form.username.data
-                current_user.email = form.email.data
-                current_user.note = form.note.data
-                db.session.commit()
-                flash('Your account has been updated!', 'success')
-            except Exception as e:
-                flash(f'An error occurred: {str(e)}', 'danger')
-                db.session.rollback()
-            return redirect(url_for('profile_bp.profile'))
-        elif request.method == 'GET':
-            form.username.data = current_user.username
-            form.email.data = current_user.email
-            form.note.data = current_user.note
-        profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
-        return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+        data = request.get_json()
+        user = current_user
+        user.username = data.get('username', user.username)
+        user.email = data.get('email', user.email)
+        user.note = data.get('note', user.note)
+
+        if 'profile_image' in request.files:
+            picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+            user.profile_image = picture_file
+
+        try:
+            db.session.commit()
+            response = {
+                'message': 'Your account has been updated!',
+                'profile': {
+                    'username': user.username,
+                    'email': user.email,
+                    'note': user.note,
+                    'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
+                }
+            }
+            return jsonify(response), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'message': f'An error occurred: {str(e)}'}), 400
 
 
 def save_picture(form_picture, target_dir):
@@ -82,27 +86,27 @@ def save_picture(form_picture, target_dir):
     form_picture.save(picture_path)
     return picture_fn
 
-@profile_bp.route('/', methods=['GET', 'POST'])
-@token_or_login_required
-def profile():
-    form = UpdateProfileForm()
-    if form.validate_on_submit():
-        try:
-            if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
-                current_user.profile_image = picture_file
-            current_user.username = form.username.data
-            current_user.email = form.email.data
-            current_user.note = form.note.data
-            db.session.commit()
-            flash('Your account has been updated!', 'success')
-        except Exception as e:
-            flash(f'An error occurred: {str(e)}', 'danger')
-            db.session.rollback()
-        return redirect(url_for('profile_bp.profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.note.data = current_user.note
-    profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
-    return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+# @profile_bp.route('/', methods=['GET', 'POST'])
+# @token_or_login_required
+# def profile():
+#     form = UpdateProfileForm()
+#     if form.validate_on_submit():
+#         try:
+#             if form.profile_image.data:
+#                 picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
+#                 current_user.profile_image = picture_file
+#             current_user.username = form.username.data
+#             current_user.email = form.email.data
+#             current_user.note = form.note.data
+#             db.session.commit()
+#             flash('Your account has been updated!', 'success')
+#         except Exception as e:
+#             flash(f'An error occurred: {str(e)}', 'danger')
+#             db.session.rollback()
+#         return redirect(url_for('profile_bp.profile'))
+#     elif request.method == 'GET':
+#         form.username.data = current_user.username
+#         form.email.data = current_user.email
+#         form.note.data = current_user.note
+#     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
+#     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
