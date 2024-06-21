@@ -66,8 +66,22 @@
 
 <!-- Leaflet JavaScript -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" crossorigin=""></script>
-<script src="{{ url_for('static', filename='map.js') }}"></script>
+<script src="{{ url_for('static', filename='map.js') }}?v=1.0.1"></script>
+<script src="{{ url_for('static', filename='storage.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch friends' locations and handle caching
+        fetchFriendsLocations();
+    });
 
+    function showOfflineAlert() {
+        alert('No active internet connection. Please connect to the internet.');
+    }
+
+    function isOnline() {
+        return navigator.onLine;
+    }
+    </script>
 <script src="{{ url_for('static', filename='map-mode.js') }}"></script>
 {% endblock %}
 
