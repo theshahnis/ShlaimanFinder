@@ -41,26 +41,19 @@ def login():
         # Ensure the token is generated and saved
         token = generate_and_save_token(user)
         
-        # If it's an API request, return the token in JSON format
-        if request.is_json or request.path.startswith('/api/'):
-            response = jsonify({'api_token': token, 'user_id': user.id, 'email': email, 'msg': 'Successfully logged in!'})
-            response.set_cookie('api_token', token, httponly=True, secure=True)
-            response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
-            response.set_cookie('email', email, httponly=True, secure=True)
-            return response
-        
-        # Create a response object for HTML response and set the token in the cookie
-        response = redirect(url_for('profile_bp.get_profile'))
+        # Create a response object and set the token in the cookie
+        response = redirect(url_for('profile_bp.profile'))
         response.set_cookie('api_token', token, httponly=True, secure=True)
         response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
         response.set_cookie('email', email, httponly=True, secure=True)
         
+        # If it's an API request, return the token in JSON format
+        if request.is_json or request.path.startswith('/api/'):
+            return jsonify({'api_token': token, 'user_id': user.id, 'email': email, 'msg': 'Successfully logged in!'})
+        
         flash('Successfully logged in!', 'success')
         return response
     else:
-        if request.is_json or request.path.startswith('/api/'):
-            return jsonify({'msg': 'Login failed. Check your email and password.'}), 401
-        
         flash('Login failed. Check your email and password.', 'error')
         return redirect(url_for('auth_bp.auth_page'))
     
