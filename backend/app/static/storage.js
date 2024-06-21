@@ -1,11 +1,13 @@
 // Save data to local storage
 function saveToLocalStorage(key, data) {
+    console.log('Saving to Local Storage:', key, data); 
     localStorage.setItem(key, JSON.stringify(data));
 }
 
 // Load data from local storage
 function loadFromLocalStorage(key) {
     const data = localStorage.getItem(key);
+    console.log('Loading from Local Storage:', key, data);
     return data ? JSON.parse(data) : null;
 }
 
