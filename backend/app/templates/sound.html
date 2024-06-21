@@ -6,6 +6,24 @@
     <title>Soundboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            background-color: #f0f0f0;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form, select, button {
+            margin: 10px;
+        }
+
         .play-button {
             background-color: red;
             border: none;
@@ -22,16 +40,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px auto;
         }
 
         .play-button:active {
             background-color: darkred;
-        }
-
-        .play-button:disabled {
-            background-color: grey;
-            cursor: not-allowed;
         }
     </style>
 </head>
@@ -87,10 +99,6 @@
                     const audioPlayer = document.getElementById('audioPlayer');
                     audioPlayer.src = `/static/sounds/${selectedSound}`;
                     audioPlayer.play();
-                    playButton.disabled = true;
-                    audioPlayer.onended = () => {
-                        playButton.disabled = false;
-                    };
                 } else {
                     alert('Please select a sound');
                 }
