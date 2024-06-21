@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('refreshButton').addEventListener('click', function() {
         if (!isOnline()) {
             showOfflineAlert();
-            loadCachedLocations(); // Load cached locations when offline
             return;
         }
 
@@ -29,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isOnline()) {
         loadCachedLocations();
     } else {
-        refreshLocations(); // Refresh locations on load if online
+        refreshLocations();
     }
 });
 
@@ -50,6 +49,11 @@ function initializeMap() {
             locationMode = false;
         }
     });
+}
+
+function loadMap(location) {
+    map.setView(locations[location], 11);
+    refreshLocations();
 }
 
 function loadMap(location) {
@@ -94,7 +98,7 @@ function refreshLocations() {
         .then(response => response.json())
         .then(data => {
             console.log('Fetched locations:', data);  // Debugging information
-            
+
             // Save new data to local storage
             saveToLocalStorage('locations', data);
 
@@ -115,7 +119,8 @@ function refreshLocations() {
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
-            loadCachedLocations(); // Load cached locations if fetch fails
+            // If fetching fails, load cached locations
+            loadCachedLocations();
         });
 }
 
@@ -337,6 +342,3 @@ function loadFromLocalStorage(key) {
     return data ? JSON.parse(data) : null;
 }
 
-function deepEqual(obj1, obj2) {
-    return JSON.stringify(obj1) === JSON.stringify(obj2);
-}
