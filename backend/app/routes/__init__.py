@@ -7,7 +7,7 @@ from .show import show_bp as show_blueprint
 from .general import general_bp as general_blueprint
 from .map import map_bp as map_blueprint
 from .api import api_bp as api_blueprint
-from .sounds import sounds_bp
+from .sounds import sounds_bp as sounds_blueprint
 
 def register_blueprints(app):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
