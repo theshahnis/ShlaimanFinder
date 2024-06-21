@@ -47,27 +47,17 @@
             });
         });
 
-        document.getElementById('soundSelect').addEventListener('change', function() {
-            const selectedSound = this.value;
-            const audioPlayer = document.getElementById('audioPlayer');
+        document.getElementById('playButton').addEventListener('click', function() {
+            const soundSelect = document.getElementById('soundSelect');
+            const selectedSound = soundSelect.value;
             if (selectedSound) {
-                audioPlayer.src = `/static/sounds/${selectedSound}`;
-                audioPlayer.load(); // Preload the selected audio
-            }
-        });
-
-        const playButton = document.getElementById('playButton');
-        playButton.addEventListener('mousedown', handlePlaySound);
-        playButton.addEventListener('touchstart', handlePlaySound);
-
-        function handlePlaySound() {
-            const audioPlayer = document.getElementById('audioPlayer');
-            if (audioPlayer.src) {
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = `/sounds/sounds/${selectedSound}`;
                 audioPlayer.play();
             } else {
                 alert('Please select a sound');
             }
-        }
+        });
     });
 
     function fetchSounds() {

@@ -8,9 +8,7 @@ sounds_bp = Blueprint('sounds_bp', __name__)
 SOUND_UPLOAD_FOLDER = 'static/sounds/'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 
-# Ensure the sound upload folder exists
-if not os.path.exists(SOUND_UPLOAD_FOLDER):
-    os.makedirs(SOUND_UPLOAD_FOLDER)
+
 
 @sounds_bp.route('/')
 @token_or_login_required
@@ -46,3 +44,11 @@ def list_sounds():
         return jsonify({'sounds': sound_files}), 200
     except Exception as e:
         return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
+
+@sounds_bp.route('/sounds/<filename>', methods=['GET'])
+@token_or_login_required
+def get_sound(filename):
+    try:
+        return send_from_directory(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER), filename)
+    except Exception as e:
+        return jsonify({'message': 'Failed to fetch sound', 'error': str(e)}), 500
