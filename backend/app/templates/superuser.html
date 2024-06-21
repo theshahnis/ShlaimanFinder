@@ -93,31 +93,36 @@
             fetchMeetingPoints();
             fetchStaticLocations();
             document.getElementById('addStaticLocationForm').addEventListener('submit', addStaticLocation);
+            document.getElementById('addGroupForm').addEventListener('submit', addGroup);
+            document.querySelectorAll('.delete-user').forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    deleteUser(userId);
+                });
+            });
         });
     
         function fetchMeetingPoints() {
-            fetch('/location/locations')
+            fetch('/superuser/api')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('meetingPointsTableBody');
                     tableBody.innerHTML = '';
-                    data.meeting_points.forEach(location => {
+                    data.meeting_points.forEach(point => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${location.username}</td>
-                            <td>${location.note}</td>
-                            <td>${location.created_at}</td>
-                            <td>${location.remaining_time}</td>
-                            <td><button class="delete-meeting-point btn btn-danger" data-location-id="${location.location_id}">Delete</button></td>
+                            <td>${point.username}</td>
+                            <td>${point.note}</td>
+                            <td>${point.created_at}</td>
+                            <td>${point.remaining_time}</td>
+                            <td><button class="delete-meeting-point btn btn-danger" data-location-id="${point.id}">Delete</button></td>
                         `;
                         tableBody.appendChild(row);
                     });
-    
-                    // Add event listeners for delete buttons
+
                     document.querySelectorAll('.delete-meeting-point').forEach(button => {
                         button.addEventListener('click', function() {
                             const meetingPointId = this.getAttribute('data-location-id');
-                            console.log(`Deleting meeting point with ID: ${meetingPointId}`);
                             deleteMeetingPoint(meetingPointId);
                         });
                     });
@@ -155,7 +160,7 @@
         }
     
         function fetchStaticLocations() {
-            fetch('/location/locations')
+            fetch('/superuser/api')
                 .then(response => response.json())
                 .then(data => {
                     const tableBody = document.getElementById('staticLocationsTableBody');
@@ -163,18 +168,16 @@
                     data.static_locations.forEach(location => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${location.username}</td>
+                            <td>${location.name}</td>
                             <td>${location.note}</td>
-                            <td><button class="delete-static-location btn btn-danger" data-location-id="${location.location_id}">Delete</button></td>
+                            <td><button class="delete-static-location btn btn-danger" data-location-id="${location.id}">Delete</button></td>
                         `;
                         tableBody.appendChild(row);
                     });
-    
-                    // Add event listeners for delete buttons
+
                     document.querySelectorAll('.delete-static-location').forEach(button => {
                         button.addEventListener('click', function() {
                             const locationId = this.getAttribute('data-location-id');
-                            console.log(`Deleting static location with ID: ${locationId}`);
                             deleteStaticLocation(locationId);
                         });
                     });
@@ -210,28 +213,67 @@
                 console.error('Error deleting static location:', error);
             });
         }
+
+        function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user?')) {
+                return;
+            }
+
+            fetch(`/superuser/delete/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('User deleted:', data);
+                location.reload(); // Reload the page to reflect changes
+            })
+            .catch(error => {
+                console.error('Error deleting user:', error);
+            });
+        }
     
         function addStaticLocation(event) {
             event.preventDefault();
 
-            if (!isOnline()) {
-                showOfflineAlert();
-                return;
-            }
-
             const formData = new FormData(event.target);
 
-            fetchWithNetworkCheck('/superuser/add_static_location', {
+            fetch('/superuser/add_static_location', {
                 method: 'POST',
                 body: formData
             })
             .then(response => response.json())
             .then(data => {
                 console.log('Static location added:', data);
-                fetchStaticLocations();
+                fetchStaticLocations(); // Refresh the list
             })
             .catch(error => {
                 console.error('Error adding static location:', error);
+            });
+        }
+        
+        function addGroup(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/superuser/add_group', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Group added:', data);
+                location.reload(); // Reload the page to reflect changes
+            })
+            .catch(error => {
+                console.error('Error adding group:', error);
             });
         }
     </script>

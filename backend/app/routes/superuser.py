@@ -19,7 +19,24 @@ def superuser_view():
     meeting_points = MeetingPoint.query.all()
     return render_template('superuser.html', users=users, groups=groups, static_locations=static_locations, meeting_points=meeting_points)
 
-@superuser_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
+# API route for superuser view
+@superuser_bp.route('/api', methods=['GET'])
+@token_or_login_required
+def superuser_api():
+    if not current_user.superuser:
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+    users = User.query.all()
+    groups = Group.query.all()
+    static_locations = StaticLocation.query.all()
+    meeting_points = MeetingPoint.query.all()
+    return jsonify({
+        'users': [user.to_dict() for user in users],
+        'groups': [group.to_dict() for group in groups],
+        'static_locations': [location.to_dict() for location in static_locations],
+        'meeting_points': [point.to_dict() for point in meeting_points]
+    })
+
+@superuser_bp.route('/edit/<int:user_id>', methods=['GET', 'PUT'])
 @token_or_login_required
 def edit_user(user_id):
     if not current_user.superuser:
@@ -29,56 +46,48 @@ def edit_user(user_id):
     user = User.query.get_or_404(user_id)
     groups = Group.query.all()
 
-    if request.method == 'POST':
-        user.email = request.form['email']
-        if request.form['password']:
-            user.password = generate_password_hash(request.form['password'], method='pbkdf2:sha256')
-        group_id = request.form['group_id']
-        if group_id:
-            user.group_id = int(group_id)
-        else:
-            user.group_id = None
+    if request.method == 'PUT':
+        data = request.get_json()
+        user.email = data.get('email', user.email)
+        if 'password' in data and data['password']:
+            user.password = generate_password_hash(data['password'], method='pbkdf2:sha256')
+        user.group_id = data.get('group_id', user.group_id)
         db.session.commit()
-        flash('User updated successfully', 'success')
-        return redirect(url_for('superuser_bp.superuser_view'))
+        return jsonify({'message': 'User updated successfully'}), 200
 
     return render_template('edit_user.html', user=user, groups=groups)
 
-@superuser_bp.route('/delete/<int:user_id>', methods=['POST'])
+
+@superuser_bp.route('/delete/<int:user_id>', methods=['DELETE'])
 @token_or_login_required
 def delete_user(user_id):
     if not current_user.superuser:
-        flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('general_bp.index'))
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
     user = User.query.get_or_404(user_id)
     db.session.delete(user)
     db.session.commit()
-    flash('User deleted successfully', 'success')
-    return redirect(url_for('superuser_bp.superuser_view'))
+    return jsonify({'message': 'User deleted successfully'}), 200
 
 @superuser_bp.route('/add_group', methods=['POST'])
 @token_or_login_required
 def add_group():
     if not current_user.superuser:
-        flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('general_bp.index'))
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
     
-    group_name = request.form['group_name']
-    passcode = request.form['passcode']
+    data = request.get_json()
+    group_name = data.get('group_name')
+    passcode = data.get('passcode')
 
-    # Check if the group name already exists
     existing_group = Group.query.filter_by(name=group_name).first()
     if existing_group:
-        flash('Group name already exists. Please choose a different name.', 'error')
-        return redirect(url_for('superuser_bp.superuser_view'))
+        return jsonify({'error': 'Group name already exists. Please choose a different name.'}), 400
 
     new_group = Group(name=group_name, passcode=passcode)
     db.session.add(new_group)
     db.session.commit()
-    flash('Group added successfully', 'success')
-    return redirect(url_for('superuser_bp.superuser_view'))
+    return jsonify({'message': 'Group added successfully'}), 201
 
-@superuser_bp.route('/delete_static_location', methods=['POST'])
+@superuser_bp.route('/delete_static_location', methods=['DELETE'])
 @token_or_login_required
 def delete_static_location():
     if not current_user.superuser:
@@ -93,9 +102,9 @@ def delete_static_location():
     location = StaticLocation.query.get_or_404(location_id)
     db.session.delete(location)
     db.session.commit()
-    return jsonify({'msg': 'Static location deleted successfully'}), 200
+    return jsonify({'message': 'Static location deleted successfully'}), 200
 
-@superuser_bp.route('/delete_meeting_point', methods=['POST'])
+@superuser_bp.route('/delete_meeting_point', methods=['DELETE'])
 @token_or_login_required
 def delete_meeting_point():
     if not current_user.superuser:
@@ -110,14 +119,14 @@ def delete_meeting_point():
     point = MeetingPoint.query.get_or_404(point_id)
     db.session.delete(point)
     db.session.commit()
-    return jsonify({'msg': 'Meeting point deleted successfully'}), 200
+    return jsonify({'message': 'Meeting point deleted successfully'}), 200
 
 @superuser_bp.route('/locations', methods=['GET'])
 @token_or_login_required
 def get_locations():
     if not current_user.superuser:
-        flash('Access denied: Superuser only', 'error')
-        return redirect(url_for('general_bp.index'))
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
     meeting_points = MeetingPoint.query.all()
     static_locations = StaticLocation.query.all()
     locations = []
@@ -127,7 +136,7 @@ def get_locations():
             'username': mp.username,
             'note': mp.note,
             'created_at': mp.created_at,
-            'remaining_time': mp.duration,  
+            'remaining_time': mp.duration,
             'isMeetingPoint': True
         })
     for sl in static_locations:
@@ -167,3 +176,23 @@ def add_static_location():
     db.session.add(static_location)
     db.session.commit()
     return jsonify({'message': 'Static location added successfully'})
+
+
+def save_picture(form_picture, target_dir):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(current_app.root_path, target_dir, picture_fn)
+
+    if not os.path.exists(os.path.join(current_app.root_path, target_dir)):
+        os.makedirs(os.path.join(current_app.root_path, target_dir))
+
+    try:
+        with Image.open(form_picture) as img:
+            img.verify()
+            form_picture.seek(0)
+    except (IOError, SyntaxError) as e:
+        raise ValueError("Invalid image file")
+
+    form_picture.save(picture_path)
+    return picture_fn
