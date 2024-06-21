@@ -60,15 +60,28 @@
             }
         });
 
-        document.getElementById('refreshSoundsButton').addEventListener('click', function() {
-            fetchSounds();
-        });
+        const refreshButton = document.getElementById('refreshSoundsButton');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', function() {
+                console.log('Refresh button clicked');
+                fetchSounds();
+            });
+        } else {
+            console.error('Refresh button not found');
+        }
     });
 
     function fetchSounds() {
+        console.log('Fetching sounds...');
         fetch('{{ url_for("sounds_bp.list_sounds") }}')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Fetched sounds:', data);
                 const soundSelect = document.getElementById('soundSelect');
                 soundSelect.innerHTML = '<option value="">Select a sound</option>';
                 data.sounds.forEach(sound => {
