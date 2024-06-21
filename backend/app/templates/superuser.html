@@ -138,7 +138,7 @@
             }
 
             fetch('/superuser/delete_meeting_point', {
-                method: 'DELETE',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -285,7 +285,7 @@
             }
 
             fetch(`/superuser/delete/${userId}`, {
-                method: 'DELETE',
+                method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
