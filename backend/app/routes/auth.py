@@ -43,7 +43,7 @@ def login():
         
         # Create a response object and set the token in the cookie
         response = redirect(url_for('profile_bp.profile'))
-        response.set_cookie('api_token', token, httponly=True, secure=True)
+        response.set_cookie('api_token', token, httponly=True, secure=True,max_age=60*60*24*7)
         response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
         response.set_cookie('email', email, httponly=True, secure=True)
         
@@ -106,7 +106,7 @@ def generate_and_save_token(user):
     token_data = {
         'user_id': user.id,
         'sub': user.id,
-        'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
+        'exp': (datetime.utcnow() + timedelta(days=7)).timestamp()
     }
     token = create_access_token(identity=user.id, additional_claims=token_data)
     user.api_token = token

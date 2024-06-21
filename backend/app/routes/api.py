@@ -43,10 +43,10 @@ def token_or_login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split()[1]
-        elif 'api_token' in request.cookies:
+        if 'api_token' in request.headers:
             token = request.cookies.get('api_token')
+        elif 'Authorization' in request.cookies:
+            token = request.headers['Authorization'].split()[1]
 
         if token:
             try:
@@ -64,7 +64,7 @@ def token_or_login_required(f):
                 if user:
                     new_token = generate_and_save_token(user)
                     response = redirect(url_for('profile_bp.profile'))
-                    response.set_cookie('api_token', new_token, httponly=True, secure=True)
+                    response.set_cookie('api_token', new_token, httponly=True, secure=True, max_age=60*60*24*7)
                     return response
                 else:
                     if request.is_json or request.path.startswith('/api/'):
@@ -109,7 +109,8 @@ def generate_and_save_token(user):
     # Generate a new token
     token_data = {
         'user_id': user.id,
-        'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
+        'sub': user.id,
+        'exp': (datetime.utcnow() + timedelta(days=7)).timestamp()
     }
     token = create_access_token(identity=user.id, additional_claims=token_data)
     user.api_token = token
