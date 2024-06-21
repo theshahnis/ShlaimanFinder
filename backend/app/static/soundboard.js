@@ -48,12 +48,16 @@ function fetchSounds() {
             console.log('Sounds fetched:', data);
             const soundSelect = document.getElementById('soundSelect');
             soundSelect.innerHTML = '<option value="">Select a sound</option>';
-            data.sounds.forEach(sound => {
-                const option = document.createElement('option');
-                option.value = sound;
-                option.textContent = sound;
-                soundSelect.appendChild(option);
-            });
+            if (data.sounds && Array.isArray(data.sounds)) {
+                data.sounds.forEach(sound => {
+                    const option = document.createElement('option');
+                    option.value = sound;
+                    option.textContent = sound;
+                    soundSelect.appendChild(option);
+                });
+            } else {
+                console.error('Invalid data format:', data);
+            }
         })
         .catch(error => {
             console.error('Error fetching sounds:', error);
