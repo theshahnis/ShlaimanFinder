@@ -33,7 +33,7 @@
             const fileInput = document.getElementById('soundFile');
             formData.append('file', fileInput.files[0]);
 
-            fetch('/sounds/upload', {
+            fetch('{{ url_for('sounds_bp.upload_sound') }}', {
                 method: 'POST',
                 body: formData
             })
@@ -71,7 +71,7 @@
     });
 
     function fetchSounds() {
-        fetch('/sounds/sounds')
+        fetch('{{ url_for('sounds_bp.list_sounds') }}')
             .then(response => response.json())
             .then(data => {
                 const soundSelect = document.getElementById('soundSelect');
