@@ -9,7 +9,7 @@ import os,logging
 from dotenv import load_dotenv
 from app.routes import register_blueprints 
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from .sounds import sounds_bp
+
 
 
 api = Api(version='1.0', title='Shlaiman Finder API', description='A simple API', doc='/docs')
@@ -43,6 +43,7 @@ def create_app():
     app.config['SESSION_COOKIE_SECURE'] = True
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SOUND_UPLOAD_FOLDER'] = 'static/sounds'
     
 
     db.init_app(app)
