@@ -11,6 +11,14 @@ class Group(db.Model):
     passcode = db.Column(db.String(4), nullable=True)
     users = db.relationship('User', backref='group', lazy=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'passcode': self.passcode,
+            'users': [user.to_dict() for user in self.users]
+        }
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
@@ -23,6 +31,8 @@ class User(UserMixin, db.Model):
     note = db.Column(db.Text, nullable=True)
     api_token = db.Column(db.String(512), unique=True, nullable=True) 
 
+    
+
     def generate_api_token(self, secret_key):
         token_data = {
             'user_id': self.id,
@@ -32,6 +42,17 @@ class User(UserMixin, db.Model):
         self.api_token = token
         db.session.commit()
         return token
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'username': self.username,
+            'superuser': self.superuser,
+            'group': self.group.name if self.group else None,
+            'profile_image': self.profile_image,
+            'note': self.note
+        }
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,6 +74,19 @@ class MeetingPoint(db.Model):
     duration = db.Column(db.Integer, default=3, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now(), nullable=True)
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'username': self.username,
+            'note': self.note,
+            'image': self.image,
+            'group_id': self.group_id,
+            'duration': self.duration,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
 class StaticLocation(db.Model):
     __tablename__ = 'static_location'
     
@@ -62,6 +96,16 @@ class StaticLocation(db.Model):
     longitude = db.Column(db.Float, nullable=False)
     note = db.Column(db.Text, nullable=True)
     image = db.Column(db.String(150), nullable=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'note': self.note,
+            'image': self.image
+        }
 
 class Show(db.Model):
     id = db.Column(db.Integer, primary_key=True)
