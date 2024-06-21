@@ -9,7 +9,7 @@ from ..forms import RequestResetForm
 import smtplib
 from datetime import datetime, timedelta
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity,create_access_token, set_access_cookies
+    JWTManager, create_access_token, jwt_required, get_jwt_identity,create_access_token, set_access_cookies,decode_token
 )
 from .api import token_or_login_required
 import jwt
