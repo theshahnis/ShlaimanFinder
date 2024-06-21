@@ -70,16 +70,19 @@ def token_or_login_required(f):
                     response.set_cookie('api_token', new_token, httponly=True, secure=True, max_age=60*60*24*7)
                     return response
                 else:
+                    session.clear()
                     if request.is_json or request.path.startswith('/api/'):
                         return jsonify({'error': 'Token has expired'}), 401
                     else:
                         return redirect(url_for('auth_bp.auth_page'))
             except jwt.InvalidTokenError:
+                session.clear()
                 if request.is_json or request.path.startswith('/api/'):
                     return jsonify({'error': 'Token is invalid'}), 401
                 else:
                     return redirect(url_for('auth_bp.auth_page'))
         elif not current_user.is_authenticated:
+            session.clear()
             if request.is_json or request.path.startswith('/api/'):
                 return jsonify({'error': 'Token is missing or invalid'}), 401
             else:
