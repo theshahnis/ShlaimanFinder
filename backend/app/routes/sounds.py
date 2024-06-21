@@ -7,7 +7,11 @@ sounds_bp = Blueprint('sounds_bp', __name__)
 SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 
-
+@general_bp.route('/')
+@token_or_login_required
+def sounds_page():
+    return render_template('sound.html')
+    
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -29,3 +33,5 @@ def upload_sound():
 def list_sounds():
     sound_files = os.listdir(os.path.join(current_app.root_path, UPLOAD_FOLDER))
     return jsonify({'sounds': sound_files}), 200
+
+
