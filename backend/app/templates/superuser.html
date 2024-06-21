@@ -37,7 +37,7 @@
     </table>
 
     <h2>Manage Groups</h2>
-    <form action="{{ url_for('superuser_bp.add_group') }}" method="POST" class="form-inline">
+    <form id="addGroupForm" action="{{ url_for('superuser_bp.add_group') }}" method="POST" class="form-inline">
         <input type="text" name="group_name" placeholder="New group name" required class="form-control">
         <input type="text" name="passcode" placeholder="Group passcode (4 digits)" required class="form-control">
         <button type="submit" class="btn">Add Group</button>
@@ -255,19 +255,24 @@
         }
         
         function addGroup(event) {
-            event.preventDefault();
+            event.preventDefault(); // Prevent the default form submission
 
-            const formData = new FormData(event.target);
-            const data = Object.fromEntries(formData.entries());
+            const formData = new FormData(event.target); // Create a FormData object
+            const data = Object.fromEntries(formData.entries()); // Convert FormData to a plain object
 
             fetch('/superuser/add_group', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json' // Set the content type to JSON
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(data) // Stringify the plain object to JSON
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Group added:', data);
                 location.reload(); // Reload the page to reflect changes
