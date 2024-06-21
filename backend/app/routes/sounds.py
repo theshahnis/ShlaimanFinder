@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, current_app, send_from_directory
+from flask import Blueprint, render_template, jsonify, current_app, send_from_directory, request
 from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
