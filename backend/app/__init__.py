@@ -61,11 +61,12 @@ def create_app():
     from app.routes.api import api as api_namespace
     from app.routes.profile import profile_ns
     from app.routes.show import show_ns
+    from app.routes.superuser import superuser_ns
 
     api.add_namespace(api_namespace, path='/api')
     api.add_namespace(profile_ns, path='/profile')
     api.add_namespace(show_ns, path='/show')
-    api.add_namespace(show_ns, path='/superuser')
+    api.add_namespace(superuser_ns, path='/superuser')
 
     @app.route('/')
     def index():
