@@ -58,7 +58,8 @@ def edit_user(user_id):
     return render_template('edit_user.html', user=user, groups=groups)
 
 
-@superuser_bp.route('/delete/<int:user_id>', methods=['POST'])
+
+@superuser_bp.route('/delete/<int:user_id>', methods=['DELETE'])
 @token_or_login_required
 def delete_user(user_id):
     if not current_user.superuser:
