@@ -116,8 +116,11 @@ def generate_and_save_token(user):
 @auth_bp.route('/logout')
 @token_or_login_required
 def logout():
+    session.clear()
     response = redirect(url_for('auth_bp.auth_page'))
-    response.delete_cookie('api_token')
+    response.delete_cookie('api_token', path='/', domain=None)
+    response.delete_cookie('user_id', path='/', domain=None)
+    response.delete_cookie('email', path='/', domain=None)
     logout_user()
     flash('You have been logged out.', 'success')
     return response
