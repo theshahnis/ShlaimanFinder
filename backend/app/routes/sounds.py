@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request,jsonify,current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
@@ -17,6 +17,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @sounds_bp.route('/upload', methods=['POST'])
+@token_or_login_required
 def upload_sound():
     if 'file' not in request.files:
         return jsonify({'message': 'No file part'}), 400
@@ -26,13 +27,26 @@ def upload_sound():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
+        try:
+            file.save(filepath)
+            return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
+        except Exception as e:
+            return jsonify({'message': 'File upload failed', 'error': str(e)}), 500
     return jsonify({'message': 'Invalid file type'}), 400
 
-@sounds_bp.route('/sounds', methods=['GET'])
+@sounds_bp.route('/get_sounds', methods=['GET'])
+@token_or_login_required
 def list_sounds():
-    sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-    return jsonify({'sounds': sound_files}), 200
+    try:
+        sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
+        return jsonify({'sounds': sound_files}), 200
+    except Exception as e:
+        return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
 
-
+@sounds_bp.route('/<filename>', methods=['GET'])
+@token_or_login_required
+def get_sound(filename):
+    try:
+        return send_from_directory(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER), filename)
+    except Exception as e:
+        return jsonify({'message': 'Failed to fetch sound', 'error': str(e)}), 500
