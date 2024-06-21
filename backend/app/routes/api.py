@@ -31,12 +31,12 @@ api = Api(
     authorizations=authorizations
 )
 
-login_model = api.model('Login', {
+login_model = api_ns.model('Login', {
     'email': fields.String(required=True, description='The email address'),
     'password': fields.String(required=True, description='The user password')
 })
 
-signup_model = api.model('Signup', {
+signup_model = api_ns.model('Signup', {
     'email': fields.String(required=True, description='The email address'),
     'username': fields.String(required=True, description='The username'),
     'password': fields.String(required=True, description='The user password')
@@ -223,6 +223,8 @@ def validate_token():
     user_id = get_jwt_identity()
     test_value = request.json.get('test', False)
     return jsonify({'msg': f'Token is valid for user {user_id} and test value is {test_value}'}), 200
+
+
 
 @api_ns.route('/login')
 class LoginResource(Resource):
