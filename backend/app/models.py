@@ -35,8 +35,8 @@ class User(UserMixin, db.Model):
 
     def generate_api_token(self, secret_key):
         token_data = {
-            'user_id': user.id,
-            'sub': user.id,
+            'user_id': self.id,
+            'sub': self.id,
             'exp': (datetime.utcnow() + timedelta(days=7)).timestamp()
         }
         token = jwt.encode(token_data, secret_key, algorithm='HS256')
