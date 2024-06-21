@@ -19,10 +19,37 @@ profile_model = profile_ns.model('Profile', {
     'profile_image': fields.String(description='URL to the profile image')
 })
 
+# HTML Profile Route
+@profile_bp.route('/profile', methods=['GET', 'POST'])
+@token_or_login_required
+def profile():
+    form = UpdateProfileForm()
+    if form.validate_on_submit():
+        try:
+            if form.profile_image.data:
+                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
+                current_user.profile_image = picture_file
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.note = form.note.data
+            db.session.commit()
+            flash('Your account has been updated!', 'success')
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}', 'danger')
+            db.session.rollback()
+        return redirect(url_for('profile_bp.profile'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.note.data = current_user.note
+    profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
+    return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+
+# API Profile Routes
 @profile_bp.route('/profile/api', methods=['GET'])
 @token_or_login_required
-def get_profile():
-    """Get the current user's profile"""
+def get_profile_api():
+    """Get the current user's profile (API)"""
     user = current_user
     profile_image = url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
     return jsonify({
@@ -32,11 +59,11 @@ def get_profile():
         'profile_image': profile_image
     }), 200
 
-@profile_bp.route('/profile', methods=['PUT'])
+@profile_bp.route('/profile/api', methods=['PUT'])
 @token_or_login_required
-def update_profile():
-    """Update the current user's profile"""
-    data = request.form
+def update_profile_api():
+    """Update the current user's profile (API)"""
+    data = request.get_json()
     user = current_user
     user.username = data.get('username', user.username)
     user.email = data.get('email', user.email)
@@ -62,7 +89,6 @@ def update_profile():
         db.session.rollback()
         return jsonify({'message': f'An error occurred: {str(e)}'}), 400
 
-
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -81,31 +107,6 @@ def save_picture(form_picture, target_dir):
 
     form_picture.save(picture_path)
     return picture_fn
-
-@profile_bp.route('/', methods=['GET', 'POST'])
-@token_or_login_required
-def profile():
-    form = UpdateProfileForm()
-    if form.validate_on_submit():
-        try:
-            if form.profile_image.data:
-                picture_file = save_picture(form.profile_image.data, 'static/profile_pics')
-                current_user.profile_image = picture_file
-            current_user.username = form.username.data
-            current_user.email = form.email.data
-            current_user.note = form.note.data
-            db.session.commit()
-            flash('Your account has been updated!', 'success')
-        except Exception as e:
-            flash(f'An error occurred: {str(e)}', 'danger')
-            db.session.rollback()
-        return redirect(url_for('profile_bp.profile'))
-    elif request.method == 'GET':
-        form.username.data = current_user.username
-        form.email.data = current_user.email
-        form.note.data = current_user.note
-    profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
-    return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
 # API Namespace for documentation purposes only
 @profile_ns.route('/api')
