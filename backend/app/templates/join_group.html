@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Join a Group</h1>
-<form method="POST" action="{{ url_for('general_bp.join_group') }}">
+<form id="joinGroupForm" method="POST">
     {{ form.hidden_tag() }}
     <div>
         {{ form.passcode.label }}<br>
@@ -17,4 +17,34 @@
         {{ form.submit() }}
     </div>
 </form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('joinGroupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('{{ url_for("general_bp.join_group") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.status === 'success') {
+                    window.location.href = '{{ url_for("profile_bp.home") }}';
+                }
+            })
+            .catch(error => {
+                console.error('Error joining group:', error);
+                alert('An error occurred. Please try again.');
+            });
+        });
+    });
+</script>
 {% endblock %}

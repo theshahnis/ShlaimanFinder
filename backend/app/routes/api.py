@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 
 
 api_bp = Blueprint('api', __name__)
+api_ns = Namespace('api', description='Authentication operations')
+
+
 authorizations = {
     'Bearer': {
         'type': 'apiKey',
@@ -217,3 +220,42 @@ def validate_token():
     user_id = get_jwt_identity()
     test_value = request.json.get('test', False)
     return jsonify({'msg': f'Token is valid for user {user_id} and test value is {test_value}'}), 200
+
+@api_ns.route('/login')
+class LoginResource(Resource):
+    @api_ns.expect(login_model)
+    def post(self):
+        return login()
+
+@api_ns.route('/signup')
+class SignupResource(Resource):
+    @api_ns.expect(signup_model)
+    def post(self):
+        return signup()
+
+@api_ns.route('/logout')
+class LogoutResource(Resource):
+    @api_ns.doc(security='Bearer')
+    @token_or_login_required
+    def post(self, current_user):
+        return logout()
+
+@api_ns.route('/protected')
+class ProtectedResource(Resource):
+    @api_ns.doc(security='Bearer')
+    @token_or_login_required
+    def get(self, current_user):
+        return protected_route()
+
+@api_ns.route('/validate')
+class ValidateTokenResource(Resource):
+    @api_ns.doc(security='Bearer')
+    @token_or_login_required
+    def post(self, current_user):
+        return validate_token_route()
+
+@api_ns.route('/protected-endpoint')
+class ProtectedEndpoint(Resource):
+    @token_or_login_required
+    def get(self, current_user):
+        return protected_endpoint()

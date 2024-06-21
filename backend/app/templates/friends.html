@@ -5,17 +5,7 @@
 {% block content %}
 <h1>Friends in Your Group</h1>
 <div id="friends-list" class="friends-container">
-    {% if no_friends %}
-    <p>No friends in current group - Join a group to view friends.</p>
-    {% else %}
-    {% for user in users %}
-    <div class="friend">
-        <img src="{{ url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.png')) }}" alt="{{ user.username }}'s photo" class="friend-img">
-        <p>{{ user.username }}</p>
-        <button onclick="viewLocation({{ user.id }})">View Location</button>
-    </div>
-    {% endfor %}
-    {% endif %}
+    <p id="no-friends-message" style="display:none;">No friends in current group - Join a group to view friends.</p>
 </div>
 
 <div id="location-info">
@@ -23,5 +13,19 @@
     <p id="location-details"></p>
 </div>
 
-<script src="{{ url_for('static', filename='storage.js') }}"> </script>
+<script src="{{ url_for('static', filename='storage.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch friends' locations and handle caching
+        fetchFriendsLocations();
+    });
+
+    function showOfflineAlert() {
+        alert('No active internet connection. Please connect to the internet.');
+    }
+
+    function isOnline() {
+        return navigator.onLine;
+    }
+</script>
 {% endblock %}

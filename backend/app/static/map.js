@@ -83,6 +83,7 @@ function refreshLocations() {
     
     if (!isOnline()) {
         showOfflineAlert();
+        loadCachedLocations();
         return;
     }
 
@@ -238,7 +239,6 @@ function showError(error) {
             break;
     }
 }
-
 function showLocationForm(lat, lng) {
     const formHtml = `
         <div id="locationForm" style="position: absolute; top: 20px; left: 20px; background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;">

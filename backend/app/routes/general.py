@@ -26,40 +26,57 @@ def before_request():
 @token_or_login_required
 def join_group():
     form = JoinGroupForm()
-    if form.validate_on_submit():
+    data = request.get_json() if request.is_json else request.form
+
+    if form.validate_on_submit() or request.is_json:
         if current_user.passcode_attempts is None:
             current_user.passcode_attempts = 0 
 
         if current_user.passcode_attempts >= 10:
-            flash('Too many failed attempts. Please contact support.', 'danger')
-            return redirect(url_for('profile_bp.home'))
+            response = {'message': 'Too many failed attempts. Please contact support.', 'status': 'danger'}
+            return jsonify(response) if request.is_json else (flash(response['message'], response['status']), redirect(url_for('profile_bp.home')))
+
         try:
-            group = Group.query.filter_by(passcode=form.passcode.data).first()
+            group = Group.query.filter_by(passcode=data.get('passcode')).first()
             if not group:
                 current_user.passcode_attempts += 1
                 db.session.commit()
-                flash('Invalid passcode. Please try again.', 'danger')
-                return redirect(url_for('general_bp.join_group'))
+                response = {'message': 'Invalid passcode. Please try again.', 'status': 'danger'}
+                return jsonify(response) if request.is_json else (flash(response['message'], response['status']), redirect(url_for('general_bp.join_group')))
 
             current_user.group = group
             current_user.passcode_attempts = 0  # Reset attempts on successful joining
             db.session.commit()
-            flash('You have successfully joined the group!', 'success')
-            return redirect(url_for('profile_bp.home'))
+            response = {'message': 'You have successfully joined the group!', 'status': 'success'}
+            return jsonify(response) if request.is_json else (flash(response['message'], response['status']), redirect(url_for('profile_bp.home')))
+
         except Exception as e:
             print("Failed to process request or insert to db")
+            response = {'message': 'An error occurred. Please try again later.', 'status': 'danger'}
+            return jsonify(response) if request.is_json else (flash(response['message'], response['status']), redirect(url_for('general_bp.join_group')))
+    
     return render_template('join_group.html', title='Join Group', form=form)
 
 @general_bp.route('/friends', methods=['GET'])
 @token_or_login_required
 def friends():
     if not current_user.group_id:
-        flash('You are not part of any group', 'warning')
-        return render_template('friends.html', users=[], no_friends=True)
+        response = {'message': 'You are not part of any group', 'users': [], 'no_friends': True}
+        return jsonify(response) if request.is_json else render_template('friends.html', users=[], no_friends=True)
 
     users = User.query.filter(User.group_id == current_user.group_id).all()
+    user_data = [
+        {
+            'id': user.id,
+            'username': user.username,
+            'profile_image': url_for('static', filename='profile_pics/' + (user.profile_image if user.profile_image else 'default.png'))
+        }
+        for user in users
+    ]
     no_friends = len(users) == 0
-    return render_template('friends.html', users=users, no_friends=no_friends)
+    response = {'users': user_data, 'no_friends': no_friends}
+    
+    return jsonify(response) if request.is_json else render_template('friends.html', users=user_data, no_friends=no_friends)
 
 @general_bp.route('/map', methods=['GET'])
 @token_or_login_required

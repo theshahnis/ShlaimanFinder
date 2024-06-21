@@ -4,8 +4,44 @@ from ..models import User, Group, StaticLocation, MeetingPoint
 from ..extensions import db
 from werkzeug.security import generate_password_hash
 from .api import token_or_login_required
+from flask_restx import Resource, Namespace, fields
 
 superuser_bp = Blueprint('superuser_bp', __name__,url_prefix='/superuser')
+superuser_ns = Namespace('superuser', description='Superuser operations')
+
+user_model = superuser_ns.model('User', {
+    'id': fields.Integer(required=True, description='User ID'),
+    'email': fields.String(required=True, description='User email'),
+    'username': fields.String(required=True, description='Username'),
+    'group_id': fields.Integer(description='Group ID')
+})
+
+group_model = superuser_ns.model('Group', {
+    'id': fields.Integer(required=True, description='Group ID'),
+    'name': fields.String(required=True, description='Group name'),
+    'passcode': fields.String(description='Group passcode')
+})
+
+static_location_model = superuser_ns.model('StaticLocation', {
+    'id': fields.Integer(required=True, description='Static location ID'),
+    'name': fields.String(required=True, description='Static location name'),
+    'latitude': fields.Float(required=True, description='Latitude'),
+    'longitude': fields.Float(required=True, description='Longitude'),
+    'note': fields.String(description='Note about the location')
+})
+
+meeting_point_model = superuser_ns.model('MeetingPoint', {
+    'id': fields.Integer(required=True, description='Meeting point ID'),
+    'username': fields.String(required=True, description='Username who created the meeting point'),
+    'note': fields.String(description='Note about the meeting point'),
+    'created_at': fields.DateTime(description='Creation time of the meeting point'),
+    'remaining_time': fields.Integer(description='Remaining time for the meeting point'),
+    'isMeetingPoint': fields.Boolean(description='Is this a meeting point')
+})
+
+location_model = superuser_ns.model('Location', {
+    'locations': fields.List(fields.Nested(static_location_model))
+})
 
 @superuser_bp.route('/', methods=['GET'])
 @token_or_login_required
@@ -197,3 +233,83 @@ def save_picture(form_picture, target_dir):
 
     form_picture.save(picture_path)
     return picture_fn
+
+
+@superuser_ns.route('/api')
+class SuperuserAPIResource(Resource):
+    @superuser_ns.doc('get_superuser_data')
+    @superuser_ns.marshal_with(superuser_ns.model('SuperuserData', {
+        'users': fields.List(fields.Nested(user_model)),
+        'groups': fields.List(fields.Nested(group_model)),
+        'static_locations': fields.List(fields.Nested(static_location_model)),
+        'meeting_points': fields.List(fields.Nested(meeting_point_model))
+    }))
+    def get(self):
+        return superuser_api()
+
+@superuser_ns.route('/edit/<int:user_id>')
+class EditUserResource(Resource):
+    @superuser_ns.doc('edit_user')
+    @superuser_ns.expect(superuser_ns.model('EditUserPayload', {
+        'email': fields.String(required=True, description='User email'),
+        'password': fields.String(description='New password'),
+        'group_id': fields.Integer(description='Group ID')
+    }))
+    def put(self, user_id):
+        return edit_user(user_id)
+
+@superuser_ns.route('/delete/<int:user_id>')
+class DeleteUserResource(Resource):
+    @superuser_ns.doc('delete_user')
+    def delete(self, user_id):
+        return delete_user(user_id)
+
+@superuser_ns.route('/add_group')
+class AddGroupResource(Resource):
+    @superuser_ns.doc('add_group')
+    @superuser_ns.expect(superuser_ns.model('AddGroupPayload', {
+        'group_name': fields.String(required=True, description='Group name'),
+        'passcode': fields.String(description='Group passcode')
+    }))
+    def post(self):
+        return add_group()
+
+@superuser_ns.route('/delete_static_location')
+class DeleteStaticLocationResource(Resource):
+    @superuser_ns.doc('delete_static_location')
+    @superuser_ns.expect(superuser_ns.model('DeleteStaticLocationPayload', {
+        'location_id': fields.Integer(required=True, description='Static location ID')
+    }))
+    def post(self):
+        return delete_static_location()
+
+@superuser_ns.route('/delete_meeting_point')
+class DeleteMeetingPointResource(Resource):
+    @superuser_ns.doc('delete_meeting_point')
+    @superuser_ns.expect(superuser_ns.model('DeleteMeetingPointPayload', {
+        'location_id': fields.Integer(required=True, description='Meeting point ID')
+    }))
+    def post(self):
+        return delete_meeting_point()
+
+@superuser_ns.route('/locations')
+class GetLocationsResource(Resource):
+    @superuser_ns.doc('get_locations')
+    @superuser_ns.marshal_with(superuser_ns.model('LocationsData', {
+        'locations': fields.List(fields.Nested(fields.Raw))
+    }))
+    def get(self):
+        return get_locations()
+
+@superuser_ns.route('/add_static_location')
+class AddStaticLocationResource(Resource):
+    @superuser_ns.doc('add_static_location')
+    @superuser_ns.expect(superuser_ns.model('AddStaticLocationPayload', {
+        'name': fields.String(required=True, description='Static location name'),
+        'latitude': fields.Float(required=True, description='Latitude'),
+        'longitude': fields.Float(required=True, description='Longitude'),
+        'note': fields.String(description='Note about the location'),
+        'image': fields.String(description='Image of the location')
+    }))
+    def post(self):
+        return add_static_location()
