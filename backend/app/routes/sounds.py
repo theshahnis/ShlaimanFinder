@@ -25,14 +25,14 @@ def upload_sound():
         return jsonify({'message': 'No selected file'}), 400
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        filepath = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
+        filepath = os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER, filename)
         file.save(filepath)
         return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
     return jsonify({'message': 'Invalid file type'}), 400
 
 @sounds_bp.route('/sounds', methods=['GET'])
 def list_sounds():
-    sound_files = os.listdir(os.path.join(current_app.root_path, UPLOAD_FOLDER))
+    sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
     return jsonify({'sounds': sound_files}), 200
 
 
