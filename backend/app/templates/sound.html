@@ -20,7 +20,7 @@
     });
 
     function fetchSounds() {
-        fetch('{{ url_for('sounds_bp.list_sounds') }}')
+        fetch('/sounds/get_sounds')
             .then(response => response.json())
             .then(data => {
                 const soundSelect = document.getElementById('soundSelect');
