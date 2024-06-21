@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('refreshButton').addEventListener('click', function() {
         if (!isOnline()) {
             showOfflineAlert();
-            loadCachedLocations(); // Load cached locations when offline
             return;
         }
 
@@ -24,11 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         refreshLocations();
     });
-
-    // Load cached locations if offline
-    if (!isOnline()) {
-        loadCachedLocations();
-    }
 });
 
 const locations = {
@@ -84,18 +78,15 @@ function refreshLocations() {
     
     if (!isOnline()) {
         showOfflineAlert();
-        loadCachedLocations();
         return;
     }
+
 
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
             console.log('Fetched locations:', data);  // Debugging information
             
-            // Save new data to local storage
-            saveToLocalStorage('locations', data);
-
             // Process user locations
             data.users.forEach(location => {
                 addMarker(location);
@@ -113,32 +104,7 @@ function refreshLocations() {
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
-            loadCachedLocations(); // Load cached locations if fetch fails
         });
-}
-
-function loadCachedLocations() {
-    const data = loadFromLocalStorage('locations');
-    if (data) {
-        console.log('Loaded cached locations:', data);
-
-        // Process user locations
-        data.users.forEach(location => {
-            addMarker(location);
-        });
-
-        // Process static locations
-        data.static_locations.forEach(location => {
-            addMarker(location);
-        });
-
-        // Process meeting points
-        data.meeting_points.forEach(location => {
-            addMarker(location);
-        });
-    } else {
-        console.log('No cached locations found.');
-    }
 }
 
 function addMarker(location) {
@@ -314,27 +280,4 @@ function submitLocation(lat, lng) {
 
 function cancelLocation() {
     document.getElementById('locationForm').remove();
-}
-
-function isOnline() {
-    return navigator.onLine;
-}
-
-function showOfflineAlert() {
-    alert('No active internet connection. Please connect to the internet.');
-}
-
-function saveToLocalStorage(key, data) {
-    console.log('Saving to Local Storage:', key, data);
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function loadFromLocalStorage(key) {
-    const data = localStorage.getItem(key);
-    console.log('Loading from Local Storage:', key, data);
-    return data ? JSON.parse(data) : null;
-}
-
-function deepEqual(obj1, obj2) {
-    return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
