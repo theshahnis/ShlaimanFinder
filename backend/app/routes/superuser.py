@@ -58,7 +58,7 @@ def edit_user(user_id):
     return render_template('edit_user.html', user=user, groups=groups)
 
 
-@superuser_bp.route('/delete/<int:user_id>', methods=['DELETE'])
+@superuser_bp.route('/delete/<int:user_id>', methods=['POST'])
 @token_or_login_required
 def delete_user(user_id):
     if not current_user.superuser:
@@ -87,7 +87,7 @@ def add_group():
     db.session.commit()
     return jsonify({'message': 'Group added successfully'}), 201
 
-@superuser_bp.route('/delete_static_location', methods=['DELETE'])
+@superuser_bp.route('/delete_static_location', methods=['POST'])
 @token_or_login_required
 def delete_static_location():
     if not current_user.superuser:
@@ -104,7 +104,7 @@ def delete_static_location():
     db.session.commit()
     return jsonify({'message': 'Static location deleted successfully'}), 200
 
-@superuser_bp.route('/delete_meeting_point', methods=['DELETE'])
+@superuser_bp.route('/delete_meeting_point', methods=['POST'])
 @token_or_login_required
 def delete_meeting_point():
     if not current_user.superuser:
