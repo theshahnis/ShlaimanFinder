@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
@@ -7,8 +7,6 @@ sounds_bp = Blueprint('sounds_bp', __name__)
 
 SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
-
-
 
 @sounds_bp.route('/')
 @token_or_login_required
@@ -45,7 +43,7 @@ def list_sounds():
     except Exception as e:
         return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
 
-@sounds_bp.route('/<filename>', methods=['GET'])
+@sounds_bp.route('/sounds/<filename>', methods=['GET'])
 @token_or_login_required
 def get_sound(filename):
     try:
