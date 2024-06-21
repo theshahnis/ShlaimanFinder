@@ -19,7 +19,7 @@ profile_model = profile_ns.model('Profile', {
     'profile_image': fields.String(description='URL to the profile image')
 })
 
-@profile_bp.route('/profile', methods=['GET'])
+@profile_bp.route('/profile/api', methods=['GET'])
 @token_or_login_required
 def get_profile():
     """Get the current user's profile"""
@@ -108,8 +108,8 @@ def profile():
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
 # API Namespace for documentation purposes only
-@profile_ns.route('/')
-class UserProfile(Resource):
+@profile_ns.route('/api')
+class UserProfileAPI(Resource):
     @profile_ns.doc('get_profile')
     @profile_ns.marshal_with(profile_model)
     @token_or_login_required
