@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>Edit User</h1>
-<form method="POST">
+<form id="editUserForm">
     <label for="email">Email:</label>
     <input type="email" name="email" id="email" value="{{ user.email }}" required>
     <br>
@@ -22,4 +22,35 @@
     <button type="submit">Save Changes</button>
 </form>
 <a href="{{ url_for('superuser_bp.superuser_view') }}">Cancel</a>
+
+<script>
+document.getElementById('editUserForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const userId = {{ user.id }};
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+
+    fetch(`/superuser/edit/${userId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('User updated:', data);
+        window.location.href = "{{ url_for('superuser_bp.superuser_view') }}"; // Redirect to superuser view
+    })
+    .catch(error => {
+        console.error('Error updating user:', error);
+    });
+});
+</script>
 {% endblock %}
