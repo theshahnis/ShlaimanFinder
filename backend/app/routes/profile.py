@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app,jsonify
 from flask_restx import Resource, Namespace, fields, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_login import login_required, current_user
