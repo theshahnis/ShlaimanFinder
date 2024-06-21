@@ -19,52 +19,48 @@ profile_model = profile_ns.model('Profile', {
     'profile_image': fields.String(description='URL to the profile image')
 })
 
-@profile_ns.route('/')
-class UserProfile(Resource):
-    @profile_ns.doc('get_profile')
-    @profile_ns.marshal_with(profile_model)
-    @token_or_login_required
-    def get(self):
-        """Get the current user's profile"""
-        user = current_user
-        profile_image = url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
-        return {
-            'username': user.username,
-            'email': user.email,
-            'note': user.note,
-            'profile_image': profile_image
-        }
+@profile_bp.route('/profile', methods=['GET'])
+@token_or_login_required
+def get_profile():
+    """Get the current user's profile"""
+    user = current_user
+    profile_image = url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
+    return jsonify({
+        'username': user.username,
+        'email': user.email,
+        'note': user.note,
+        'profile_image': profile_image
+    }), 200
 
-    @profile_ns.doc('update_profile')
-    @profile_ns.expect(profile_model)
-    @token_or_login_required
-    def put(self):
-        """Update the current user's profile"""
-        data = request.get_json()
-        user = current_user
-        user.username = data.get('username', user.username)
-        user.email = data.get('email', user.email)
-        user.note = data.get('note', user.note)
+@profile_bp.route('/profile', methods=['PUT'])
+@token_or_login_required
+def update_profile():
+    """Update the current user's profile"""
+    data = request.form
+    user = current_user
+    user.username = data.get('username', user.username)
+    user.email = data.get('email', user.email)
+    user.note = data.get('note', user.note)
 
-        if 'profile_image' in request.files:
-            picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
-            user.profile_image = picture_file
+    if 'profile_image' in request.files:
+        picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+        user.profile_image = picture_file
 
-        try:
-            db.session.commit()
-            response = {
-                'message': 'Your account has been updated!',
-                'profile': {
-                    'username': user.username,
-                    'email': user.email,
-                    'note': user.note,
-                    'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
-                }
+    try:
+        db.session.commit()
+        response = {
+            'message': 'Your account has been updated!',
+            'profile': {
+                'username': user.username,
+                'email': user.email,
+                'note': user.note,
+                'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
             }
-            return jsonify(response), 200
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({'message': f'An error occurred: {str(e)}'}), 400
+        }
+        return jsonify(response), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': f'An error occurred: {str(e)}'}), 400
 
 
 def save_picture(form_picture, target_dir):
@@ -110,3 +106,47 @@ def profile():
         form.note.data = current_user.note
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
+
+# API Namespace for documentation purposes only
+@profile_ns.route('/')
+class UserProfile(Resource):
+    @profile_ns.doc('get_profile')
+    @profile_ns.marshal_with(profile_model)
+    @token_or_login_required
+    def get(self):
+        """Get the current user's profile"""
+        user = current_user
+        profile_image = url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
+        return {
+            'username': user.username,
+            'email': user.email,
+            'note': user.note,
+            'profile_image': profile_image
+        }
+
+    @profile_ns.doc('update_profile')
+    @profile_ns.expect(profile_model)
+    @token_or_login_required
+    def put(self):
+        """Update the current user's profile"""
+        data = request.get_json()
+        user = current_user
+        user.username = data.get('username', user.username)
+        user.email = data.get('email', user.email)
+        user.note = data.get('note', user.note)
+
+        if 'profile_image' in request.files:
+            picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+            user.profile_image = picture_file
+
+        try:
+            db.session.commit()
+            return {
+                'username': user.username,
+                'email': user.email,
+                'note': user.note,
+                'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
+            }, 200
+        except Exception as e:
+            db.session.rollback()
+            return {'message': f'An error occurred: {str(e)}'}, 400

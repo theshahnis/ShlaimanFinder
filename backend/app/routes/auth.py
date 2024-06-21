@@ -50,7 +50,7 @@ def login():
             return response
         
         # Create a response object for HTML response and set the token in the cookie
-        response = redirect(url_for('profile_bp.profile'))
+        response = redirect(url_for('profile_bp.get_profile'))
         response.set_cookie('api_token', token, httponly=True, secure=True)
         response.set_cookie('user_id', str(user.id), httponly=True, secure=True)
         response.set_cookie('email', email, httponly=True, secure=True)
