@@ -7,11 +7,11 @@ sounds_bp = Blueprint('sounds_bp', __name__)
 SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 
-@general_bp.route('/')
+@sounds_bp.route('/')
 @token_or_login_required
 def sounds_page():
     return render_template('sound.html')
-    
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
