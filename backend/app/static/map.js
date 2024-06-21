@@ -23,13 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         refreshLocations();
     });
-
-    // Load cached locations if offline
-    if (!isOnline()) {
-        loadCachedLocations();
-    } else {
-        refreshLocations();
-    }
 });
 
 const locations = {
@@ -85,21 +78,15 @@ function refreshLocations() {
     
     if (!isOnline()) {
         showOfflineAlert();
-        loadCachedLocations();
         return;
     }
+
 
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
             console.log('Fetched locations:', data);  // Debugging information
-
-            // Save new data to local storage if different
-            const cachedData = loadFromLocalStorage('locations');
-            if (!deepEqual(data, cachedData)) {
-                saveToLocalStorage('locations', data);
-            }
-
+            
             // Process user locations
             data.users.forEach(location => {
                 addMarker(location);
@@ -117,33 +104,7 @@ function refreshLocations() {
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
-            // If fetching fails, load cached locations
-            loadCachedLocations();
         });
-}
-
-function loadCachedLocations() {
-    const data = loadFromLocalStorage('locations');
-    if (data) {
-        console.log('Loaded cached locations:', data);
-
-        // Process user locations
-        data.users.forEach(location => {
-            addMarker(location);
-        });
-
-        // Process static locations
-        data.static_locations.forEach(location => {
-            addMarker(location);
-        });
-
-        // Process meeting points
-        data.meeting_points.forEach(location => {
-            addMarker(location);
-        });
-    } else {
-        console.log('No cached locations found.');
-    }
 }
 
 function addMarker(location) {
