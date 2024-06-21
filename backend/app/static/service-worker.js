@@ -46,7 +46,6 @@ const urlsToCache = [
   '/templates/join_group.html'
 ];
 
-// Install event - cache specified URLs and skip waiting to activate the new service worker immediately
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -54,32 +53,23 @@ self.addEventListener('install', event => {
       return cache.addAll(urlsToCache);
     })
   );
-  self.skipWaiting(); // Forces the waiting service worker to become the active service worker
+  self.skipWaiting(); 
 });
 
-// Fetch event - serve cached content when offline and cache new requests dynamically
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response => {
-      // Cache hit - return response
       if (response) {
         return response;
       }
 
-      // Not in cache - fetch from network
       return fetch(event.request).then(
         response => {
-          // Check if we received a valid response
           if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
           }
 
-          // Important: Clone the response. A response is a stream
-          // and because we want the browser to consume the response
-          // as well as the cache consuming the response, we need
-          // to clone it so we have two streams.
           const responseToCache = response.clone();
-
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
           });
@@ -88,12 +78,11 @@ self.addEventListener('fetch', event => {
         }
       );
     }).catch(() => {
-      return caches.match('/static/fallback.html'); // Serve the fallback page when offline
+      return caches.match('/fallback.html'); 
     })
   );
 });
 
-// Activate event - cleanup old caches
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
 
@@ -108,5 +97,5 @@ self.addEventListener('activate', event => {
       );
     })
   );
-  self.clients.claim(); // Ensures that the service worker takes control of all clients as soon as it activates
+  self.clients.claim(); 
 });
