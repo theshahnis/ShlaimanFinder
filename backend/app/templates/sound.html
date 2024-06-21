@@ -61,7 +61,7 @@
     });
 
     function fetchSounds() {
-        fetch('{{ url_for('sounds_bp.get_sounds') }}')
+        fetch('{{ url_for('sounds_bp.list_sounds') }}')
             .then(response => response.json())
             .then(data => {
                 const soundSelect = document.getElementById('soundSelect');
@@ -74,7 +74,7 @@
                 });
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error fetching sounds:', error);
             });
     }
 </script>
