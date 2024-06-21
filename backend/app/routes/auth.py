@@ -85,7 +85,6 @@ def signup():
     db.session.add(new_user)
     db.session.commit()
     login_user(new_user)
-    #token = generate_and_save_token(new_user)
     access_token = create_access_token(identity=new_user.id)
     new_user.api_token = access_token
     db.session.commit()
@@ -101,18 +100,17 @@ def generate_and_save_token(user):
     # Check if the current token is valid
     if user.api_token:
         try:
-            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            data = decode_token(user.api_token)
             if data['exp'] > datetime.utcnow().timestamp():
                 return user.api_token
         except jwt.ExpiredSignatureError:
-            pass  
+            pass
         except jwt.InvalidTokenError:
-            pass  
-    
+            pass
+
     # Generate a new token
     token_data = {
         'user_id': user.id,
-        'sub': user.id,
         'exp': (datetime.utcnow() + timedelta(days=3)).timestamp()
     }
     token = create_access_token(identity=user.id, additional_claims=token_data)

@@ -98,14 +98,14 @@ def generate_and_save_token(user):
     # Check if the current token is valid
     if user.api_token:
         try:
-            data = jwt.decode(user.api_token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            data = decode_token(user.api_token)
             if data['exp'] > datetime.utcnow().timestamp():
                 return user.api_token
         except jwt.ExpiredSignatureError:
-            pass  
+            pass
         except jwt.InvalidTokenError:
-            pass  
-    
+            pass
+
     # Generate a new token
     token_data = {
         'user_id': user.id,
