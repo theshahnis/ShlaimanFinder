@@ -60,7 +60,9 @@
             }
         });
 
-        document.getElementById('refreshSoundsButton').addEventListener('click', fetchSounds);
+        document.getElementById('refreshSoundsButton').addEventListener('click', function() {
+            fetchSounds();
+        });
     });
 
     function fetchSounds() {
