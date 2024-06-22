@@ -5,6 +5,7 @@
 {% block head %}
 <style>
     body {
+        display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -20,9 +21,8 @@
     }
 
     #soundButtons {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 20px;
         margin-top: 20px;
     }
@@ -43,6 +43,18 @@
         justify-content: center;
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .sound-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5);
     }
 
     .sound-button:hover {
