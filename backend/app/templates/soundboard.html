@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Soundboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Soundboard</h1>
+
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="soundFile" name="file" accept=".wav, .mp3, .ogg">
+        <button type="submit">Upload Sound</button>
+    </form>
+
+    <h2>Select a sound</h2>
+    <select id="soundSelect">
+        <option value="">Select a sound</option>
+        {% for sound in sound_files %}
+            <option value="{{ sound }}">{{ sound }}</option>
+        {% endfor %}
+    </select>
+    <button id="refreshSoundsButton">Refresh Sounds</button>
+
+    <button id="playButton">Print Sound Name</button>
+
+    <audio id="audioPlayer" controls style="display:none;"></audio>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            const fileInput = document.getElementById('soundFile');
+            formData.append('file', fileInput.files[0]);
+
+            fetch('{{ url_for("soundboard_bp.upload_sound") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                fetchSounds();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('refreshSoundsButton').addEventListener('click', function() {
+            fetchSounds();
+        });
+
+        document.getElementById('playButton').addEventListener('click', function() {
+            const soundSelect = document.getElementById('soundSelect');
+            const selectedSound = soundSelect.value;
+            if (selectedSound) {
+                console.log('Selected Sound:', selectedSound);
+            } else {
+                alert('Please select a sound');
+            }
+        });
+    });
+
+    function fetchSounds() {
+        fetch('{{ url_for("soundboard_bp.list_sounds") }}')
+            .then(response => response.json())
+            .then(data => {
+                const soundSelect = document.getElementById('soundSelect');
+                soundSelect.innerHTML = '<option value="">Select a sound</option>';
+                data.sounds.forEach(sound => {
+                    const option = document.createElement('option');
+                    option.value = sound;
+                    option.textContent = sound;
+                    soundSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching sounds:', error);
+            });
+    }
+</script>
+{% endblock %}

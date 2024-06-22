@@ -33,7 +33,6 @@ const urlsToCache = [
   '/static/my_shows.js',
   '/static/map.js',
   '/static/storage.js',
-  '/static/soundboard.js',
   '/templates/base.html',
   '/templates/profile.html',
   '/templates/index.html',
