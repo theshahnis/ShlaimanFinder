@@ -6,7 +6,7 @@ from .api import token_or_login_required
 soundboard_bp = Blueprint('soundboard_bp', __name__)
 
 SOUND_UPLOAD_FOLDER = 'static/sounds'
-ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
+ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg','oga'}
 
 @soundboard_bp.route('/')
 @token_or_login_required

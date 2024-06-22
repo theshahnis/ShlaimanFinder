@@ -16,6 +16,8 @@ const urlsToCache = [
   '/location/test-location',
   '/superuser/',
   '/superuser',
+  '/soundboard',
+  '/soundboard/',
   '/fallback.html',
   '/static/styles.css',
   '/static/dark-mode.css',
