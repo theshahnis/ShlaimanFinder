@@ -1,5 +1,30 @@
 {% extends "base_soundboard.html" %}
+{% block head %}
+<style>
+    .play-button {
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+    }
 
+    .play-button:active {
+        background-color: darkred;
+        transform: scale(0.95);
+    }
+
+    body {
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+</style>
+{% endblock %}
 {% block title %}Soundboard{% endblock %}
 
 {% block content %}
@@ -30,6 +55,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    document.addEventListener('DOMContentLoaded', function () {
+    var images = [
+        "{{ url_for('static', filename='images/background.png') }}",
+        "{{ url_for('static', filename='images/background2.png') }}",
+        "{{ url_for('static', filename='images/background3.png') }}",
+        "{{ url_for('static', filename='images/background4.png') }}"
+    ];
+    var randomImage = images[Math.floor(Math.random() * images.length)];
+    document.body.style.backgroundImage = 'url(' + randomImage + ')';
+
+
     document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData();
@@ -43,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             alert(data.message);
-            location.reload(); // Reload the page to update the list of sounds
+            location.reload(); 
         })
         .catch(error => {
             console.error('Error:', error);
