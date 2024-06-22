@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
 
-soundboard_bp = Blueprint('sounds_bp', __name__)
+soundboard_bp = Blueprint('soundboard_bp', __name__)
 
 SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
