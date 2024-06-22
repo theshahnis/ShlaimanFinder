@@ -21,17 +21,35 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.play-button').forEach(button => {
+    console.log('DOMContentLoaded event fired');
+    const buttons = document.querySelectorAll('.play-button');
+    if (buttons.length === 0) {
+        console.log('No play buttons found');
+    } else {
+        console.log('Play buttons found:', buttons.length);
+    }
+    
+    buttons.forEach(button => {
         button.addEventListener('click', function() {
+            console.log('Play button clicked');
             const sound = this.getAttribute('data-sound');
+            console.log('Playing sound:', sound);
             const audioPlayer = document.getElementById('audioPlayer');
             audioPlayer.src = `/sounds/get_sounds/${sound}`;
             audioPlayer.play();
         });
     });
 
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+    const uploadForm = document.getElementById('uploadForm');
+    if (!uploadForm) {
+        console.log('Upload form not found');
+    } else {
+        console.log('Upload form found');
+    }
+    
+    uploadForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        console.log('Upload form submitted');
         const formData = new FormData();
         const fileInput = document.getElementById('soundFile');
         formData.append('file', fileInput.files[0]);
@@ -42,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('Upload response:', data);
             alert(data.message);
             location.reload();
         })
