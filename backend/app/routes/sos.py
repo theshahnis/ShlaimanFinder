@@ -53,7 +53,7 @@ def send_sos():
 
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
-        account_sid = os.getenv('ACCOUNT_SID')
+        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
         auth_token = os.getenv('TWILIO_AUTH_TOKEN')
         client = Client(account_sid, auth_token)
 
@@ -63,15 +63,17 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
         body_params = [initiator_username, location]
         print(f"Body Params: {body_params}")
 
+        # Send message using the template
         message = client.messages.create(
             from_=from_whatsapp_number,
             to=to_whatsapp_number,
-            provide_feedback=True,
+            body="SOS - Need Assistance\nInitiator: {{1}}\nLocation: {{2}}",  # Include a fallback message body
+            status_callback='http://postb.in/1234abcd',  # Optional: URL to receive status callbacks
             persistent_action=[
                 {
                     "type": "template",
                     "template_name": template_name,
-                    "template_language": "en",  # Adjust language code if necessary
+                    "template_language": "en",
                     "body_params": body_params
                 }
             ]
