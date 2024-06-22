@@ -73,13 +73,12 @@ def send_sos():
 
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
-        account_sid = 
-        auth_token = 
-        if not account_sid or not auth_token:
+
+        if not ACCOUNT_SID or not ACCOUNT_TOKEN:
             logger.error("Twilio account SID or auth token not set")
             return
 
-        client = Client(account_sid, auth_token)
+        client = Client(ACCOUNT_SID, ACCOUNT_TOKEN)
 
         from_whatsapp_number = 'whatsapp:+12518108458'
         to_whatsapp_number = f'whatsapp:{phone_number}'
