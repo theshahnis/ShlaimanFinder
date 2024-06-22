@@ -39,6 +39,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         const phoneNumberInput = document.querySelector('.phone-number');
 
+        // If phone number already starts with +972, remove it to avoid double prefix
+        if (phoneNumberInput.value.startsWith('+972')) {
+            phoneNumberInput.value = phoneNumberInput.value.replace('+972', '');
+        }
+
         phoneNumberInput.addEventListener('input', function(event) {
             let value = event.target.value;
             if (value.startsWith('0')) {
