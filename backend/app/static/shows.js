@@ -12,33 +12,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fetch all shows once on page load
-    fetchShows();
-
-    // Fetch friends' locations when the page loads
-    fetchFriendsLocations();
-});
-
-function fetchShows() {
     if (!isOnline()) {
         showOfflineAlert();
-        const cachedShows = loadFromLocalStorage('shows');
-        const cachedShowsAttendees = loadFromLocalStorage('shows_attendees');
-        if (cachedShows && cachedShowsAttendees) {
-            allShows = cachedShows;
-            allShowsAttendees = cachedShowsAttendees;
-
-            // Load shows for the first date by default and highlight the first button
-            const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
-            if (firstButton) {
-                firstButton.classList.add('selected');
-                loadShowsForDate('2024-06-27', firstButton);
-            }
-        } else {
-            console.error('No cached shows data available.');
-        }
         return;
     }
-
     fetch('/show/api/shows')
         .then(response => response.json())
         .then(data => {
@@ -48,8 +25,6 @@ function fetchShows() {
             }
             allShows = data.shows;
             allShowsAttendees = data.shows_attendees;
-            saveToLocalStorage('shows', data.shows);
-            saveToLocalStorage('shows_attendees', data.shows_attendees);
 
             // Load shows for the first date by default and highlight the first button
             const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
@@ -59,22 +34,26 @@ function fetchShows() {
             }
         })
         .catch(error => console.error('Error loading shows:', error));
-}
+});
 
-function loadShowsForDate(date, button) {
-    const showsForDate = allShows[date];
-    if (showsForDate) {
-        displayShows(showsForDate);
+function loadShowsForDate(date, selectedButton) {
+    // Filter shows by selected date
+    const filteredShows = {};
+    for (const [stage, dates] of Object.entries(allShows)) {
+        filteredShows[stage] = {};
+        if (dates[date]) {
+            filteredShows[stage][date] = dates[date];
+        }
     }
 
-    // Highlight the selected date button
-    document.querySelectorAll('.button').forEach(btn => btn.classList.remove('selected'));
-    button.classList.add('selected');
-}
+    renderShows(filteredShows, allShowsAttendees);
 
-function displayShows(shows) {
-    // Implement the logic to update your UI with the shows data
-    console.log('Displaying shows:', shows);
+    // Remove 'selected' class from all buttons
+    const dateButtons = document.querySelectorAll('.button');
+    dateButtons.forEach(button => button.classList.remove('selected'));
+
+    // Add 'selected' class to the clicked class to the button
+    selectedButton.classList.add('selected');
 }
 
 function renderShows(shows, showsAttendees) {
