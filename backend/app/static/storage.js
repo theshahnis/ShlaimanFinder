@@ -51,17 +51,19 @@ function fetchFriendsLocations() {
 // Display friends data in the UI
 function displayFriends(friends) {
     const friendsList = document.getElementById('friends-list');
-    friendsList.innerHTML = '';
-    friends.forEach(friend => {
-        const friendDiv = document.createElement('div');
-        friendDiv.className = 'friend';
-        friendDiv.innerHTML = `
-            <img src="${friend.profile_image}" alt="${friend.username}'s photo" class="friend-img">
-            <p>${friend.username}</p>
-            <button onclick="viewLocation(${friend.user_id})">View Location</button>
-        `;
-        friendsList.appendChild(friendDiv);
-    });
+    if (friendsList) {
+        friendsList.innerHTML = '';
+        friends.forEach(friend => {
+            const friendDiv = document.createElement('div');
+            friendDiv.className = 'friend';
+            friendDiv.innerHTML = `
+                <img src="${friend.profile_image}" alt="${friend.username}'s photo" class="friend-img">
+                <p>${friend.username}</p>
+                <button onclick="viewLocation(${friend.user_id})">View Location</button>
+            `;
+            friendsList.appendChild(friendDiv);
+        });
+    }
 }
 
 // View a friend's location
