@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const sound = this.getAttribute('data-sound');
             console.log('Playing sound:', sound);
             const audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.src = `/sounds/get_sounds/${sound}`;
+            audioPlayer.src = `/soundboard/get_sounds/${sound}`;
             audioPlayer.play();
         });
     });
