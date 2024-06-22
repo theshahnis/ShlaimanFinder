@@ -1,4 +1,3 @@
-<!-- templates/sos.html -->
 {% extends "base.html" %}
 
 {% block title %}SOS{% endblock %}
@@ -13,17 +12,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const sosButton = document.getElementById('sosButton');
     let holdTimer = null;
 
-    sosButton.addEventListener('mousedown', function() {
+    // Function to start the hold timer
+    function startHoldTimer() {
         holdTimer = setTimeout(sendSOS, 5000);
-    });
+    }
 
-    sosButton.addEventListener('mouseup', function() {
+    // Function to clear the hold timer
+    function clearHoldTimer() {
         clearTimeout(holdTimer);
-    });
+    }
 
-    sosButton.addEventListener('mouseleave', function() {
-        clearTimeout(holdTimer);
-    });
+    // Add event listeners for mouse events
+    sosButton.addEventListener('mousedown', startHoldTimer);
+    sosButton.addEventListener('mouseup', clearHoldTimer);
+    sosButton.addEventListener('mouseleave', clearHoldTimer);
+
+    // Add event listeners for touch events
+    sosButton.addEventListener('touchstart', startHoldTimer);
+    sosButton.addEventListener('touchend', clearHoldTimer);
+    sosButton.addEventListener('touchcancel', clearHoldTimer);
 
     function sendSOS() {
         // Assume current location is obtained from the browser's geolocation API
@@ -35,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ location: location })
+                    body: JSON.stringify({ latitude: position.coords.latitude, longitude: position.coords.longitude })
                 })
                 .then(response => response.json())
                 .then(data => {
