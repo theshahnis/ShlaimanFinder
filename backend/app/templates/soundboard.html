@@ -44,20 +44,9 @@
         <audio id="{{ sound }}" src="{{ url_for('static', filename='sounds/' ~ sound) }}" preload="auto"></audio>
     {% endfor %}
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var images = [
-        "{{ url_for('static', filename='images/background.png') }}",
-        "{{ url_for('static', filename='images/background2.png') }}",
-        "{{ url_for('static', filename='images/background3.png') }}",
-        "{{ url_for('static', filename='images/background4.png') }}"
-    ];
-    var randomImage = images[Math.floor(Math.random() * images.length)];
-    document.body.style.backgroundImage = 'url(' + randomImage + ')';
-
     const buttons = document.querySelectorAll('.play-button');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
@@ -67,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
             audioPlayer.play();
         });
     });
+    
 
     document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();
