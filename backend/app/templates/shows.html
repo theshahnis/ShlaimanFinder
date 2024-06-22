@@ -17,9 +17,27 @@
 <script src="{{ url_for('static', filename='storage.js') }}"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch friends' locations and shows when the page loads
-    fetchAndSaveShows();
-});
-</script>
+// Function to fetch and save shows data
+function fetchAndSaveShows() {
+            fetch('/show/api/shows')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    // Save the fetched data to local storage
+                    localStorage.setItem('shows', JSON.stringify(data));
+                    console.log('Shows data saved to local storage:', data);
+                })
+                .catch(error => {
+                    console.error('Error fetching shows:', error);
+                });
+        }
+
+        // Call the function when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAndSaveShows();
+        });
+    </script>
 {% endblock %}
