@@ -47,7 +47,10 @@ def profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
         form.note.data = current_user.note
-        form.phone_number.data = current_user.phone_number
+        phone_number = current_user.phone_number
+        if phone_number.startswith('+972'):
+            phone_number = phone_number.replace('+972', '')
+        form.phone_number.data = phone_number
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 

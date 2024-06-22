@@ -19,12 +19,11 @@
         <div>
             {{ form.profile_image.label }} {{ form.profile_image }}
         </div>
-        <div class="container mt-2">
-            <div class="col-md-6">
-                <div class="form-group mt-2 d-inline-block">
-                    <span class="border-end country-code px-2">+972</span>
-                    {{ form.phone_number(class="form-control phone-number", id="ec-mobile-number", placeholder="512345678") }}
-                </div>
+        <div class="phone-number-container">
+            {{ form.phone_number.label }} 
+            <div class="phone-number-input">
+                <span class="country-code">+972</span>
+                {{ form.phone_number(class="phone-number") }}
             </div>
         </div>
         <div>
@@ -40,9 +39,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const phoneNumberInput = document.querySelector('.phone-number');
 
-        // If phone number already starts with +972, remove it for display purposes
-        if (phoneNumberInput.value.startsWith('+972')) {
-            phoneNumberInput.value = phoneNumberInput.value.replace('+972', '');
+        // Add placeholder if the input is empty
+        if (!phoneNumberInput.value) {
+            phoneNumberInput.value = '';
         }
 
         phoneNumberInput.addEventListener('input', function(event) {
@@ -57,7 +56,7 @@
             event.preventDefault(); // Prevent the default form submission
 
             let formData = new FormData(this);
-            let phoneNumber = document.querySelector('.phone-number').value;
+            let phoneNumber = phoneNumberInput.value;
 
             if (phoneNumber.startsWith('0')) {
                 phoneNumber = phoneNumber.slice(1);
