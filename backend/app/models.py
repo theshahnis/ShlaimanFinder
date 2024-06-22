@@ -30,6 +30,7 @@ class User(UserMixin, db.Model):
     passcode_attempts = db.Column(db.Integer, default=0, nullable=True)
     note = db.Column(db.Text, nullable=True)
     api_token = db.Column(db.String(512), unique=True, nullable=True) 
+    phone_number = db.Column(db.String(20), nullable=True)
 
     
 
@@ -52,7 +53,8 @@ class User(UserMixin, db.Model):
             'superuser': self.superuser,
             'group': self.group.name if self.group else None,
             'profile_image': self.profile_image,
-            'note': self.note
+            'note': self.note,
+            'phone_number': self.phone_number
         }
     @staticmethod
     def get_user_by_email(email):

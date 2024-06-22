@@ -1,0 +1,56 @@
+<!-- templates/sos.html -->
+{% extends "base.html" %}
+
+{% block title %}SOS{% endblock %}
+
+{% block content %}
+<h1>SOS Page</h1>
+<p>Hold the button for 5 seconds to send an SOS message.</p>
+<button id="sosButton">SOS - Need Assistance</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sosButton = document.getElementById('sosButton');
+    let holdTimer = null;
+
+    sosButton.addEventListener('mousedown', function() {
+        holdTimer = setTimeout(sendSOS, 5000);
+    });
+
+    sosButton.addEventListener('mouseup', function() {
+        clearTimeout(holdTimer);
+    });
+
+    sosButton.addEventListener('mouseleave', function() {
+        clearTimeout(holdTimer);
+    });
+
+    function sendSOS() {
+        // Assume current location is obtained from the browser's geolocation API
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const location = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+                fetch('{{ url_for("sos_bp.send_sos") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ location: location })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }, function(error) {
+                alert('Unable to retrieve your location.');
+            });
+        } else {
+            alert('Geolocation is not supported by this browser.');
+        }
+    }
+});
+</script>
+{% endblock %}

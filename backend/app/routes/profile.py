@@ -66,6 +66,7 @@ def update_profile_api():
     data = request.get_json()
     user = current_user
     user.username = data.get('username', user.username)
+    phone_number = data.form.get('phone_number')
     user.email = data.get('email', user.email)
     user.note = data.get('note', user.note)
 
@@ -81,6 +82,7 @@ def update_profile_api():
                 'username': user.username,
                 'email': user.email,
                 'note': user.note,
+                'phone_number':user.phone_number,
                 'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
             }
         }
@@ -133,6 +135,7 @@ class UserProfileAPI(Resource):
         data = request.get_json()
         user = current_user
         user.username = data.get('username', user.username)
+        phone_number = data.form.get('phone_number')
         user.email = data.get('email', user.email)
         user.note = data.get('note', user.note)
 
@@ -146,6 +149,7 @@ class UserProfileAPI(Resource):
                 'username': user.username,
                 'email': user.email,
                 'note': user.note,
+                'phone_number':user.phone_number,
                 'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
             }, 200
         except Exception as e:
