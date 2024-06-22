@@ -18,9 +18,11 @@
             <option value="{{ sound }}">{{ sound }}</option>
         {% endfor %}
     </select>
-    <button id="refreshSoundsButton">Refresh Sounds</button>
+    <button id="refreshSoundsButton" type="button">Refresh Sounds</button>
 
-    <button id="playButton">Print Sound Name</button>
+    <div class="buzzer-container">
+        <button id="playButton" type="button" class="buzzer-button">Play Sound</button>
+    </div>
 
     <audio id="audioPlayer" controls style="display:none;"></audio>
 </div>
@@ -82,4 +84,31 @@
             });
     }
 </script>
+{% endblock %}
+
+{% block head %}
+<style>
+    .buzzer-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .buzzer-button {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .buzzer-button:active {
+        background-color: darkred;
+    }
+</style>
 {% endblock %}
