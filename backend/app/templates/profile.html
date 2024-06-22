@@ -23,7 +23,7 @@
             {{ form.phone_number.label }} 
             <div class="phone-number-input">
                 <span class="country-code">+972</span>
-                {{ form.phone_number(class="phone-number") }}
+                <input type="text" class="phone-number" id="phone_number" name="phone_number" placeholder="0XXXXXXXXX" maxlength="12">
             </div>
         </div>
         <div>
@@ -39,16 +39,24 @@
     document.addEventListener('DOMContentLoaded', function() {
         const phoneNumberInput = document.querySelector('.phone-number');
 
-        // If phone number already starts with +972, remove it for display purposes
+        // Set initial value if it starts with +972
         if (phoneNumberInput.value.startsWith('+972')) {
             phoneNumberInput.value = phoneNumberInput.value.replace('+972', '');
         }
 
         phoneNumberInput.addEventListener('input', function(event) {
             let value = event.target.value;
+
+            // Ensure value starts with 0 for display purposes
+            if (!value.startsWith('0')) {
+                value = '0' + value;
+            }
+            
+            // Remove initial 0 for storing purposes
             if (value.startsWith('0')) {
                 value = value.slice(1);
             }
+
             event.target.value = value;
         });
 
