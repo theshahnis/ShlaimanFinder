@@ -20,54 +20,54 @@
 <audio id="audioPlayer" controls style="display:none;"></audio>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOMContentLoaded event fired');
-    const buttons = document.querySelectorAll('.play-button');
-    if (buttons.length === 0) {
-        console.log('No play buttons found');
-    } else {
-        console.log('Play buttons found:', buttons.length);
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded event fired');
+        const buttons = document.querySelectorAll('.play-button');
+        if (buttons.length === 0) {
+            console.log('No play buttons found');
+        } else {
+            console.log('Play buttons found:', buttons.length);
+        }
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Play button clicked');
+                const sound = this.getAttribute('data-sound');
+                console.log('Playing sound:', sound);
+                const audioPlayer = document.getElementById(sound);
+                audioPlayer.currentTime = 0; // Reset the playback time to start from the beginning
+                audioPlayer.play();
+            });
+        });
     
-    buttons.forEach(button => {
-        button.addEventListener('click', function() {
-            console.log('Play button clicked');
-            const sound = this.getAttribute('data-sound');
-            console.log('Playing sound:', sound);
-            const audioPlayer = document.getElementById('audioPlayer');
-            audioPlayer.src = `/soundboard/get_sounds/${sound}`;
-            audioPlayer.play();
+        const uploadForm = document.getElementById('uploadForm');
+        if (!uploadForm) {
+            console.log('Upload form not found');
+        } else {
+            console.log('Upload form found');
+        }
+        
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            console.log('Upload form submitted');
+            const formData = new FormData();
+            const fileInput = document.getElementById('soundFile');
+            formData.append('file', fileInput.files[0]);
+    
+            fetch('{{ url_for("soundboard_bp.upload_sound") }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Upload response:', data);
+                alert(data.message);
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
     });
-
-    const uploadForm = document.getElementById('uploadForm');
-    if (!uploadForm) {
-        console.log('Upload form not found');
-    } else {
-        console.log('Upload form found');
-    }
-    
-    uploadForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        console.log('Upload form submitted');
-        const formData = new FormData();
-        const fileInput = document.getElementById('soundFile');
-        formData.append('file', fileInput.files[0]);
-
-        fetch('{{ url_for("soundboard_bp.upload_sound") }}', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Upload response:', data);
-            alert(data.message);
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    });
-});
-</script>
-{% endblock %}
+    </script>
+    {% endblock %}
