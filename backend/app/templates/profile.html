@@ -20,11 +20,10 @@
             {{ form.profile_image.label }} {{ form.profile_image }}
         </div>
         <div>
-            {{ form.note.label }} {{ form.note }} 
+            {{ form.phone_number.label }} {{ form.phone_number }}
         </div>
         <div>
-            <label for="phone_number">Phone Number:</label>
-            <input type="text" id="phone_number" name="phone_number" value="{{ current_user.phone_number }}">
+            {{ form.note.label }} {{ form.note }} 
         </div>
         <div>
             {{ form.submit }}
@@ -46,12 +45,20 @@
             }
         });
 
-        const response = await fetch('/api/profile', {
+        const phoneNumberInput = document.getElementById('phone_number');
+        let phoneNumber = phoneNumberInput.value;
+        if (phoneNumber.startsWith('0')) {
+            phoneNumber = phoneNumber.slice(1);
+        }
+        phoneNumber = '+972' + phoneNumber;
+        jsonData['phone_number'] = phoneNumber;
+
+        const response = await fetch('/profile/api', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
             },
-            body: formData // FormData will automatically set the correct headers for file uploads
+            body: JSON.stringify(jsonData)
         });
 
         if (response.ok) {
@@ -62,6 +69,14 @@
             const error = await response.json();
             alert('Error: ' + error.message);
         }
+    });
+
+    document.getElementById('phone_number').addEventListener('input', function(event) {
+        let value = event.target.value;
+        if (value.startsWith('0')) {
+            value = value.slice(1);
+        }
+        event.target.value = value;
     });
 </script>
 {% endblock %}

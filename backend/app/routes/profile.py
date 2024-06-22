@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app,jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_restx import Resource, Namespace, fields, reqparse
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_login import login_required, current_user
@@ -16,7 +16,8 @@ profile_model = profile_ns.model('Profile', {
     'username': fields.String(required=True, description='The username'),
     'email': fields.String(required=True, description='The email address'),
     'note': fields.String(description='A note about the user'),
-    'profile_image': fields.String(description='URL to the profile image')
+    'profile_image': fields.String(description='URL to the profile image'),
+    'phone_number': fields.String(description='The phone number')
 })
 
 # HTML Profile Route
@@ -32,6 +33,10 @@ def profile():
             current_user.username = form.username.data
             current_user.email = form.email.data
             current_user.note = form.note.data
+            phone_number = form.phone_number.data
+            if phone_number.startswith('0'):
+                phone_number = phone_number[1:]
+            current_user.phone_number = '+972' + phone_number
             db.session.commit()
             flash('Your account has been updated!', 'success')
         except Exception as e:
@@ -42,6 +47,7 @@ def profile():
         form.username.data = current_user.username
         form.email.data = current_user.email
         form.note.data = current_user.note
+        form.phone_number.data = current_user.phone_number
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
 
@@ -56,6 +62,7 @@ def get_profile_api():
         'username': user.username,
         'email': user.email,
         'note': user.note,
+        'phone_number': user.phone_number,
         'profile_image': profile_image
     }), 200
 
@@ -66,7 +73,10 @@ def update_profile_api():
     data = request.get_json()
     user = current_user
     user.username = data.get('username', user.username)
-    phone_number = data.form.get('phone_number')
+    phone_number = data.get('phone_number')
+    if phone_number and phone_number.startswith('0'):
+        phone_number = phone_number[1:]
+    user.phone_number = '+972' + phone_number if phone_number else user.phone_number
     user.email = data.get('email', user.email)
     user.note = data.get('note', user.note)
 
@@ -82,7 +92,7 @@ def update_profile_api():
                 'username': user.username,
                 'email': user.email,
                 'note': user.note,
-                'phone_number':user.phone_number,
+                'phone_number': user.phone_number,
                 'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
             }
         }
@@ -124,6 +134,7 @@ class UserProfileAPI(Resource):
             'username': user.username,
             'email': user.email,
             'note': user.note,
+            'phone_number': user.phone_number,
             'profile_image': profile_image
         }
 
@@ -135,7 +146,10 @@ class UserProfileAPI(Resource):
         data = request.get_json()
         user = current_user
         user.username = data.get('username', user.username)
-        phone_number = data.form.get('phone_number')
+        phone_number = data.get('phone_number')
+        if phone_number and phone_number.startswith('0'):
+            phone_number = phone_number[1:]
+        user.phone_number = '+972' + phone_number if phone_number else user.phone_number
         user.email = data.get('email', user.email)
         user.note = data.get('note', user.note)
 
@@ -149,7 +163,7 @@ class UserProfileAPI(Resource):
                 'username': user.username,
                 'email': user.email,
                 'note': user.note,
-                'phone_number':user.phone_number,
+                'phone_number': user.phone_number,
                 'profile_image': url_for('static', filename='profile_pics/' + user.profile_image) if user.profile_image else None
             }, 200
         except Exception as e:
