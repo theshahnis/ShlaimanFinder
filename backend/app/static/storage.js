@@ -16,6 +16,16 @@ function deepEqual(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
 
+// Check if the user is online
+function isOnline() {
+    return navigator.onLine;
+}
+
+// Show offline alert
+function showOfflineAlert() {
+    document.getElementById('offline-alert').style.display = 'block';
+}
+
 // Fetch friends' locations and save to local storage
 function fetchFriendsLocations() {
     fetch('/location/locations')
