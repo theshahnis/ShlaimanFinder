@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, current_app, sen
 from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
+import unicodedata
 
 soundboard_bp = Blueprint('soundboard_bp', __name__)
 
@@ -13,7 +14,7 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg','oga'}
 def sounds_page():
     sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
     return render_template('soundboard.html', sounds=sound_files)
-    
+
 def secure_hebrew_filename(filename):
     """
     A modified version of secure_filename that allows Hebrew characters.
