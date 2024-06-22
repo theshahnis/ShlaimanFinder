@@ -44,7 +44,6 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['SOUND_UPLOAD_FOLDER'] = 'static/sounds'
-    
 
     db.init_app(app)
     login_manager.init_app(app)

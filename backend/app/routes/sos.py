@@ -38,8 +38,8 @@ def send_sos():
 def send_sms_or_whatsapp(phone_number, message):
     # Implement SMS/Whatsapp API call here
     # Example using Twilio (replace with your API details):
-    account_sid = 'AC88a7500703d36e12b7a04c25e9d2e3c2'
-    auth_token = '7c578ec8c4e13c829b9e087207a6076e'
+    account_sid = os.getenv('ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
     from_whatsapp_number = 'whatsapp:+12518108458'
     to_whatsapp_number = f'whatsapp:{phone_number}'
     body = message
