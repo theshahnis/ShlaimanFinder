@@ -10,12 +10,9 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 
 @soundboard_bp.route('/')
 @token_or_login_required
-def soundboard_page():
-    try:
-        sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-        return render_template('soundboard.html', sound_files=sound_files)
-    except Exception as e:
-        return jsonify({'message': 'Failed to load sounds', 'error': str(e)}), 500
+def sounds_page():
+    sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
+    return render_template('soundboard.html', sound_files=sound_files)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -38,11 +35,8 @@ def upload_sound():
 @soundboard_bp.route('/get_sounds', methods=['GET'])
 @token_or_login_required
 def list_sounds():
-    try:
-        sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-        return jsonify({'sounds': sound_files}), 200
-    except Exception as e:
-        return jsonify({'message': 'Failed to list sounds', 'error': str(e)}), 500
+    sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
+    return jsonify({'sounds': sound_files}), 200
 
 @soundboard_bp.route('/get_sounds/<filename>', methods=['GET'])
 @token_or_login_required
