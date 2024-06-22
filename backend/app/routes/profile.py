@@ -80,10 +80,15 @@ def update_profile_api():
     user.email = data.get('email', user.email)
     user.note = data.get('note', user.note)
 
-    if 'profile_image' in request.files:
-        picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
-        if picture_file:
-            user.profile_image = picture_file
+    picture_file = None
+    if 'profile_image' in request.files and request.files['profile_image'].filename != '':
+        try:
+            picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+        except ValueError as e:
+            return jsonify({'message': str(e)}), 400
+
+    if picture_file:
+        user.profile_image = picture_file
 
     try:
         db.session.commit()
@@ -104,6 +109,9 @@ def update_profile_api():
 
 
 def save_picture(form_picture, target_dir):
+    if form_picture is None:
+        return None
+
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
