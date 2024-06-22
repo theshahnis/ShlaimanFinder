@@ -68,7 +68,7 @@ def send_sos():
         if not phone_numbers:
             phone_numbers = ["+972547537103"]
 
-        message_template_name = 'sos_alert'
+        message_template_name = 'sos_alert_new'
         initiator_username = current_user.username
         initiator_number = current_user.phone_number if current_user.phone_number else 'missing'
         logger.debug(f"Initiator: {initiator_username}, Phone: {initiator_number}")
@@ -82,7 +82,7 @@ def send_sos():
         logger.error(f"Error in send_sos: {e}", exc_info=True)
         return jsonify({'message': 'Failed to send SOS message'}), 500
 
-def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location, initiator_number):
+def send_sms_or_whatsapp(phone_number, message_template_name, initiator_username, location, initiator_number):
     try:
         # Check if the Twilio credentials are loaded
         if not ACCOUNT_SID or not ACCOUNT_TOKEN:
@@ -105,7 +105,7 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
             persistent_action=[
                 {
                     "type": "template",
-                    "template_name": template_name,
+                    "template_name": 'sos_alert_new',
                     "template_language": "en",
                     "body_params": body_params
                 }
