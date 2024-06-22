@@ -36,13 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
         // Assume current location is obtained from the browser's geolocation API
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                const location = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
                 fetch('{{ url_for("sos_bp.send_sos") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ latitude: position.coords.latitude, longitude: position.coords.longitude })
+                    body: JSON.stringify({ latitude: latitude, longitude: longitude })
                 })
                 .then(response => response.json())
                 .then(data => {

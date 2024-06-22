@@ -34,7 +34,6 @@ def send_sos():
 
         group_members = User.query.filter_by(group_id=group_id).all()
         phone_numbers = [member.phone_number for member in group_members if member.phone_number]
-        # For testing purposes
         if not phone_numbers:
             phone_numbers = ["+972547537103"]
 
@@ -55,6 +54,10 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
     try:
         account_sid = os.getenv('TWILIO_ACCOUNT_SID')
         auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        if not account_sid or not auth_token:
+            print("Twilio account SID or auth token not set")
+            return
+
         client = Client(account_sid, auth_token)
 
         from_whatsapp_number = 'whatsapp:+12518108458'
@@ -67,8 +70,8 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
         message = client.messages.create(
             from_=from_whatsapp_number,
             to=to_whatsapp_number,
-            body="SOS - Need Assistance\nInitiator: {{1}}\nLocation: {{2}}",  # Include a fallback message body
-            status_callback='http://postb.in/1234abcd',  # Optional: URL to receive status callbacks
+            body=f"SOS - Need Assistance\nInitiator: {initiator_username}\nLocation: {location}",  # Include a fallback message body
+            status_callback='http://yourserver.com/twilio_status_callback',  # Update this to your actual status callback URL
             persistent_action=[
                 {
                     "type": "template",
