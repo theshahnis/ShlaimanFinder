@@ -26,14 +26,15 @@ def send_sos():
 
     group_members = User.query.filter_by(group_id=group_id).all()
     # phone_numbers = [member.phone_number for member in group_members if member.phone_number]
-    phone_numbers = ["+972547537103"]
+    phone_numbers = ['+972547537103']
 
     message = f"SOS - Need Assistance\nInitiator: {current_user.username}\nLocation: {current_location}"
 
     for number in phone_numbers:
+        print(f"trying to send message to {number}")
         send_sms_or_whatsapp(number, message)
 
-    return jsonify({'message': 'SOS message sent to group members'}), 200
+    return jsonify({'message': f'SOS message sent to group members by {current_user.username} to {phone_numbers}'}), 200
 
 def send_sms_or_whatsapp(phone_number, message):
     try:
