@@ -61,11 +61,6 @@
             if (phoneNumber.startsWith('0')) {
                 phoneNumber = phoneNumber.slice(1);
             }
-
-            // Ensure only one +972 is prefixed
-            if (!phoneNumber.startsWith('+972')) {
-                phoneNumber = '+972' + phoneNumber;
-            }
             
             formData.set('phone_number', phoneNumber);
 
