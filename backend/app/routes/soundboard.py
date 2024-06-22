@@ -13,6 +13,14 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg','oga'}
 def sounds_page():
     sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
     return render_template('soundboard.html', sounds=sound_files)
+    
+def secure_hebrew_filename(filename):
+    """
+    A modified version of secure_filename that allows Hebrew characters.
+    """
+    filename = unicodedata.normalize('NFKD', filename).encode('utf-8', 'ignore').decode('utf-8')
+    filename = re.sub(r'[^a-zA-Z0-9\u0590-\u05FF_.-]', '', filename)
+    return filename
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -26,7 +34,7 @@ def upload_sound():
     if file.filename == '':
         return jsonify({'message': 'No selected file'}), 400
     if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
+        filename = secure_hebrew_filename(file.filename)
         filepath = os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER, filename)
         try:
             file.save(filepath)
