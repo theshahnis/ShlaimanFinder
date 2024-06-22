@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 from .api import token_or_login_required
 
-soundboard_bp = Blueprint('soundboard_bp', __name__)
+soundboard_bp = Blueprint('sounds_bp', __name__)
 
 SOUND_UPLOAD_FOLDER = 'static/sounds'
 ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
@@ -12,7 +12,7 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 @token_or_login_required
 def sounds_page():
     sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-    return render_template('soundboard.html', sound_files=sound_files, default_sound='airhorn-6466.mp3')
+    return render_template('sound.html', sounds=sound_files)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shlaiman Finder{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    {% block head %}{% endblock %}
+    
+    <style>
+        body {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            {% if current_user.is_authenticated %}
+                <button class="nav-button" data-page="index"><a href="{{ url_for('general_bp.home') }}">Home</a></button>
+                <button class="nav-button" data-page="profile"><a href="{{ url_for('profile_bp.profile') }}">Profile</a></button>
+                {% if current_user.is_authenticated and current_user.superuser %}
+                    <button class="nav-button" data-page="superuser"><a href="{{ url_for('superuser_bp.superuser_view') }}">Superuser</a></button>
+                    <button class="nav-button" data-page="test-location"><a href="{{ url_for('location_bp.test_location') }}">Test Location</a></button>
+                {% endif %}
+                <button class="nav-button" data-page="map_view"><a href="{{ url_for('general_bp.map_view') }}">Maps</a></button>
+                <button class="nav-button" data-page="shows"><a href="{{ url_for('show_bp.shows') }}">Shows</a></button>
+                <button class="nav-button" data-page="my_shows"><a href="{{ url_for('show_bp.my_shows') }}">My Shows</a></button>
+                <button class="nav-button" data-page="friends"><a href="{{ url_for('general_bp.friends') }}">Friends in Group</a></button>
+                <button class="nav-button" data-page="friends"><a href="{{ url_for('sounds_bp.sounds_page') }}">Sound Board</a></button>
+                <button class="nav-button" data-page="join_group"><a href="{{ url_for('general_bp.join_group') }}">Join Group</a></button>
+                <button class="nav-button" id="logout-btn"><a href="{{ url_for('auth_bp.logout') }}">Logout</a></button>
+            {% endif %}
+        </ul>
+    </nav>
+    <div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="{{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

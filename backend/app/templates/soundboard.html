@@ -1,66 +1,54 @@
-{% extends "base.html" %}
+{% extends "base_soundboard.html" %}
 
 {% block title %}Soundboard{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Soundboard</h1>
+<h1>Soundboard</h1>
 
-    <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{{ url_for('soundboard_bp.upload_sound') }}">
-        <input type="file" id="soundFile" name="file" accept=".wav, .mp3, .ogg">
-        <button type="submit">Upload Sound</button>
-    </form>
+<form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="soundFile" name="file" accept=".wav, .mp3, .ogg">
+    <button type="submit">Upload Sound</button>
+</form>
 
-    <h2>Select a sound</h2>
-    <select id="soundSelect">
-        {% for sound in sound_files %}
-            <option value="{{ sound }}" {% if sound == default_sound %}selected{% endif %}>{{ sound }}</option>
-        {% endfor %}
-    </select>
-
-    <button id="playButton" class="buzzer">Play Sound</button>
-
-    <audio id="audioPlayer" controls style="display:none;"></audio>
+<h2>Select a sound</h2>
+<div id="soundButtons">
+    {% for sound in sounds %}
+        <button class="play-button" data-sound="{{ sound }}">{{ sound }}</button>
+    {% endfor %}
 </div>
-{% endblock %}
 
-{% block scripts %}
+<audio id="audioPlayer" controls style="display:none;"></audio>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const playButton = document.getElementById('playButton');
-        const soundSelect = document.getElementById('soundSelect');
-        const audioPlayer = document.getElementById('audioPlayer');
-
-        playButton.addEventListener('click', function() {
-            const selectedSound = soundSelect.value;
-            audioPlayer.src = `/sounds/get_sounds/${selectedSound}`;
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.play-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const sound = this.getAttribute('data-sound');
+            const audioPlayer = document.getElementById('audioPlayer');
+            audioPlayer.src = `/sounds/get_sounds/${sound}`;
             audioPlayer.play();
         });
     });
+
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData();
+        const fileInput = document.getElementById('soundFile');
+        formData.append('file', fileInput.files[0]);
+
+        fetch('{{ url_for("sounds_bp.upload_sound") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+});
 </script>
-{% endblock %}
-
-{% block head %}
-<style>
-    .buzzer {
-        display: inline-block;
-        width: 100px;
-        height: 100px;
-        background-color: red;
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .buzzer:active {
-        background-color: darkred;
-    }
-
-    .container {
-        text-align: center;
-    }
-</style>
 {% endblock %}
