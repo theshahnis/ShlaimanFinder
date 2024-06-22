@@ -159,7 +159,7 @@ class UserProfileAPI(Resource):
         phone_number = data.get('phone_number')
         if phone_number and phone_number.startswith('0'):
             phone_number = phone_number[1:]
-        user.phone_number = '+972' + phone_number if phone_number else user.phone_number
+        user.phone_number = phone_number if phone_number else user.phone_number
         user.email = data.get('email', user.email)
         user.note = data.get('note', user.note)
 
