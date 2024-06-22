@@ -16,6 +16,7 @@ body {
   background-size: contain;
   background-attachment: fixed;
   background-color: #ad7d35;
+  justify-content: center;
 }
 
 body::before {
