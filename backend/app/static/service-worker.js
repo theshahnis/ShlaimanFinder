@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shlaiman-cache-v1';
+const CACHE_NAME = 'shlaiman-cache-v2';
 const urlsToCache = [
   '/',
   '/profile/',
@@ -66,28 +66,22 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   console.log('Service Worker: Fetching', event.request.url);
   event.respondWith(
-    caches.match(event.request).then(response => {
-      if (response) {
-        console.log('Returning cached response for', event.request.url);
+    fetch(event.request).then(response => {
+      if (!response || response.status !== 200 || response.type !== 'basic') {
         return response;
       }
 
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
-        }
-
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          console.log('Caching new resource', event.request.url);
-          cache.put(event.request, responseToCache);
-        });
-
-        return response;
+      const responseToCache = response.clone();
+      caches.open(CACHE_NAME).then(cache => {
+        console.log('Caching new resource', event.request.url);
+        cache.put(event.request, responseToCache);
       });
-    }).catch(error => {
-      console.error('Fetching failed, returning fallback page:', error);
-      return caches.match('/fallback.html');
+
+      return response;
+    }).catch(() => {
+      return caches.match(event.request).then(response => {
+        return response || caches.match('/fallback.html');
+      });
     })
   );
 });
