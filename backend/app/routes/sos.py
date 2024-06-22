@@ -26,24 +26,31 @@ def send_sos():
 
         google_maps_link = f"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}"
         current_location = google_maps_link
+        print(f"Google Maps Link: {google_maps_link}")
 
         group_id = current_user.group_id
         if not group_id:
             return jsonify({'message': 'You are not part of any group'}), 400
 
         group_members = User.query.filter_by(group_id=group_id).all()
-        #phone_numbers = [member.phone_number for member in group_members if member.phone_number]
-        phone_numbers = ["+972547537103"]  # For testing purposes
+        phone_numbers = [member.phone_number for member in group_members if member.phone_number]
+        # For testing purposes
+        if not phone_numbers:
+            phone_numbers = ["+972547537103"]
 
         message_template_name = 'sos_alert'
         initiator_username = current_user.username
+        print(f"Initiator: {initiator_username}")
 
         for number in phone_numbers:
+            print(f"Sending message to: {number}")
             send_sms_or_whatsapp(number, message_template_name, initiator_username, current_location)
 
         return jsonify({'message': 'SOS message sent to group members'}), 200
     except Exception as e:
-        print(f"Error sending initiate send sms: {e}")
+        print(f"Error in send_sos: {e}")
+        return jsonify({'message': 'Failed to send SOS message'}), 500
+
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
         account_sid = os.getenv('ACCOUNT_SID')
@@ -54,6 +61,7 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
         to_whatsapp_number = f'whatsapp:{phone_number}'
 
         body_params = [initiator_username, location]
+        print(f"Body Params: {body_params}")
 
         message = client.messages.create(
             from_=from_whatsapp_number,
