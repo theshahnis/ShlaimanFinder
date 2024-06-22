@@ -36,28 +36,24 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error loading shows:', error));
 });
 
-function loadShowsForDate(date, button) {
-    const timetable = document.getElementById('shows-list');
-    timetable.innerHTML = '';
-
-    for (const stage in allShows) {
-        if (allShows[stage][date]) {
-            allShows[stage][date].forEach(show => {
-                const showDiv = document.createElement('div');
-                showDiv.className = 'show';
-                showDiv.innerHTML = `
-                    <h3>${show.name}</h3>
-                    <p>Stage: ${show.stage}</p>
-                    <p>Start Time: ${show.start_time}</p>
-                    <p>End Time: ${show.end_time}</p>
-                `;
-                timetable.appendChild(showDiv);
-            });
+function loadShowsForDate(date, selectedButton) {
+    // Filter shows by selected date
+    const filteredShows = {};
+    for (const [stage, dates] of Object.entries(allShows)) {
+        filteredShows[stage] = {};
+        if (dates[date]) {
+            filteredShows[stage][date] = dates[date];
         }
     }
 
-    document.querySelectorAll('.button').forEach(btn => btn.classList.remove('selected'));
-    button.classList.add('selected');
+    renderShows(filteredShows, allShowsAttendees);
+
+    // Remove 'selected' class from all buttons
+    const dateButtons = document.querySelectorAll('.button');
+    dateButtons.forEach(button => button.classList.remove('selected'));
+
+    // Add 'selected' class to the clicked class to the button
+    selectedButton.classList.add('selected');
 }
 
 function renderShows(shows, showsAttendees) {
