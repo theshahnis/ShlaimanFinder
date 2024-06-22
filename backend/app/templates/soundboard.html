@@ -1,4 +1,7 @@
-{% extends "base_soundboard.html" %}
+{% extends "base.html" %}
+
+{% block title %}Soundboard{% endblock %}
+
 {% block head %}
 <style>
     .play-button {
@@ -25,7 +28,6 @@
     }
 </style>
 {% endblock %}
-{% block title %}Soundboard{% endblock %}
 
 {% block content %}
 <h1>Soundboard</h1>
@@ -42,20 +44,11 @@
         <audio id="{{ sound }}" src="{{ url_for('static', filename='sounds/' ~ sound) }}" preload="auto"></audio>
     {% endfor %}
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('.play-button');
-    buttons.forEach(button => {
-        button.addEventListener('click', function() {
-            const sound = this.getAttribute('data-sound');
-            const audioPlayer = document.getElementById(sound);
-            audioPlayer.currentTime = 0; // Reset the playback time to start from the beginning
-            audioPlayer.play();
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
     var images = [
         "{{ url_for('static', filename='images/background.png') }}",
         "{{ url_for('static', filename='images/background2.png') }}",
@@ -65,6 +58,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var randomImage = images[Math.floor(Math.random() * images.length)];
     document.body.style.backgroundImage = 'url(' + randomImage + ')';
 
+    const buttons = document.querySelectorAll('.play-button');
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            const sound = this.getAttribute('data-sound');
+            const audioPlayer = document.getElementById(sound);
+            audioPlayer.currentTime = 0; // Reset the playback time to start from the beginning
+            audioPlayer.play();
+        });
+    });
 
     document.getElementById('uploadForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -79,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             alert(data.message);
-            location.reload(); 
+            location.reload(); // Reload the page to update the list of sounds
         })
         .catch(error => {
             console.error('Error:', error);
