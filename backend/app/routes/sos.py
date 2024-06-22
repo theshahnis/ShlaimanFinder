@@ -70,7 +70,7 @@ def send_sos():
 
         message_template_name = 'sos_alert'
         initiator_username = current_user.username
-        initiator_number = current_user.number if current_user.number else 'missing'
+        initiator_number = current_user.phone_number if current_user.phone_number else 'missing'
         logger.debug(f"Initiator: {initiator_username}, Phone: {initiator_number}")
 
         for number in phone_numbers:
