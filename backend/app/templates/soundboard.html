@@ -47,11 +47,18 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    let currentlyPlayingAudio = null;
     const buttons = document.querySelectorAll('.play-button');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
             const sound = this.getAttribute('data-sound');
             const audioPlayer = document.getElementById(sound);
+            if (currentlyPlayingAudio && currentlyPlayingAudio !== audioPlayer) {
+                currentlyPlayingAudio.pause();
+                currentlyPlayingAudio.currentTime = 0; // Reset the playback time
+            }
+
+            currentlyPlayingAudio = audioPlayer;
             audioPlayer.currentTime = 0; // Reset the playback time to start from the beginning
             audioPlayer.play();
         });
