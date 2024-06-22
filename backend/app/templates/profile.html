@@ -62,7 +62,11 @@
                 phoneNumber = phoneNumber.slice(1);
             }
 
-            phoneNumber = '+972' + phoneNumber;
+            // Ensure only one +972 is prefixed
+            if (!phoneNumber.startsWith('+972')) {
+                phoneNumber = '+972' + phoneNumber;
+            }
+            
             formData.set('phone_number', phoneNumber);
 
             const response = await fetch('/profile/api', {
