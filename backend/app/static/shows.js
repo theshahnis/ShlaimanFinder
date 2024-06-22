@@ -11,80 +11,70 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Fetch all shows once on page load
     fetchShows();
 
-    function fetchShows() {
-        if (!navigator.onLine) {
-            loadCachedShows();
-            return;
-        }
-
-        fetch('/show/api/shows')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-                allShows = data.shows;
-                allShowsAttendees = data.shows_attendees;
-
-                // Cache the response
-                caches.open(CACHE_NAME).then(cache => {
-                    cache.put('/show/api/shows', new Response(JSON.stringify(data)));
-                });
-
-                // Load shows for the first date by default and highlight the first button
-                const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
-                if (firstButton) {
-                    firstButton.classList.add('selected');
-                    loadShowsForDate('2024-06-27', firstButton);
-                }
-            })
-            .catch(error => console.error('Error loading shows:', error));
-    }
-
-    function loadCachedShows() {
-        caches.open(CACHE_NAME).then(cache => {
-            cache.match('/show/api/shows').then(response => {
-                if (response) {
-                    response.json().then(data => {
-                        allShows = data.shows;
-                        allShowsAttendees = data.shows_attendees;
-
-                        // Load shows for the first date by default and highlight the first button
-                        const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
-                        if (firstButton) {
-                            firstButton.classList.add('selected');
-                            loadShowsForDate('2024-06-27', firstButton);
-                        }
-                    });
-                } else {
-                    console.error('No cached shows data available.');
-                }
-            });
-        });
-    }
+    // Fetch friends' locations when the page loads
+    fetchFriendsLocations();
 });
 
-function loadShowsForDate(date, selectedButton) {
-    // Filter shows by selected date
-    const filteredShows = {};
-    for (const [stage, dates] of Object.entries(allShows)) {
-        filteredShows[stage] = {};
-        if (dates[date]) {
-            filteredShows[stage][date] = dates[date];
+function fetchShows() {
+    if (!isOnline()) {
+        showOfflineAlert();
+        const cachedShows = loadFromLocalStorage('shows');
+        const cachedShowsAttendees = loadFromLocalStorage('shows_attendees');
+        if (cachedShows && cachedShowsAttendees) {
+            allShows = cachedShows;
+            allShowsAttendees = cachedShowsAttendees;
+
+            // Load shows for the first date by default and highlight the first button
+            const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+            if (firstButton) {
+                firstButton.classList.add('selected');
+                loadShowsForDate('2024-06-27', firstButton);
+            }
+        } else {
+            console.error('No cached shows data available.');
         }
+        return;
     }
 
-    renderShows(filteredShows, allShowsAttendees);
+    fetch('/show/api/shows')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            allShows = data.shows;
+            allShowsAttendees = data.shows_attendees;
+            saveToLocalStorage('shows', data.shows);
+            saveToLocalStorage('shows_attendees', data.shows_attendees);
 
-    // Remove 'selected' class from all buttons
-    const dateButtons = document.querySelectorAll('.button');
-    dateButtons.forEach(button => button.classList.remove('selected'));
+            // Load shows for the first date by default and highlight the first button
+            const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+            if (firstButton) {
+                firstButton.classList.add('selected');
+                loadShowsForDate('2024-06-27', firstButton);
+            }
+        })
+        .catch(error => console.error('Error loading shows:', error));
+}
 
-    // Add 'selected' class to the clicked class to the button
-    selectedButton.classList.add('selected');
+function loadShowsForDate(date, button) {
+    const showsForDate = allShows[date];
+    if (showsForDate) {
+        displayShows(showsForDate);
+    }
+
+    // Highlight the selected date button
+    document.querySelectorAll('.button').forEach(btn => btn.classList.remove('selected'));
+    button.classList.add('selected');
+}
+
+function displayShows(shows) {
+    // Implement the logic to update your UI with the shows data
+    console.log('Displaying shows:', shows);
 }
 
 function renderShows(shows, showsAttendees) {

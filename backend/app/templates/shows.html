@@ -13,7 +13,14 @@
     <!-- Stages and shows will be dynamically added here by JavaScript -->
 </div>
 <script src="{{ url_for('static', filename='shows.js') }}"></script>
+<script src="{{ url_for('static', filename='storage.js') }}"></script>
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch friends' locations and shows when the page loads
+        fetchFriendsLocations();
+        fetchShows();
+    });
+</script>
 {% endblock %}
 

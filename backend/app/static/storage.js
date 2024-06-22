@@ -108,7 +108,32 @@ function viewLocation(userId) {
     }
 }
 
+function fetchShows() {
+    fetch('/show/api/shows')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            saveToLocalStorage('shows', data.shows);
+            saveToLocalStorage('shows_attendees', data.shows_attendees);
+            displayShows(data.shows, data.shows_attendees);
+        })
+        .catch(error => {
+            console.error('Error loading shows:', error);
+            const cachedShows = loadFromLocalStorage('shows');
+            const cachedShowsAttendees = loadFromLocalStorage('shows_attendees');
+            if (cachedShows && cachedShowsAttendees) {
+                displayShows(cachedShows, cachedShowsAttendees);
+            } else {
+                console.error('No cached shows data available.');
+            }
+        });
+}
+
 // Call fetchFriendsLocations when the page is loaded
 document.addEventListener('DOMContentLoaded', () => {
     fetchFriendsLocations();
+    fetchShows();
 });
