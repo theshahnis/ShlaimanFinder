@@ -19,12 +19,12 @@
         <div>
             {{ form.profile_image.label }} {{ form.profile_image }}
         </div>
-        <div class="phone-number-container">
-            {{ form.phone_number.label }} 
-            <div class="phone-number-input">
-                <span class="country-code">+972</span>
-                <span class="zero-placeholder">0</span>
-                <input type="text" class="phone-number" id="phone_number" name="phone_number" placeholder="XXXXXXXXX" maxlength="12">
+        <div class="container mt-2">
+            <div class="col-md-6">
+                <div class="form-group mt-2 d-inline-block">
+                    <span class="border-end country-code px-2">+972</span>
+                    {{ form.phone_number(class="form-control phone-number", id="ec-mobile-number", placeholder="512345678") }}
+                </div>
             </div>
         </div>
         <div>
@@ -39,21 +39,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const phoneNumberInput = document.querySelector('.phone-number');
-        const zeroPlaceholder = document.querySelector('.zero-placeholder');
 
-        // Set initial value if it starts with +972
+        // If phone number already starts with +972, remove it for display purposes
         if (phoneNumberInput.value.startsWith('+972')) {
             phoneNumberInput.value = phoneNumberInput.value.replace('+972', '');
         }
 
         phoneNumberInput.addEventListener('input', function(event) {
             let value = event.target.value;
-            if (value === '' || value === '0') {
-                zeroPlaceholder.style.visibility = 'visible';
-            } else {
-                zeroPlaceholder.style.visibility = 'hidden';
-            }
-
             if (value.startsWith('0')) {
                 value = value.slice(1);
             }
@@ -90,13 +83,6 @@
                 alert('Error: ' + error.message);
             }
         });
-
-        // Initial check to set the visibility of the zero placeholder
-        if (phoneNumberInput.value === '' || phoneNumberInput.value === '0') {
-            zeroPlaceholder.style.visibility = 'visible';
-        } else {
-            zeroPlaceholder.style.visibility = 'hidden';
-        }
     });
 </script>
 {% endblock %}
