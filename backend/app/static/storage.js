@@ -16,6 +16,16 @@ function deepEqual(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
 }
 
+// Check if the user is online
+function isOnline() {
+    return navigator.onLine;
+}
+
+// Show offline alert
+function showOfflineAlert() {
+    document.getElementById('offline-alert').style.display = 'block';
+}
+
 // Fetch friends' locations and save to local storage
 function fetchFriendsLocations() {
     fetch('/location/locations')
@@ -108,7 +118,59 @@ function viewLocation(userId) {
     }
 }
 
-// Call fetchFriendsLocations when the page is loaded
+// Fetch shows and save to local storage
+function fetchShows() {
+    fetch('/show/api/shows')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            // Save the fetched data to local storage
+            saveToLocalStorage('shows', data.shows);
+            saveToLocalStorage('shows_attendees', data.shows_attendees);
+            // Update the UI with the fetched data
+            displayShows(data.shows, data.shows_attendees);
+        })
+        .catch(error => {
+            console.error('Error fetching shows:', error);
+            // Try to load data from local storage if fetch fails
+            const cachedShows = loadFromLocalStorage('shows');
+            const cachedShowsAttendees = loadFromLocalStorage('shows_attendees');
+            if (cachedShows && cachedShowsAttendees) {
+                showOfflineAlert();
+                displayShows(cachedShows, cachedShowsAttendees);
+            } else {
+                document.getElementById('shows-list').innerHTML = 'Error fetching data and no cached data available.';
+            }
+        });
+}
+
+// Display shows data in the UI
+function displayShows(shows, showsAttendees) {
+    const showsList = document.getElementById('shows-list');
+    showsList.innerHTML = '';
+    for (const stage in shows) {
+        for (const date in shows[stage]) {
+            shows[stage][date].forEach(show => {
+                const showDiv = document.createElement('div');
+                showDiv.className = 'show';
+                showDiv.innerHTML = `
+                    <h3>${show.name}</h3>
+                    <p>Stage: ${show.stage}</p>
+                    <p>Start: ${show.start_time}</p>
+                    <p>End: ${show.end_time}</p>
+                    <p>Attendees: ${showsAttendees[show.id].map(att => att.username).join(', ')}</p>
+                `;
+                showsList.appendChild(showDiv);
+            });
+        }
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchFriendsLocations();
+    fetchShows();
 });

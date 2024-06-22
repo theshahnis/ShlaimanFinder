@@ -4,14 +4,15 @@
 
 {% block content %}
 <div class="date-buttons">
-    <button class="button" data-date="2024-06-27">June 27</button>
-    <button class="button" data-date="2024-06-28">June 28</button>
-    <button class="button" data-date="2024-06-29">June 29</button>
-    <button class="button" data-date="2024-06-30">June 30</button>
+    <button class="button" data-date="2024-06-27">Thursday 27</button>
+    <button class="button" data-date="2024-06-28">Friday 28</button>
+    <button class="button" data-date="2024-06-29">Saturday 29</button>
+    <button class="button" data-date="2024-06-30">Sunday 30</button>
 </div>
-<div class="timetable">
+<div class="timetable" id="shows-list">
     <!-- Stages and shows will be dynamically added here by JavaScript -->
 </div>
+<div id="offline-alert" style="display:none; color:red;">You are currently offline. Some data might not be up-to-date.</div>
 <script src="{{ url_for('static', filename='shows.js') }}"></script>
 <script src="{{ url_for('static', filename='storage.js') }}"></script>
 
@@ -23,4 +24,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
-
