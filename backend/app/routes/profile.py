@@ -48,8 +48,13 @@ def profile():
         form.email.data = current_user.email
         form.note.data = current_user.note
         phone_number = current_user.phone_number
-        if phone_number.startswith('+972'):
-            phone_number = phone_number.replace('+972', '')
+        if phone_number:
+            if phone_number.startswith('+972'):
+                phone_number = phone_number.replace('+972', '')
+            else:
+                pass
+        else:
+            pass
         form.phone_number.data = phone_number
     profile_image = url_for('static', filename='profile_pics/' + current_user.profile_image) if current_user.profile_image else None
     return render_template('profile.html', title='Profile', form=form, profile_image=profile_image)
