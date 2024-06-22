@@ -101,7 +101,7 @@ def send_sms_or_whatsapp(phone_number, message_template_name, initiator_username
         message = client.messages.create(
             from_=from_whatsapp_number,
             to=to_whatsapp_number,
-            body=f"SOS - Need Assistance\nInitiator: {initiator_username}\nLocation: {location}\nPhone: {initiator_number}",  # Include a fallback message body
+            body=f"SOS - Need Assistance\nInitiator: {initiator_username}\nLocation: {location}\Phone number: {initiator_number}",  # Include a fallback message body
             persistent_action=[
                 {
                     "type": "template",
