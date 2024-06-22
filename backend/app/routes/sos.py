@@ -70,7 +70,7 @@ def send_sos():
 
         message_template_name = 'sos_alert'
         initiator_username = current_user.username
-        initiator_number = current_user.phone_number if current_user.phone_number else 'missing'
+        initiator_number = current_user.number if current_user.number else 'missing'
         logger.debug(f"Initiator: {initiator_username}, Phone: {initiator_number}")
 
         for number in phone_numbers:
@@ -101,8 +101,6 @@ def send_sms_or_whatsapp(phone_number, template_name, initiator_username, locati
         message = client.messages.create(
             from_=from_whatsapp_number,
             to=to_whatsapp_number,
-            body=f"SOS - Need Assistance\nInitiator: {initiator_username}\nLocation: {location}\nPhone: {initiator_number}",  # Include a fallback message body
-            status_callback='http://yourserver.com/twilio_status_callback',  # Update this to your actual status callback URL
             persistent_action=[
                 {
                     "type": "template",
