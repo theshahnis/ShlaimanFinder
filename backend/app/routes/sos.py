@@ -13,6 +13,9 @@ load_dotenv()
 import logging
 from logging.handlers import RotatingFileHandler
 
+ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+ACCOUNT_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 handler = RotatingFileHandler('sos.log', maxBytes=10000, backupCount=1)
@@ -70,8 +73,8 @@ def send_sos():
 
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
-        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
-        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        account_sid = 
+        auth_token = 
         if not account_sid or not auth_token:
             logger.error("Twilio account SID or auth token not set")
             return
