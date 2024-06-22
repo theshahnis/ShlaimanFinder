@@ -5,7 +5,10 @@ from app.models import User
 from app.extensions import db
 import os
 from twilio.rest import Client
+from dotenv import load_dotenv
 from .api import token_or_login_required
+
+load_dotenv()
 
 import logging
 from logging.handlers import RotatingFileHandler
