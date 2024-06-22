@@ -54,6 +54,9 @@ class User(UserMixin, db.Model):
             'profile_image': self.profile_image,
             'note': self.note
         }
+    @staticmethod
+    def get_user_by_email(email):
+        return User.query.filter_by(email=email).first()
 
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
