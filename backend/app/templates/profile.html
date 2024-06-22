@@ -1,6 +1,115 @@
 {% extends "base.html" %}
 
 {% block title %}ShlaimanFinder - Profile{% endblock %}
+{% block head %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+    }
+
+    .profile-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+    }
+
+    .profile-container img {
+        display: block;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+    }
+
+    .profile-container form div {
+        margin-bottom: 15px;
+    }
+
+    .pn-select {
+        position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-color: var(--border-color);
+        display: grid;
+        grid-template-columns: 4.5em 1fr;
+        border-radius: var(--border-radius);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-out;
+        max-width: 100%;
+        width: 100%;
+        z-index: 1;
+        margin-bottom: 15px;
+    }
+
+    .pn-input__container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .pn-input__prefix {
+        background: transparent;
+        position: absolute;
+        color: var(--input-prefix-color);
+        max-width: 3rem;
+        pointer-events: none;
+    }
+
+    .pn-input__phonenumber {
+        background: transparent;
+        color: var(--input-phonenumber-color);
+        padding-left: calc(calc(var(--prefix-length) * 1ch) + 1.5ch);
+        font-weight: 500;
+    }
+
+    .pn-input__label {
+        color: var(--input-label-color);
+        font-size: 0.7rem;
+        position: relative;
+        top: -0.25em;
+    }
+
+    .pn-input__error {
+        bottom: 0;
+        color: var(--input-error-color);
+        font-size: 0.785rem;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        transition: all 0.2s ease-out;
+        z-index: -1;
+    }
+
+    .pn-selected-prefix {
+        align-items: center;
+        appearance: none;
+        background: var(--dropdown-trigger-background-color);
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        border: 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        outline: none;
+        padding: 0;
+        transition: background 0.2s ease-out;
+    }
+
+    .pn-selected-prefix__flag {
+        height: auto;
+        width: 1.25rem;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <div class="profile-container">
     <h1>Profile Page</h1>
@@ -19,8 +128,15 @@
         <div>
             {{ form.profile_image.label }} {{ form.profile_image }}
         </div>
-        <div>
-            {{ form.phone_number.label }} {{ form.phone_number }}
+        <div class="pn-select">
+            <div class="pn-input">
+                <label class="pn-input__label">Phone Number*</label>
+                <div class="pn-input__container">
+                    <input class="pn-input__prefix" value="+972" type="text" name="phonenumber-prefix" readonly />
+                    {{ form.phone_number(class="pn-input__phonenumber", type="tel", maxlength="10", pattern="\d*") }}
+                </div>
+                <small class="pn-input__error">This is not a valid phone number</small>
+            </div>
         </div>
         <div>
             {{ form.note.label }} {{ form.note }} 
@@ -33,27 +149,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const phoneNumberInput = document.getElementById('phone_number');
-        
-        if (!phoneNumberInput.value.startsWith('+972')) {
-            phoneNumberInput.value = '+972' + phoneNumberInput.value.replace(/^0/, '');
-        }
-
-        phoneNumberInput.addEventListener('input', function(event) {
-            let value = event.target.value;
-            if (value.startsWith('0')) {
-                value = value.slice(1);
-            }
-            if (!value.startsWith('+972')) {
-                value = '+972' + value;
-            }
-            event.target.value = value;
-        });
-
         document.getElementById('profileForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent the default form submission
 
             let formData = new FormData(this);
+
+            const phoneNumberInput = document.getElementById('phone_number');
+            let phoneNumber = phoneNumberInput.value;
+            if (phoneNumber.startsWith('0')) {
+                phoneNumber = phoneNumber.slice(1);
+            }
+            phoneNumber = '+972' + phoneNumber;
+            formData.set('phone_number', phoneNumber);
 
             const response = await fetch('/profile/api', {
                 method: 'PUT',

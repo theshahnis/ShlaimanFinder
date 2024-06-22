@@ -67,23 +67,12 @@ def get_profile_api():
     }), 200
 
 @profile_bp.route('/api', methods=['PUT'])
-@profile_bp.route('/api', methods=['PUT'])
 @token_or_login_required
 def update_profile_api():
     """Update the current user's profile (API)"""
     user = current_user
-    
-    if request.content_type.startswith('application/json'):
-        data = request.get_json()
-        user.username = data.get('username', user.username)
-        phone_number = data.get('phone_number')
-        if phone_number and phone_number.startswith('0'):
-            phone_number = phone_number[1:]
-        user.phone_number = '+972' + phone_number if phone_number else user.phone_number
-        user.email = data.get('email', user.email)
-        user.note = data.get('note', user.note)
 
-    elif request.content_type.startswith('multipart/form-data'):
+    if request.content_type.startswith('multipart/form-data'):
         user.username = request.form.get('username', user.username)
         phone_number = request.form.get('phone_number')
         if phone_number and phone_number.startswith('0'):
@@ -115,6 +104,7 @@ def update_profile_api():
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': f'An error occurred: {str(e)}'}), 400
+
 
 def save_picture(form_picture, target_dir):
     random_hex = secrets.token_hex(8)
