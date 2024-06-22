@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('soundFile');
         formData.append('file', fileInput.files[0]);
 
-        fetch('{{ url_for("sounds_bp.upload_sound") }}', {
+        fetch('{{ url_for("soundboard_bp.upload_sound") }}', {
             method: 'POST',
             body: formData
         })
