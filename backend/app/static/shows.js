@@ -11,29 +11,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Fetch all shows once on page load
-    if (!isOnline()) {
-        showOfflineAlert();
-        return;
-    }
-    fetch('/show/api/shows')
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error(data.error);
-                return;
-            }
-            allShows = data.shows;
-            allShowsAttendees = data.shows_attendees;
+    fetchShows();
 
-            // Load shows for the first date by default and highlight the first button
-            const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
-            if (firstButton) {
-                firstButton.classList.add('selected');
-                loadShowsForDate('2024-06-27', firstButton);
-            }
-        })
-        .catch(error => console.error('Error loading shows:', error));
+    function fetchShows() {
+        if (!navigator.onLine) {
+            loadCachedShows();
+            return;
+        }
+
+        fetch('/show/api/shows')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                allShows = data.shows;
+                allShowsAttendees = data.shows_attendees;
+
+                // Cache the response
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put('/show/api/shows', new Response(JSON.stringify(data)));
+                });
+
+                // Load shows for the first date by default and highlight the first button
+                const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+                if (firstButton) {
+                    firstButton.classList.add('selected');
+                    loadShowsForDate('2024-06-27', firstButton);
+                }
+            })
+            .catch(error => console.error('Error loading shows:', error));
+    }
+
+    function loadCachedShows() {
+        caches.open(CACHE_NAME).then(cache => {
+            cache.match('/show/api/shows').then(response => {
+                if (response) {
+                    response.json().then(data => {
+                        allShows = data.shows;
+                        allShowsAttendees = data.shows_attendees;
+
+                        // Load shows for the first date by default and highlight the first button
+                        const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
+                        if (firstButton) {
+                            firstButton.classList.add('selected');
+                            loadShowsForDate('2024-06-27', firstButton);
+                        }
+                    });
+                } else {
+                    console.error('No cached shows data available.');
+                }
+            });
+        });
+    }
 });
 
 function loadShowsForDate(date, selectedButton) {
