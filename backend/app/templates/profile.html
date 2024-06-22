@@ -8,7 +8,7 @@
     {% if profile_image %}
         <img src="{{ profile_image }}" alt="Profile Picture" style="width:150px;height:150px;">
     {% endif %}
-    <form id="profileForm">
+    <form id="profileForm" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div>
             {{ form.username.label }} {{ form.username }}
@@ -32,51 +32,46 @@
 </div>
 
 <script>
-    document.getElementById('profileForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent the default form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const phoneNumberInput = document.getElementById('phone_number');
+        
+        if (!phoneNumberInput.value.startsWith('+972')) {
+            phoneNumberInput.value = '+972' + phoneNumberInput.value.replace(/^0/, '');
+        }
 
-        let formData = new FormData(this);
-        let jsonData = {};
-        formData.forEach((value, key) => {
-            if (key === 'profile_image' && value.size > 0) {
-                jsonData[key] = value;
+        phoneNumberInput.addEventListener('input', function(event) {
+            let value = event.target.value;
+            if (value.startsWith('0')) {
+                value = value.slice(1);
+            }
+            if (!value.startsWith('+972')) {
+                value = '+972' + value;
+            }
+            event.target.value = value;
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            let formData = new FormData(this);
+
+            const response = await fetch('/profile/api', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
+                },
+                body: formData // FormData will automatically set the correct headers for file uploads
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert(result.message);
+                // Optionally, update the UI with the new profile data
             } else {
-                jsonData[key] = value;
+                const error = await response.json();
+                alert('Error: ' + error.message);
             }
         });
-
-        const phoneNumberInput = document.getElementById('phone_number');
-        let phoneNumber = phoneNumberInput.value;
-        if (phoneNumber.startsWith('0')) {
-            phoneNumber = phoneNumber.slice(1);
-        }
-        phoneNumber = '+972' + phoneNumber;
-        jsonData['phone_number'] = phoneNumber;
-
-        const response = await fetch('/profile/api', {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwt_token')}`
-            },
-            body: JSON.stringify(jsonData)
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            alert(result.message);
-            // Optionally, update the UI with the new profile data
-        } else {
-            const error = await response.json();
-            alert('Error: ' + error.message);
-        }
-    });
-
-    document.getElementById('phone_number').addEventListener('input', function(event) {
-        let value = event.target.value;
-        if (value.startsWith('0')) {
-            value = value.slice(1);
-        }
-        event.target.value = value;
     });
 </script>
 {% endblock %}

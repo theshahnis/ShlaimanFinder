@@ -67,12 +67,14 @@ def get_profile_api():
     }), 200
 
 @profile_bp.route('/api', methods=['PUT'])
+@profile_bp.route('/api', methods=['PUT'])
 @token_or_login_required
 def update_profile_api():
     """Update the current user's profile (API)"""
+    user = current_user
+    
     if request.content_type.startswith('application/json'):
         data = request.get_json()
-        user = current_user
         user.username = data.get('username', user.username)
         phone_number = data.get('phone_number')
         if phone_number and phone_number.startswith('0'):
@@ -82,7 +84,6 @@ def update_profile_api():
         user.note = data.get('note', user.note)
 
     elif request.content_type.startswith('multipart/form-data'):
-        user = current_user
         user.username = request.form.get('username', user.username)
         phone_number = request.form.get('phone_number')
         if phone_number and phone_number.startswith('0'):
