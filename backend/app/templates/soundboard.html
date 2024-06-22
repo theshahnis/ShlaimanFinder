@@ -20,17 +20,19 @@
 
     <button id="playButton" class="buzzer">Play Sound</button>
 
-    <audio id="audioPlayer" src="{{ url_for('soundboard_bp.get_sound', filename=default_sound) }}" controls style="display:none;"></audio>
+    <audio id="audioPlayer" controls style="display:none;"></audio>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('playButton').addEventListener('click', function() {
-            const soundSelect = document.getElementById('soundSelect');
+        const playButton = document.getElementById('playButton');
+        const soundSelect = document.getElementById('soundSelect');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        playButton.addEventListener('click', function() {
             const selectedSound = soundSelect.value;
-            const audioPlayer = document.getElementById('audioPlayer');
             audioPlayer.src = `/sounds/get_sounds/${selectedSound}`;
             audioPlayer.play();
         });
