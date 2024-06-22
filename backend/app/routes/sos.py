@@ -17,34 +17,36 @@ def sos_page():
 @sos_bp.route('/send_sos', methods=['POST'])
 @token_or_login_required
 def send_sos():
-    data = request.get_json()
-    latitude = data.get('latitude', None)
-    longitude = data.get('longitude', None)
-    if not latitude or not longitude:
-        return jsonify({'message': 'Coordinates not provided'}), 400
+    try:
+        data = request.get_json()
+        latitude = data.get('latitude', None)
+        longitude = data.get('longitude', None)
+        if not latitude or not longitude:
+            return jsonify({'message': 'Coordinates not provided'}), 400
 
-    google_maps_link = f"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}"
-    current_location = google_maps_link
+        google_maps_link = f"https://www.google.com/maps/search/?api=1&query={latitude},{longitude}"
+        current_location = google_maps_link
 
-    group_id = current_user.group_id
-    if not group_id:
-        return jsonify({'message': 'You are not part of any group'}), 400
+        group_id = current_user.group_id
+        if not group_id:
+            return jsonify({'message': 'You are not part of any group'}), 400
 
-    group_members = User.query.filter_by(group_id=group_id).all()
-    phone_numbers = [member.phone_number for member in group_members if member.phone_number]
-    # phone_numbers = ["+972547537103"]  # For testing purposes
+        group_members = User.query.filter_by(group_id=group_id).all()
+        #phone_numbers = [member.phone_number for member in group_members if member.phone_number]
+        phone_numbers = ["+972547537103"]  # For testing purposes
 
-    message_template_name = 'sos_alert'
-    initiator_username = current_user.username
+        message_template_name = 'sos_alert'
+        initiator_username = current_user.username
 
-    for number in phone_numbers:
-        send_sms_or_whatsapp(number, message_template_name, initiator_username, current_location)
+        for number in phone_numbers:
+            send_sms_or_whatsapp(number, message_template_name, initiator_username, current_location)
 
-    return jsonify({'message': 'SOS message sent to group members'}), 200
-
+        return jsonify({'message': 'SOS message sent to group members'}), 200
+    except Exception as e:
+        print(f"Error sending initiate send sms: {e}")
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
-        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+        account_sid = os.getenv('ACCOUNT_SID')
         auth_token = os.getenv('TWILIO_AUTH_TOKEN')
         client = Client(account_sid, auth_token)
 
