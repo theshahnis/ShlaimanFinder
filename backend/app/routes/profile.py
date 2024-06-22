@@ -70,19 +70,33 @@ def get_profile_api():
 @token_or_login_required
 def update_profile_api():
     """Update the current user's profile (API)"""
-    data = request.get_json()
-    user = current_user
-    user.username = data.get('username', user.username)
-    phone_number = data.get('phone_number')
-    if phone_number and phone_number.startswith('0'):
-        phone_number = phone_number[1:]
-    user.phone_number = '+972' + phone_number if phone_number else user.phone_number
-    user.email = data.get('email', user.email)
-    user.note = data.get('note', user.note)
+    if request.content_type.startswith('application/json'):
+        data = request.get_json()
+        user = current_user
+        user.username = data.get('username', user.username)
+        phone_number = data.get('phone_number')
+        if phone_number and phone_number.startswith('0'):
+            phone_number = phone_number[1:]
+        user.phone_number = '+972' + phone_number if phone_number else user.phone_number
+        user.email = data.get('email', user.email)
+        user.note = data.get('note', user.note)
 
-    if 'profile_image' in request.files:
-        picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
-        user.profile_image = picture_file
+    elif request.content_type.startswith('multipart/form-data'):
+        user = current_user
+        user.username = request.form.get('username', user.username)
+        phone_number = request.form.get('phone_number')
+        if phone_number and phone_number.startswith('0'):
+            phone_number = phone_number[1:]
+        user.phone_number = '+972' + phone_number if phone_number else user.phone_number
+        user.email = request.form.get('email', user.email)
+        user.note = request.form.get('note', user.note)
+
+        if 'profile_image' in request.files:
+            picture_file = save_picture(request.files['profile_image'], 'static/profile_pics')
+            user.profile_image = picture_file
+
+    else:
+        return jsonify({'message': 'Unsupported Media Type'}), 415
 
     try:
         db.session.commit()
