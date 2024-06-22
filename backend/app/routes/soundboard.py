@@ -12,7 +12,7 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 @token_or_login_required
 def sounds_page():
     sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-    return render_template('soundboard.html', sound_files=sound_files)
+    return render_template('soundboard.html', sound_files=sound_files, default_sound='airhorn-6466.mp3')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -28,15 +28,12 @@ def upload_sound():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         filepath = os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER, filename)
-        file.save(filepath)
-        return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
+        try:
+            file.save(filepath)
+            return jsonify({'message': 'File uploaded successfully', 'filename': filename}), 200
+        except Exception as e:
+            return jsonify({'message': 'File upload failed', 'error': str(e)}), 500
     return jsonify({'message': 'Invalid file type'}), 400
-
-@soundboard_bp.route('/get_sounds', methods=['GET'])
-@token_or_login_required
-def list_sounds():
-    sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-    return jsonify({'sounds': sound_files}), 200
 
 @soundboard_bp.route('/get_sounds/<filename>', methods=['GET'])
 @token_or_login_required

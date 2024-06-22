@@ -6,115 +6,59 @@
 <div class="container">
     <h1>Soundboard</h1>
 
-    <form id="uploadForm" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data" method="POST" action="{{ url_for('soundboard_bp.upload_sound') }}">
         <input type="file" id="soundFile" name="file" accept=".wav, .mp3, .ogg">
         <button type="submit">Upload Sound</button>
     </form>
 
     <h2>Select a sound</h2>
-    <div id="soundButtons"></div>
-    <button id="refreshSoundsButton" type="button">Refresh Sounds</button>
+    <select id="soundSelect">
+        {% for sound in sound_files %}
+            <option value="{{ sound }}" {% if sound == default_sound %}selected{% endif %}>{{ sound }}</option>
+        {% endfor %}
+    </select>
 
-    <audio id="audioPlayer" controls style="display:none;"></audio>
+    <button id="playButton" class="buzzer">Play Sound</button>
+
+    <audio id="audioPlayer" src="{{ url_for('soundboard_bp.get_sound', filename=default_sound) }}" controls style="display:none;"></audio>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        fetchSounds();
-
-        document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formData = new FormData();
-            const fileInput = document.getElementById('soundFile');
-            formData.append('file', fileInput.files[0]);
-
-            fetch('{{ url_for("soundboard_bp.upload_sound") }}', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                fetchSounds();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-
-        document.getElementById('refreshSoundsButton').addEventListener('click', function() {
-            fetchSounds();
-        });
-
-        function fetchSounds() {
-            fetch('{{ url_for("soundboard_bp.list_sounds") }}')
-                .then(response => response.json())
-                .then(data => {
-                    const soundButtons = document.getElementById('soundButtons');
-                    soundButtons.innerHTML = '';
-                    data.sounds.forEach(sound => {
-                        const button = document.createElement('button');
-                        button.textContent = sound;
-                        button.className = 'sound-button';
-                        button.addEventListener('click', function() {
-                            playSound(sound);
-                        });
-                        soundButtons.appendChild(button);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching sounds:', error);
-                });
-        }
-
-        function playSound(sound) {
+        document.getElementById('playButton').addEventListener('click', function() {
+            const soundSelect = document.getElementById('soundSelect');
+            const selectedSound = soundSelect.value;
             const audioPlayer = document.getElementById('audioPlayer');
-            fetch('{{ url_for("soundboard_bp.get_sound", filename="") }}' + sound)
-                .then(response => {
-                    if (response.ok) {
-                        return response.blob();
-                    }
-                    throw new Error('Network response was not ok.');
-                })
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    audioPlayer.src = url;
-                    audioPlayer.play();
-                })
-                .catch(error => {
-                    console.error('There was a problem with your fetch operation:', error);
-                });
-        }
+            audioPlayer.src = `/sounds/get_sounds/${selectedSound}`;
+            audioPlayer.play();
+        });
     });
 </script>
 {% endblock %}
 
 {% block head %}
 <style>
-    .buzzer-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
-    }
-
-    .sound-button {
+    .buzzer {
         display: inline-block;
-        margin: 5px;
-        padding: 10px 20px;
+        width: 100px;
+        height: 100px;
         background-color: red;
         border: none;
-        border-radius: 10px;
+        border-radius: 50%;
         color: white;
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.2s;
     }
 
-    .sound-button:active {
+    .buzzer:active {
         background-color: darkred;
+    }
+
+    .container {
+        text-align: center;
     }
 </style>
 {% endblock %}
