@@ -12,10 +12,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fetch all shows once on page load
-    if (!isOnline()) {
+    if (isOnline()) {
+        fetchShowsFromAPI();
+    } else {
         showOfflineAlert();
-        return;
+        const cachedData = loadFromLocalStorage('shows');
+        if (cachedData) {
+            processShowsData(cachedData);
+        } else {
+            document.getElementById('shows-list').innerHTML = 'No internet connection and no cached data available.';
+        }
     }
+});
+
+function isOnline() {
+    return navigator.onLine;
+}
+
+function showOfflineAlert() {
+    const offlineAlert = document.getElementById('offline-alert');
+    offlineAlert.style.display = 'block';
+}
+
+function fetchShowsFromAPI() {
     fetch('/show/api/shows')
         .then(response => response.json())
         .then(data => {
@@ -25,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             allShows = data.shows;
             allShowsAttendees = data.shows_attendees;
+            saveToLocalStorage('shows', data);
 
             // Load shows for the first date by default and highlight the first button
             const firstButton = document.querySelector('.button[data-date="2024-06-27"]');
@@ -34,7 +54,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('Error loading shows:', error));
-});
+}
+
+function loadFromLocalStorage(key) {
+    const data = localStorage.getItem(key);
+    console.log('Loading from Local Storage:', key, data);
+    return data ? JSON.parse(data) : null;
+}
+
+function saveToLocalStorage(key, data) {
+    console.log('Saving to Local Storage:', key, data); 
+    localStorage.setItem(key, JSON.stringify(data));
+}
 
 function loadShowsForDate(date, selectedButton) {
     // Filter shows by selected date
