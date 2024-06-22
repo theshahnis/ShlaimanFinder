@@ -697,5 +697,34 @@ input[type=email]::placeholder {
   }
 }
 
+.phone-number-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.phone-number-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.country-code {
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-right: 1px solid #ccc;
+  border-radius: 5px 0 0 5px;
+  font-weight: bold;
+}
+
+.phone-number {
+  border: none;
+  padding: 10px;
+  outline: none;
+  flex: 1;
+  border-radius: 0 5px 5px 0;
+}
 
 /* before */
