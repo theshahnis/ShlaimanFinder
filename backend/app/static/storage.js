@@ -108,7 +108,58 @@ function viewLocation(userId) {
     }
 }
 
-// Call fetchFriendsLocations when the page is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    fetchFriendsLocations();
-});
+// Fetch shows and save to local storage
+function fetchShows() {
+    if (!isOnline()) {
+        const cachedShows = loadFromLocalStorage('shows');
+        const cachedShowsAttendees = loadFromLocalStorage('shows_attendees');
+        if (cachedShows && cachedShowsAttendees) {
+            showOfflineAlert();
+            displayShows(cachedShows, cachedShowsAttendees);
+        } else {
+            document.getElementById('shows-list').innerHTML = 'Error fetching data and no cached data available.';
+        }
+        return;
+    }
+
+    fetch('/show/api/shows')
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error(data.error);
+                return;
+            }
+            // Save the fetched data to local storage
+            saveToLocalStorage('shows', data.shows);
+            saveToLocalStorage('shows_attendees', data.shows_attendees);
+            // Update the UI with the fetched data
+            allShows = data.shows;
+            allShowsAttendees = data.shows_attendees;
+            displayShows(allShows, allShowsAttendees);
+        })
+        .catch(error => {
+            console.error('Error fetching shows:', error);
+        });
+}
+
+// Display shows data in the UI
+function displayShows(shows, showsAttendees) {
+    const showsList = document.getElementById('shows-list');
+    showsList.innerHTML = '';
+    for (const stage in shows) {
+        for (const date in shows[stage]) {
+            shows[stage][date].forEach(show => {
+                const showDiv = document.createElement('div');
+                showDiv.className = 'show';
+                showDiv.innerHTML = `
+                    <h3>${show.name}</h3>
+                    <p>Stage: ${show.stage}</p>
+                    <p>Start Time: ${show.start_time}</p>
+                    <p>End Time: ${show.end_time}</p>
+                `;
+                showsList.appendChild(showDiv);
+            });
+        }
+    }
+}
+
