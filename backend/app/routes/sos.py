@@ -73,7 +73,9 @@ def send_sos():
 
 def send_sms_or_whatsapp(phone_number, template_name, initiator_username, location):
     try:
-
+        load_dotenv()
+        ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+        ACCOUNT_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
         if not ACCOUNT_SID or not ACCOUNT_TOKEN:
             logger.error("Twilio account SID or auth token not set")
             return
