@@ -12,7 +12,7 @@ ALLOWED_EXTENSIONS = {'wav', 'mp3', 'ogg'}
 @token_or_login_required
 def sounds_page():
     sound_files = os.listdir(os.path.join(current_app.root_path, SOUND_UPLOAD_FOLDER))
-    return render_template('sound.html', sounds=sound_files)
+    return render_template('soundboard.html', sounds=sound_files)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
