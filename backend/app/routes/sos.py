@@ -38,19 +38,22 @@ def send_sos():
 def send_sms_or_whatsapp(phone_number, message):
     # Implement SMS/Whatsapp API call here
     # Example using Twilio (replace with your API details):
-    account_sid = os.getenv('ACCOUNT_SID')
-    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
-    from_whatsapp_number = 'whatsapp:+12518108458'
-    to_whatsapp_number = f'whatsapp:{phone_number}'
-    body = message
+    try:
+        account_sid = os.getenv('ACCOUNT_SID')
+        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        from_whatsapp_number = 'whatsapp:+12518108458'
+        to_whatsapp_number = f'whatsapp:{phone_number}'
+        body = message
 
-    url = f'https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json'
-    data = {
-        'From': from_whatsapp_number,
-        'To': to_whatsapp_number,
-        'Body': body
-    }
-    response = requests.post(url, data=data, auth=(account_sid, auth_token))
+        url = f'https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json'
+        data = {
+            'From': from_whatsapp_number,
+            'To': to_whatsapp_number,
+            'Body': body
+        }
+        response = requests.post(url, data=data, auth=(account_sid, auth_token))
 
-    if response.status_code != 201:
-        print(f"Failed to send message to {phone_number}: {response.text}")
+        if response.status_code != 201:
+            print(f"Failed to send message to {phone_number}: {response.text}")
+    except Exception as e:
+        print(f"Error sending message using twilio:{e}")
