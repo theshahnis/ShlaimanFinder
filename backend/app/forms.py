@@ -8,6 +8,7 @@ class UpdateProfileForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     profile_image = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png', 'gif','jpeg','tiff', 'bmp', 'webp','ico'], 'Images only!')])
     note = TextAreaField('Note')  
+    phone_number = StringField('Phone Number', validators=[DataRequired(), Length(min=9, max=12)])
     submit = SubmitField('Update')
 
 class JoinGroupForm(FlaskForm):
