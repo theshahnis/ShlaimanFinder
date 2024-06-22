@@ -44,7 +44,8 @@ def create_app():
     app.config['SESSION_COOKIE_HTTPONLY'] = True
     app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     app.config['SOUND_UPLOAD_FOLDER'] = 'static/sounds'
-
+    app.config['TWILIO_ACCOUNT_SID'] = os.getenv('TWILIO_ACCOUNT_SID')
+    app.config['TWILIO_AUTH_TOKEN'] = os.getenv('TWILIO_AUTH_TOKEN')
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.auth_page'
