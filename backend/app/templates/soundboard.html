@@ -28,7 +28,7 @@
         margin-top: 20px;
     }
 
-    .play-button {
+    .sound-button {
         background-color: rgb(222, 48, 48);
         color: white;
         border: none;
@@ -44,7 +44,7 @@
         text-align: center;
     }
 
-    .play-button:active {
+    .sound-button:active {
         background-color: rgb(108, 26, 26);
         transform: scale(0.95);
     }
@@ -62,7 +62,7 @@
 <h2>Select a sound</h2>
 <div id="soundButtons">
     {% for sound in sounds %}
-        <button class="play-button" data-sound="{{ sound }}">{{ sound }}</button>
+        <button class="sound-button" data-sound="{{ sound }}">{{ sound }}</button>
         <audio id="{{ sound }}" src="{{ url_for('static', filename='sounds/' ~ sound) }}" preload="auto"></audio>
     {% endfor %}
 </div>
@@ -70,7 +70,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentlyPlayingAudio = null;
-    const buttons = document.querySelectorAll('.play-button');
+    const buttons = document.querySelectorAll('.sound-button');
     buttons.forEach(button => {
         button.addEventListener('click', function() {
             const sound = this.getAttribute('data-sound');
