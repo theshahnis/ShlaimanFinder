@@ -228,13 +228,13 @@ function addMarker(location) {
     });
 
     let popupContent = `
-        <div style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
-            <b style="color: #333;">${location.username}</b><br>
-            <p style="color: #555;">${location.note || 'No additional notes.'}</p>
-            <p style="color: #888;">Last updated: ${location.created_at || 'N/A'}</p>
-            ${location.isMeetingPoint ? `<p style="color: #555;">Remaining time: ${location.remaining_time}</p>` : ''}
+        <div style="background-color: #f9f9f9; padding: 8px; border-radius: 5px; text-align: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); font-size: 12px;">
+            <b style="color: #333; font-size: 14px;">${location.username}</b><br>
+            <p style="color: #555; font-size: 12px;">${location.note || 'No additional notes.'}</p>
+            <p style="color: #888; font-size: 10px;">Last updated: ${location.created_at || 'N/A'}</p>
+            ${location.isMeetingPoint ? `<p style="color: #555; font-size: 12px;">Remaining time: ${location.remaining_time}</p>` : ''}
             <a href="https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}" target="_blank">
-                <button class="navigate-button">Navigate to this location</button>
+                <button class="navigate-button">Navigate</button>
             </a>
         </div>
     `;
