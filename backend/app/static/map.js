@@ -152,7 +152,7 @@ function addHotelMarker(hotel) {
 
     hotel.users.forEach(user => {
         popupContent += `
-            <img src="/profile_pics/${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon">
+            <img src="/profile_pics/${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon" data-username="${user.username}">
         `;
     });
 
@@ -165,9 +165,17 @@ function addHotelMarker(hotel) {
 
     const marker = L.marker(position, { icon: customIcon }).addTo(map)
         .bindPopup(popupContent);
+
+    marker.on('popupopen', function() {
+        document.querySelectorAll('.attendee-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                alert(`User: ${this.getAttribute('data-username')}`);
+            });
+        });
+    });
+
     markers.push(marker);
 }
-
 function loadCachedLocations() {
     const data = loadFromLocalStorage('locations');
     if (data) {
