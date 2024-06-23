@@ -89,7 +89,7 @@ function updateLocation(latitude, longitude) {
 function refreshLocations() {
     markerCluster.clearLayers();
     markers = [];
-    
+
     if (!isOnline()) {
         showOfflineAlert();
         loadCachedLocations();
