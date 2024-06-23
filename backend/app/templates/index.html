@@ -9,90 +9,55 @@
 
     <div class="statistics">
         <h2>User Statistics</h2>
-        <p>Active Users: {{ active_users_count }}</p>
-        <p>Total Locations Shared: {{ total_locations_count }}</p>
-        <p>Upcoming Events: {{ upcoming_events_count }}</p>
+        <p>Active Users: <span id="active-users-count">Loading...</span></p>
     </div>
 
     <div class="featured-locations">
         <h2>Featured Locations</h2>
-        <div class="location-cards">
-            {% for location in featured_locations %}
-            <div class="location-card">
-                <h3>{{ location.name }}</h3>
-                <p>{{ location.description }}</p>
-            </div>
-            {% endfor %}
+        <div id="featured-hotel">
+            <p>Loading...</p>
         </div>
     </div>
 
     <div class="upcoming-events">
         <h2>Upcoming Events</h2>
-        <ul>
-            {% for event in upcoming_events %}
-            <li>{{ event.name }} - {{ event.date }}</li>
-            {% endfor %}
+        <ul id="upcoming-events-list">
+            <li>Loading...</li>
         </ul>
-    </div>
-
-    <div class="user-stories">
-        <h2>User Stories</h2>
-        {% for story in user_stories %}
-        <blockquote>
-            <p>{{ story.text }}</p>
-            <footer>{{ story.user }}</footer>
-        </blockquote>
-        {% endfor %}
-    </div>
-
-    <div class="map-preview">
-        <h2>Map Preview</h2>
-        <div id="mapPreview" style="height: 200px;"></div>
-    </div>
-
-    <div class="profile-summary">
-        <h2>Your Profile</h2>
-        <p>Username: {{ current_user.username }}</p>
-        <p>Group: {{ current_user.group.name }}</p>
-        <a href="{{ url_for('profile_bp.profile') }}">View Profile</a>
-    </div>
-
-    <div class="news-updates">
-        <h2>News and Updates</h2>
-        <ul>
-            {% for news in news_updates %}
-            <li>{{ news.date }}: {{ news.text }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="quick-access">
-        <h2>Quick Access</h2>
-        <button onclick="location.href='{{ url_for('general_bp.map_view') }}'">View Map</button>
-        <button onclick="location.href='{{ url_for('show_bp.shows') }}'">View Shows</button>
-        <button onclick="location.href='{{ url_for('general_bp.friends') }}'">View Friends</button>
-    </div>
-
-    <div class="search-bar">
-        <h2>Search</h2>
-        <input type="text" placeholder="Search for friends, locations, or events...">
     </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize the map preview
-        const map = L.map('mapPreview').setView([52.3676, 4.9041], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
-        }).addTo(map);
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ url_for("get_home_data") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Update active users count
+            document.getElementById('active-users-count').textContent = data.active_users_count;
 
-        // Add markers for featured locations
-        {% for location in featured_locations %}
-        L.marker([{{ location.latitude }}, {{ location.longitude }}]).addTo(map)
-            .bindPopup('<b>{{ location.name }}</b><br>{{ location.description }}');
-        {% endfor %}
-    });
+            // Update upcoming events
+            const eventsList = document.getElementById('upcoming-events-list');
+            eventsList.innerHTML = ''; // Clear current content
+            data.upcoming_shows.forEach(show => {
+                const li = document.createElement('li');
+                li.textContent = `${show.name} - ${new Date(show.start_time).toLocaleString()}`;
+                eventsList.appendChild(li);
+            });
+
+            // Update featured hotel
+            const hotelDiv = document.getElementById('featured-hotel');
+            if (data.featured_hotel) {
+                hotelDiv.innerHTML = `
+                    <h3>${data.featured_hotel.name}</h3>
+                    <p>Location: (${data.featured_hotel.latitude}, ${data.featured_hotel.longitude})</p>
+                    <p>Stay Dates: ${new Date(data.featured_hotel.start_date).toLocaleDateString()} to ${new Date(data.featured_hotel.end_date).toLocaleDateString()}</p>
+                `;
+            } else {
+                hotelDiv.innerHTML = '<p>No featured hotel.</p>';
+            }
+        })
+        .catch(error => console.error('Error fetching home data:', error));
+});
 </script>
 
 <style>
@@ -103,7 +68,7 @@
     gap: 20px;
 }
 
-.statistics, .featured-locations, .upcoming-events, .user-stories, .map-preview, .profile-summary, .news-updates, .quick-access, .search-bar {
+.statistics, .featured-locations, .upcoming-events {
     width: 80%;
     max-width: 800px;
     background-color: #FFF9C4;
@@ -111,42 +76,6 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-}
-
-.location-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-}
-
-.location-card {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 200px;
-}
-
-button {
-    background: linear-gradient(145deg, #372f858f, #873430a3);
-    color: #eae3e3;
-    padding: 8px 15px;
-    border: 1px solid #979797;
-    cursor: pointer;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
-    text-align: center;
-    text-decoration: none;
-    font-family: 'Poppins', sans-serif;
-    font-size: 12px;
-}
-
-button:hover {
-    background: linear-gradient(145deg, #f3b14e, #e9a530);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 -3px 5px rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
 }
 </style>
 
