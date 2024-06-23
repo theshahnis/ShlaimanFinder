@@ -62,37 +62,9 @@ function loadMap(location) {
     refreshLocations();
 }
 
-function updateLocation(latitude, longitude) {
-    if (!isOnline()) {
-        showOfflineAlert();
-        return;
-    }
-
-    fetch('/location/update', {  
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ latitude: latitude, longitude: longitude })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Location updated successfully:', data);
-        refreshLocations(); 
-    })
-    .catch(error => {
-        console.error('Error updating location:', error);
-    });
-}
-
 function refreshLocations() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    
-    if (!isOnline()) {
-        loadCachedLocations();
-        return;
-    }
 
     fetch('/location/locations')
         .then(response => response.json())
