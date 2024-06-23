@@ -48,7 +48,7 @@ body::before {
   }
   
   .nav-button:hover {
-    background: linear-gradient(145deg, #f3b14e, #e9a530);
+    background: linear-gradient(145deg, #4d8a8acf, #18202f);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 -3px 5px rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
   }
@@ -76,7 +76,7 @@ body.dark-mode {
   }
   
   body.dark-mode .nav-button:hover {
-    background: linear-gradient(145deg, #555555, #333333);
+    background: linear-gradient(145deg, #4d8a8acf, #18202f);
   }
   
   body.dark-mode .nav-button.selected {
@@ -109,7 +109,7 @@ button {
   }
   
   button:hover {
-    background: linear-gradient(145deg, #f3b14e, #e9a530);
+    background: linear-gradient(145deg, #4d8a8acf, #18202f);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 -3px 5px rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
   }
@@ -204,7 +204,7 @@ button.select-show {
 }
 
 .whos-going:hover {
-    background-color: #FF5722;
+    background-color: linear-gradient(145deg, #4d8a8acf, #18202f);
     border-color: #673AB7;
 }
 
@@ -381,7 +381,7 @@ h2 {
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
-    background-color: #2E2E2E;
+    background-color: #0F0C0CD4;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);

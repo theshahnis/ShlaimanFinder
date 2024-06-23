@@ -71,7 +71,7 @@ button {
 }
 
 button:hover {
-  background: linear-gradient(145deg, #f3b14e, #e9a530);
+  background: linear-gradient(145deg, #a222a6, #e9a530);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 -3px 5px rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
@@ -110,7 +110,7 @@ button:active {
 }
 
 .nav-button:hover {
-  background: linear-gradient(145deg, #f3b14e, #e9a530);
+  background: linear-gradient(145deg, #a222a6, #e9a530);
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 -3px 5px rgba(255, 255, 255, 0.3);
   transform: translateY(-2px);
 }
@@ -193,7 +193,7 @@ button:active {
 }
 
 .whos-going:hover {
-  background-color: #FF5722;
+  background-color:linear-gradient(145deg, #a222a6, #e9a530);
   border-color: #FFC107;
 }
 
@@ -687,7 +687,7 @@ input[type=email]::placeholder {
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
-  background-color: #f8f8f8;
+  background-color: #64738edb;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
