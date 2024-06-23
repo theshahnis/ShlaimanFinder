@@ -16,28 +16,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the hold timer
     function startHoldTimer() {
         holdStartTime = Date.now();
-        holdTimer = setInterval(updateButtonColor, 1000);
+        holdTimer = setInterval(updateButtonGradient, 100);
     }
 
     // Function to clear the hold timer
     function clearHoldTimer() {
         clearInterval(holdTimer);
-        sosButton.style.backgroundColor = ''; // Reset color
+        sosButton.style.background = 'linear-gradient(to bottom, green, red)'; // Reset gradient
         holdStartTime = null;
     }
 
-    function updateButtonColor() {
+    function updateButtonGradient() {
         const elapsed = (Date.now() - holdStartTime) / 1000;
-        const colorValue = Math.min(255, Math.floor(elapsed * 51)); // Darken color progressively
-        sosButton.style.backgroundColor = `rgb(${255 - colorValue}, 0, 0)`;
+        const percentage = Math.min(100, Math.floor((elapsed / 5) * 100));
+        sosButton.style.background = `linear-gradient(to bottom, green ${100 - percentage}%, red ${percentage}%)`;
         if (elapsed >= 5) {
             sendSOS();
             clearHoldTimer();
         }
     }
 
-     // Add event listeners for mouse events
-     sosButton.addEventListener('mousedown', startHoldTimer);
+    // Add event listeners for mouse events
+    sosButton.addEventListener('mousedown', startHoldTimer);
     sosButton.addEventListener('mouseup', clearHoldTimer);
     sosButton.addEventListener('mouseleave', clearHoldTimer);
 
@@ -77,21 +77,24 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <style>
     .sos-container {
-        text-align: center;
-        margin-top: 20px;
+    text-align: center;
+    margin-top: 20px;
     }
-    
+
     #sosButton {
-        width: 200px;
-        height: 200px;
+        width: 150px; /* Adjusted size */
+        height: 150px; /* Adjusted size */
         font-size: 24px;
         border-radius: 50%;
-        background-color: red;
+        background: linear-gradient(to bottom, green, red); /* Gradient background */
         color: white;
         border: none;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    
+
     #sosButton:active {
         transform: scale(0.95);
     }
