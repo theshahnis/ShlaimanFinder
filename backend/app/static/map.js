@@ -150,7 +150,7 @@ function addHotelMarker(hotel) {
 
     hotel.users.forEach(user => {
         popupContent += `
-            <img src="${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon">
+            <img src="/profile_pics/${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon">
         `;
     });
 
