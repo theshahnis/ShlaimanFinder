@@ -47,7 +47,7 @@
 </head>
 <body>
     <nav>
-        <ul>
+        <ul class="nav-button-container">
             {% if current_user.is_authenticated %}
                 <button class="nav-button" data-page="index"><a href="{{ url_for('general_bp.home') }}">Home</a></button>
                 <button class="nav-button" data-page="profile"><a href="{{ url_for('profile_bp.profile') }}">Profile</a></button>
