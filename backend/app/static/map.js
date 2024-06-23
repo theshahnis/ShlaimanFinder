@@ -133,9 +133,11 @@ function refreshLocations() {
 
 function addHotelMarker(hotel) {
     const position = [hotel.latitude, hotel.longitude];
+    const defaultHotelImage = '/static/images/hotel.jpg'; // Define default hotel image
+    const hotelImage = hotel.image ? hotel.image : defaultHotelImage;
     const customIcon = L.divIcon({
         className: 'custom-marker blue',
-        html: `<div class="marker-image" style="background-image: url('/static/images/hotel.jpg');"></div>`,
+        html: `<div class="marker-image" style="background-image: url('${hotelImage}');"></div>`,
         iconSize: [50, 60],
         iconAnchor: [25, 60],
         popupAnchor: [0, -60]
@@ -154,7 +156,12 @@ function addHotelMarker(hotel) {
         `;
     });
 
-    popupContent += `</div>`;
+    popupContent += `
+        </div>
+        <a href="https://www.google.com/maps/dir/?api=1&destination=${hotel.latitude},${hotel.longitude}" target="_blank">
+            <button class="navigate-button">Navigate to this hotel</button>
+        </a>
+    `;
 
     const marker = L.marker(position, { icon: customIcon }).addTo(map)
         .bindPopup(popupContent);
