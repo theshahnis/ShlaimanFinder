@@ -20,6 +20,27 @@ body::before {
 
 }
 
+body.dark-mode {
+    background-color: #121212;
+    color: #E0E0E0;
+  }
+  
+  body.dark-mode button.nav-button {
+    background: linear-gradient(145deg, #333333, #555555);
+    color: #FF5722;
+    border: 1px solid #444444;
+  }
+  
+  body.dark-mode button.nav-button:hover {
+    background: linear-gradient(145deg, #555555, #333333);
+  }
+  
+  body.dark-mode button.nav-button.selected {
+    background-color: #673AB7;
+    color: #E0E0E0;
+    border: 2px solid #FF5722;
+  }
+
 a {
     color: #FF5722;
     display: inline-block;

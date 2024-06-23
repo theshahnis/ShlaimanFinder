@@ -42,6 +42,7 @@ a {
   /* background-color: #1F1F1F; */
 }
 
+/* General Button Styles */
 button {
   background-color: #f3b14e;
   color: #181818;
@@ -51,6 +52,7 @@ button {
   border-radius: 5px;
 }
 
+/* Navigation Buttons */
 button.nav-button {
   background: linear-gradient(145deg, #e9a530, #f3b14e);
   color: #fff;
@@ -79,6 +81,7 @@ button.nav-button:active {
   transform: translateY(1px);
 }
 
+/* Link Styling */
 .nav-button a {
   color: #fff;
   text-decoration: none;
@@ -87,7 +90,6 @@ button.nav-button:active {
 .nav-button.selected a {
   color: #fff;
 }
-
 
 .show {
   display: flex;
