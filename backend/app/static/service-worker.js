@@ -69,11 +69,8 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   console.log('Service Worker: Fetching', event.request.url);
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).then(networkResponse => {
+    fetch(event.request)
+      .then(networkResponse => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
@@ -83,10 +80,12 @@ self.addEventListener('fetch', event => {
           cache.put(event.request, responseToCache);
         });
         return networkResponse;
-      }).catch(() => {
-        return caches.match('/fallback.html');
-      });
-    })
+      })
+      .catch(() => {
+        return caches.match(event.request).then(cachedResponse => {
+          return cachedResponse || caches.match('/fallback.html');
+        });
+      })
   );
 });
 

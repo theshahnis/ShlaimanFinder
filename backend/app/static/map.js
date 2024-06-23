@@ -97,7 +97,6 @@ function refreshLocations() {
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
-
             // Save new data to local storage
             saveToLocalStorage('locations', data);
 
