@@ -11,11 +11,11 @@ nav {
   background-color: #f3b14e;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  padding: 10px 0;
+  padding: 5px 0; /* Reduced padding */
 }
 
 body {
-  padding-top: 70px; /* Add padding to avoid content being hidden behind the nav */
+  padding-top: 30px; /* Adjusted padding to avoid content being hidden behind the nav */
 }
 body {
   font-family: "Poppins", sans-serif;
@@ -59,10 +59,11 @@ button {
   background-color: #f3b14e;
   color: #181818;
   border: none;
-  padding: 10px 20px;
+  padding: 5px 10px; /* Reduced padding */
   cursor: pointer;
   border-radius: 5px;
-  font-family: 'Poppins', sans-serif; /* Adding a more stylish font */
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px; /* Reduced font size */
 }
 
 /* Navigation Bar Styles */
@@ -70,8 +71,8 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 0;
+  gap: 5px; /* Reduced gap */
+  padding: 5px 0; /* Reduced padding */
 }
 
 .nav-bar li {
@@ -81,7 +82,7 @@ button {
 .nav-button {
   background: linear-gradient(145deg, #e9a530, #f3b14e);
   color: #fff;
-  padding: 10px 20px;
+  padding: 5px 10px; /* Reduced padding */
   border: 1px solid #e0a425;
   cursor: pointer;
   border-radius: 5px;
@@ -89,7 +90,8 @@ button {
   transition: all 0.3s ease;
   text-align: center;
   text-decoration: none;
-  font-family: 'Poppins', sans-serif; /* Adding a more stylish font */
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px; /* Reduced font size */
 }
 
 .nav-button:hover {
