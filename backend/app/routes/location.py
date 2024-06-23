@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, url_for, current_app
 from flask_login import login_required, current_user
-from ..models import Location, MeetingPoint, StaticLocation, User, Group
+from ..models import Location, MeetingPoint, StaticLocation, User, Group, Hotel, UserHotel
 from ..extensions import db
 from datetime import datetime, timedelta
 import pytz
