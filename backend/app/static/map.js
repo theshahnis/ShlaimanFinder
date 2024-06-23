@@ -195,9 +195,10 @@ function loadCachedLocations() {
 function addMarker(location) {
     const position = [location.latitude, location.longitude];
     const iconColorClass = getIconColorClass(location);
+    const profileImage = location.profile_image ? `/profile_pics/${location.profile_image}` : '/profile_pics/default.png'; // Default user image
     const customIcon = L.divIcon({
         className: `custom-marker ${iconColorClass}`,
-        html: `<div class="marker-image" style="background-image: url('${location.profile_image}');"></div>`,
+        html: `<div class="marker-image" style="background-image: url('${profileImage}');"></div>`,
         iconSize: [50, 60],
         iconAnchor: [25, 60],
         popupAnchor: [0, -60]
@@ -213,7 +214,7 @@ function addMarker(location) {
     }
     popupContent += `
         <a href="https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}" target="_blank">
-            Navigate to this location
+            <button class="navigate-button">Navigate to this location</button>
         </a>
     `;
 

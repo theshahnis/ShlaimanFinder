@@ -745,6 +745,7 @@ input[type=email]::placeholder {
   box-shadow: none;
 }
 
+/* Custom Marker Styles */
 .custom-marker {
   position: relative;
   width: 50px;
@@ -788,6 +789,8 @@ input[type=email]::placeholder {
   border-right: 10px solid transparent;
   border-top: 10px solid white;
 }
+
+/* Attendees */
 .attendees {
   display: flex;
   flex-wrap: wrap;
@@ -802,6 +805,7 @@ input[type=email]::placeholder {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
+/* Navigate Button */
 .navigate-button {
   display: block;
   margin-top: 10px;
@@ -814,7 +818,6 @@ input[type=email]::placeholder {
   cursor: pointer;
   text-decoration: none;
 }
-
 .navigate-button:hover {
   background-color: #45a049;
 }
