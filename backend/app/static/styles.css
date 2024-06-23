@@ -135,7 +135,7 @@ button:active {
   /* Center the content vertically */
   text-align: center;
   /* Center the text */
-  background-color: #FFF9C4;
+  background-color: #DBCBCBB8;
   color: #000;
   border: 1px solid #FBC02D;
   border-radius: 8px;
@@ -270,10 +270,11 @@ button:active {
 }
 
 .stage {
+  text-align: center; 
   border: 1px solid #FF5722;
   padding: 10px;
   min-width: 150px;
-  background-color: #FFF9C4;
+  background-color: #D6D5FFD1;
   position: relative;
 }
 
@@ -304,9 +305,9 @@ button:active {
   justify-content: center;
   text-align: center;
   margin: 0 auto;
-  max-width: 600px;
-  padding: 20px;
-  background-color: #FFF9C4;
+  max-width: 380px;
+  padding: 10px;
+  background-color: #9797BFD4;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -726,7 +727,7 @@ input[type=email]::placeholder {
   }
 
   .stage {
-    min-width: 200px;
+    min-width: 180px;
     width: auto;
   }
 }

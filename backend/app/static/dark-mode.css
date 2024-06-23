@@ -315,9 +315,9 @@ button.select-show {
     justify-content: center;
     text-align: center;
     margin: 0 auto;
-    max-width: 600px;
-    padding: 20px;
-    background-color: #2E2E2E;
+    max-width: 380px;
+    padding: 10px;
+    background-color: #282828DE;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
