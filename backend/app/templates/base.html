@@ -94,16 +94,16 @@
     
         async function registerWorker() {
             console.log('Attempting to register service worker...');
-    
+
             if ('serviceWorker' in navigator) {
                 try {
                     console.log('Service worker is supported in this browser.');
                     const options = { scope: '/' };
                     const registration = await navigator.serviceWorker.register('/service-worker.js', options);
-    
+
                     console.log('ServiceWorker registration attempt finished.');
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    
+
                     registration.onupdatefound = () => {
                         const installingWorker = registration.installing;
                         installingWorker.onstatechange = () => {
@@ -117,7 +117,7 @@
                             }
                         };
                     };
-    
+
                     window.dispatchEvent(new Event('sw-toggle'));
                 } catch (e) {
                     console.error('ServiceWorker registration failed:', e);
@@ -129,22 +129,22 @@
                 console.log('Service Worker is not supported in this browser.');
             }
         }
-    
+
         window.addEventListener('load', registerWorker);
-    
+
         function isOnline() {
             return navigator.onLine;
         }
-    
+
         function showOfflineAlert() {
             alert('No active internet connection. Please connect to the internet.');
         }
-    
+
         window.addEventListener('online', function() {
             console.log('Back online');
             // Optionally refresh data here
         });
-    
+
         window.addEventListener('offline', function() {
             alert('You have lost internet connection. Some features may not be available.');
         });

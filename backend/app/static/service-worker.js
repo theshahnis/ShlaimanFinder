@@ -69,21 +69,22 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   console.log('Service Worker: Fetching', event.request.url);
   event.respondWith(
-    fetch(event.request).then(response => {
-      if (!response || response.status !== 200 || response.type !== 'basic') {
-        return response;
+    caches.match(event.request).then(cachedResponse => {
+      if (cachedResponse) {
+        return cachedResponse;
       }
-
-      const responseToCache = response.clone();
-      caches.open(CACHE_NAME).then(cache => {
-        console.log('Caching new resource', event.request.url);
-        cache.put(event.request, responseToCache);
-      });
-
-      return response;
-    }).catch(() => {
-      return caches.match(event.request).then(response => {
-        return response || caches.match('/fallback.html');
+      return fetch(event.request).then(networkResponse => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          console.log('Caching new resource', event.request.url);
+          cache.put(event.request, responseToCache);
+        });
+        return networkResponse;
+      }).catch(() => {
+        return caches.match('/fallback.html');
       });
     })
   );
