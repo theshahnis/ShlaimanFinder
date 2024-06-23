@@ -4,7 +4,7 @@ let locationMode = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
-    autoSelectMap();  // Request user's location on load
+    requestAndUpdateLocation();  // Request user's location on load and update it
 
     document.getElementById('refreshButton').addEventListener('click', function() {
         if (!isOnline()) {
@@ -12,15 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                updateLocation(latitude, longitude);
-            }, showError);
-        } else {
-            alert('Geolocation is not supported by this browser.');
-        }
+        requestAndUpdateLocation();  // Request user's location on button click and update it
         refreshLocations();
     });
 
@@ -31,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         refreshLocations();
     }
 });
+
 
 const locations = {
     israelCentral: [32.06607860466994, 34.78687443031782],
@@ -50,6 +43,18 @@ function initializeMap() {
         }
     });
     
+}
+
+function requestAndUpdateLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            updateLocation(latitude, longitude);
+        }, showError);
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
 }
 
 function loadMap(location) {
