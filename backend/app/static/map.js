@@ -49,8 +49,7 @@ function initializeMap() {
             locationMode = false;
         }
     });
-    markerCluster = L.markerClusterGroup();
-    map.addLayer(markerCluster);
+    
 }
 
 function loadMap(location) {
