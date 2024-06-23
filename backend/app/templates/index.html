@@ -29,7 +29,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('{{ url_for("get_home_data") }}')
+    fetch('{{ url_for("home_bp.get_home_data") }}')
         .then(response => response.json())
         .then(data => {
             // Update active users count
