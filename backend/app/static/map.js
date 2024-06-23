@@ -135,7 +135,7 @@ function addHotelMarker(hotel) {
     const position = [hotel.latitude, hotel.longitude];
     const customIcon = L.divIcon({
         className: 'custom-marker blue',
-        html: `<div class="marker-image" style="background-image: url('/static/images/hotel_icon.png');"></div>`,
+        html: `<div class="marker-image" style="background-image: url('/static/images/hotel.jpg');"></div>`,
         iconSize: [50, 60],
         iconAnchor: [25, 60],
         popupAnchor: [0, -60]
