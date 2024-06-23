@@ -4,6 +4,9 @@
 
 {% block content %}
 <div class="sos-container">
+    <div class="description">
+        <p>Hold the button for 5 seconds to send an SOS message.</p>
+    </div>
     <button id="sosButton"></button>
 </div>
 
@@ -76,15 +79,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-</script>
 <style>
     .sos-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 60px); /* Adjust height to fill the viewport minus some margin for header */
-    text-align: center;
-    margin-top: 0; /* Removed top margin */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 60px); /* Adjust height to fill the viewport minus some margin for header */
+        text-align: center;
+    }
+
+    .description {
+        margin-bottom: 20px; /* Add some space between the description and the button */
     }
 
     #sosButton {
@@ -104,5 +110,5 @@ document.addEventListener('DOMContentLoaded', function() {
     #sosButton:active {
         transform: scale(0.95);
     }
-    </style>
+</style>
 {% endblock %}
