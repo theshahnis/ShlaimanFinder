@@ -3,9 +3,9 @@
 {% block title %}SOS{% endblock %}
 
 {% block content %}
-<h1>SOS Page</h1>
-<p>Hold the button for 5 seconds to send an SOS message.</p>
-<button id="sosButton">SOS - Need Assistance</button>
+<div class="sos-container">
+    <button id="sosButton"></button>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -75,10 +75,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+</script>
 <style>
     .sos-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px); /* Adjust height to fill the viewport minus some margin for header */
     text-align: center;
-    margin-top: 20px;
+    margin-top: 0; /* Removed top margin */
     }
 
     #sosButton {
