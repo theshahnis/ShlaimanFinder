@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, jsonify, request, url_for, current_app
 from flask_login import login_required, current_user
-from ..models import Location, MeetingPoint, StaticLocation, User, Group, Hotel, UserHotel
+from ..models import Location, MeetingPoint, StaticLocation, User, Group, Hotel, UserHotel,Show,UserShow
 from app.extensions import db
 import os
 from .api import token_or_login_required
