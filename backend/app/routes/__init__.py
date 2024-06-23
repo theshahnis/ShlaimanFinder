@@ -9,6 +9,7 @@ from .map import map_bp as map_blueprint
 from .api import api_bp as api_blueprint
 from .soundboard import soundboard_bp as soundboard_blueprint
 from .sos import sos_bp
+from .home import home_bp
 
 def register_blueprints(app):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
@@ -22,3 +23,4 @@ def register_blueprints(app):
     app.register_blueprint(api_blueprint, url_prefix='/api/v1')
     app.register_blueprint(soundboard_blueprint, url_prefix='/soundboard')
     app.register_blueprint(sos_bp, url_prefix='/sos')
+    app.register_blueprint(home_bp, url_prefix='/home')

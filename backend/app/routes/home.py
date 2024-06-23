@@ -6,7 +6,10 @@ from app.extensions import db
 import os
 from .api import token_or_login_required
 
-@app.route('/home_data', methods=['GET'])
+home_bp = Blueprint('home_bp', __name__)
+
+
+@home_bp('/home_data', methods=['GET'])
 @token_or_login_required
 def get_home_data():
     # Active Users
