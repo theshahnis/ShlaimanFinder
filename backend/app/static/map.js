@@ -311,23 +311,25 @@ function showError(error) {
 
 function showLocationForm(lat, lng) {
     const formHtml = `
-        <div id="locationForm" style="position: absolute; top: 20px; left: 20px; background: white; padding: 20px; border: 1px solid #ccc; z-index: 1000;">
+        <div id="locationForm">
             <h3>Create Location</h3>
             <label for="locUsername">Name of the place:</label>
-            <input type="text" id="locUsername" name="locUsername"><br>
-            <label for="locNote">Note</label>
-            <textarea id="locNote" name="locNote"></textarea><br>
-            <label for="locImage">Image</label>
-            <input type="file" id="locImage" name="locImage"><br>
-            <label for="locType">Type</label><br>
+            <input type="text" id="locUsername" name="locUsername">
+            <label for="locNote">Note:</label>
+            <textarea id="locNote" name="locNote"></textarea>
+            <label for="locImage">Image:</label>
+            <input type="file" id="locImage" name="locImage">
+            <label for="locType">Type:</label><br>
             <input type="radio" id="meetingPoint" name="locType" value="meetingPoint" checked>
             <label for="meetingPoint">Meeting Point</label><br>
             <input type="radio" id="staticPoint" name="locType" value="staticPoint">
-            <label for="staticPoint">Static Location</label><br>
-            <label for="locDuration" id="durationLabel">Duration (hours)</label>
-            <input type="number" id="locDuration" name="locDuration" value="3"><br>
-            <button onclick="submitLocation(${lat}, ${lng})">Submit</button>
-            <button onclick="cancelLocation()">Cancel</button>
+            <label for="staticPoint">Static Location</label>
+            <label for="locDuration" id="durationLabel">Duration (hours):</label>
+            <input type="number" id="locDuration" name="locDuration" value="3">
+            <div style="display: flex; justify-content: space-between;">
+                <button onclick="submitLocation(${lat}, ${lng})">Submit</button>
+                <button onclick="cancelLocation()">Cancel</button>
+            </div>
         </div>
     `;
     document.body.insertAdjacentHTML('beforeend', formHtml);
