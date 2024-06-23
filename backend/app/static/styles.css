@@ -53,40 +53,33 @@ button {
 
 button.nav-button {
   background-color: #e9a530;
+  ;
   color: #000;
   padding: 10px 20px;
   border: none;
   cursor: pointer;
   border-radius: 5px;
-  font-size: 16px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin: 5px;
-  text-align: center;
 }
 
-button.nav-button:hover {
-  background-color: #ffbb33;
-  transform: translateY(-2px);
-}
 
+.button.selected,
+.nav-button.selected {
+  background-color: #FFC107;
+  /* Light background for selected buttons */
+  color: #000;
+  border: 2px solid #FF5722;
+  /* Dark border */
+}
 button.nav-button.selected {
   background-color: #007bff;
   color: #fff;
   border: 2px solid #0056b3;
 }
-
-button.nav-button a {
-  color: inherit;
-  text-decoration: none;
-  display: block;
-}
-
-.nav-button-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+.button.selected,
+.nav-button.selected {
+  background-color: #007bff;
+  color: #fff;
+  border: 2px solid #0056b3;
 }
 
 
@@ -813,11 +806,10 @@ input[type=email]::placeholder {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
-/* Navigate Button */
 .navigate-button {
   display: block;
   margin-top: 10px;
-  padding: 10px 20px; /* Increased padding for better touch targets */
+  padding: 5px 10px; /* Decreased padding for a smaller button */
   background-color: #4CAF50;
   color: white;
   text-align: center;
@@ -825,7 +817,7 @@ input[type=email]::placeholder {
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 10px; /* Larger font size for readability */
+  font-size: 12px; /* Smaller font size */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
