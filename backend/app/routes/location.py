@@ -263,12 +263,26 @@ def save_picture(form_picture, target_dir):
     form_picture.save(picture_path)
     return picture_fn
 
+# Add this new endpoint
 @location_bp.route('/hotels', methods=['GET'])
-@login_required
+@token_or_login_required
 def get_hotels():
     hotels = Hotel.query.all()
-    hotels_data = [hotel.to_dict() for hotel in hotels]
-    return jsonify({'hotels': hotels_data})
+    hotel_data = []
+
+    for hotel in hotels:
+        users = [{'id': user.id, 'username': user.username, 'profile_image': user.profile_image} for user in hotel.users]
+        hotel_data.append({
+            'id': hotel.id,
+            'name': hotel.name,
+            'latitude': hotel.latitude,
+            'longitude': hotel.longitude,
+            'start_date': hotel.start_date.isoformat(),
+            'end_date': hotel.end_date.isoformat(),
+            'users': users
+        })
+
+    return jsonify(hotel_data)
 
 
 @location_bp.route('/add_hotel', methods=['POST'])

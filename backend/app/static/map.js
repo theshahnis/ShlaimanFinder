@@ -89,7 +89,6 @@ function refreshLocations() {
     markers = [];
     
     if (!isOnline()) {
-        showOfflineAlert();
         loadCachedLocations();
         return;
     }
@@ -97,7 +96,6 @@ function refreshLocations() {
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
-            console.log('Fetched locations:', data);  // Debugging information
 
             // Save new data to local storage
             saveToLocalStorage('locations', data);
@@ -116,12 +114,51 @@ function refreshLocations() {
             data.meeting_points.forEach(location => {
                 addMarker(location);
             });
+
+            // Fetch and process hotels
+            fetch('/location/hotels')
+                .then(response => response.json())
+                .then(hotels => {
+                    hotels.forEach(hotel => {
+                        addHotelMarker(hotel);
+                    });
+                });
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
             // If fetching fails, load cached locations
             loadCachedLocations();
         });
+}
+
+function addHotelMarker(hotel) {
+    const position = [hotel.latitude, hotel.longitude];
+    const customIcon = L.divIcon({
+        className: 'custom-marker blue',
+        html: `<div class="marker-image" style="background-image: url('/static/images/hotel_icon.png');"></div>`,
+        iconSize: [50, 60],
+        iconAnchor: [25, 60],
+        popupAnchor: [0, -60]
+    });
+
+    let popupContent = `
+        <b>${hotel.name}</b><br>
+        <p>Start Date: ${new Date(hotel.start_date).toLocaleDateString()}</p>
+        <p>End Date: ${new Date(hotel.end_date).toLocaleDateString()}</p>
+        <h4>Users staying in this hotel:</h4>
+        <div class="attendees">`;
+
+    hotel.users.forEach(user => {
+        popupContent += `
+            <img src="${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon">
+        `;
+    });
+
+    popupContent += `</div>`;
+
+    const marker = L.marker(position, { icon: customIcon }).addTo(map)
+        .bindPopup(popupContent);
+    markers.push(marker);
 }
 
 function loadCachedLocations() {
