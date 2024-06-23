@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime,timedelta
 import pytz,jwt
 
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False, unique=True)
@@ -31,6 +32,7 @@ class User(UserMixin, db.Model):
     note = db.Column(db.Text, nullable=True)
     api_token = db.Column(db.String(512), unique=True, nullable=True) 
     phone_number = db.Column(db.String(20), nullable=True)
+    
 
     
 
@@ -136,3 +138,29 @@ class UserShow(db.Model):
     show_id = db.Column(db.Integer, db.ForeignKey('show.id'), nullable=False)
     user = db.relationship('User', backref='user_shows')
     show = db.relationship('Show', backref='user_shows')
+
+
+class Hotel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
+    users = db.relationship('User', secondary='user_hotel', backref='hotels')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
+            'start_date': self.start_date.isoformat() if self.start_date else None,
+            'end_date': self.end_date.isoformat() if self.end_date else None,
+            'users': [user.username for user in self.users]
+        }
+
+class UserHotel(db.Model):
+    __tablename__ = 'user_hotel'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), primary_key=True)

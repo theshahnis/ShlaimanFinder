@@ -262,3 +262,54 @@ def save_picture(form_picture, target_dir):
 
     form_picture.save(picture_path)
     return picture_fn
+
+@location_bp.route('/hotels', methods=['GET'])
+@login_required
+def get_hotels():
+    hotels = Hotel.query.all()
+    hotels_data = [hotel.to_dict() for hotel in hotels]
+    return jsonify({'hotels': hotels_data})
+
+
+@location_bp.route('/add_hotel', methods=['POST'])
+@login_required
+def add_hotel():
+    try:
+        data = request.get_json()
+        name = data.get('name')
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d')
+        end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d')
+
+        if name and latitude and longitude and start_date and end_date:
+            hotel = Hotel(name=name, latitude=latitude, longitude=longitude, start_date=start_date, end_date=end_date)
+            db.session.add(hotel)
+            db.session.commit()
+            return jsonify({'message': 'Hotel added successfully'}), 200
+
+        return jsonify({'message': 'Invalid data'}), 400
+    except Exception as e:
+        print(f"Error adding hotel - {e}")
+        return jsonify({'message': 'Internal Server Error'}), 500
+
+@location_bp.route('/assign_user_to_hotel', methods=['POST'])
+@login_required
+def assign_user_to_hotel():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        hotel_id = data.get('hotel_id')
+
+        user = User.query.get(user_id)
+        hotel = Hotel.query.get(hotel_id)
+
+        if user and hotel:
+            hotel.users.append(user)
+            db.session.commit()
+            return jsonify({'message': 'User assigned to hotel successfully'}), 200
+
+        return jsonify({'message': 'Invalid user or hotel ID'}), 400
+    except Exception as e:
+        print(f"Error assigning user to hotel - {e}")
+        return jsonify({'message': 'Internal Server Error'}), 500
