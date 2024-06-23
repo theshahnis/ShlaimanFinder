@@ -82,7 +82,7 @@ button {
 .nav-button {
   background: linear-gradient(145deg, #372f858f, #873430a3);
   color: #eae3e3;
-  padding: 3px 11px; /* Reduced padding */
+  padding: 8px 15px; /* Reduced padding */
   border: 1px solid #979797;
   cursor: pointer;
   border-radius: 10px;
