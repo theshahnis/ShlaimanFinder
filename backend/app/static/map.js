@@ -49,6 +49,8 @@ function initializeMap() {
             locationMode = false;
         }
     });
+    markerCluster = L.markerClusterGroup();
+    map.addLayer(markerCluster);
 }
 
 function loadMap(location) {
@@ -85,10 +87,11 @@ function updateLocation(latitude, longitude) {
 }
 
 function refreshLocations() {
-    markers.forEach(marker => map.removeLayer(marker));
+    markerCluster.clearLayers();
     markers = [];
     
     if (!isOnline()) {
+        showOfflineAlert();
         loadCachedLocations();
         return;
     }
@@ -96,6 +99,7 @@ function refreshLocations() {
     fetch('/location/locations')
         .then(response => response.json())
         .then(data => {
+            console.log('Fetched locations:', data);  // Debugging information
 
             // Save new data to local storage
             saveToLocalStorage('locations', data);
@@ -114,15 +118,6 @@ function refreshLocations() {
             data.meeting_points.forEach(location => {
                 addMarker(location);
             });
-
-            // Fetch and process hotels
-            fetch('/location/hotels')
-                .then(response => response.json())
-                .then(hotels => {
-                    hotels.forEach(hotel => {
-                        addHotelMarker(hotel);
-                    });
-                });
         })
         .catch(error => {
             console.error('Error fetching locations:', error);
@@ -217,7 +212,7 @@ function loadCachedLocations() {
 function addMarker(location) {
     const position = [location.latitude, location.longitude];
     const iconColorClass = getIconColorClass(location);
-    const profileImage = location.profile_image ? `${location.profile_image}` : 'default.png'; // Default user image
+    const profileImage = location.profile_image ? `/profile_pics/${location.profile_image}` : '/profile_pics/default.png'; // Default user image
     const customIcon = L.divIcon({
         className: `custom-marker ${iconColorClass}`,
         html: `<div class="marker-image" style="background-image: url('${profileImage}');"></div>`,
@@ -240,8 +235,8 @@ function addMarker(location) {
         </a>
     `;
 
-    const marker = L.marker(position, { icon: customIcon }).addTo(map)
-        .bindPopup(popupContent);
+    const marker = L.marker(position, { icon: customIcon }).bindPopup(popupContent);
+    markerCluster.addLayer(marker);
     markers.push(marker);
 }
 

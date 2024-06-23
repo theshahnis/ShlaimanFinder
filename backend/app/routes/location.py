@@ -267,20 +267,25 @@ def save_picture(form_picture, target_dir):
 @location_bp.route('/hotels', methods=['GET'])
 @token_or_login_required
 def get_hotels():
+    today = datetime.today().date()
     hotels = Hotel.query.all()
     hotel_data = []
 
     for hotel in hotels:
-        users = [{'id': user.id, 'username': user.username, 'profile_image': user.profile_image} for user in hotel.users]
-        hotel_data.append({
-            'id': hotel.id,
-            'name': hotel.name,
-            'latitude': hotel.latitude,
-            'longitude': hotel.longitude,
-            'start_date': hotel.start_date.isoformat(),
-            'end_date': hotel.end_date.isoformat(),
-            'users': users
-        })
+        start_display_date = hotel.start_date.date() - timedelta(days=1)
+        end_display_date = hotel.end_date.date() + timedelta(days=1)
+        
+        if start_display_date <= today <= end_display_date:
+            users = [{'id': user.id, 'username': user.username, 'profile_image': user.profile_image} for user in hotel.users]
+            hotel_data.append({
+                'id': hotel.id,
+                'name': hotel.name,
+                'latitude': hotel.latitude,
+                'longitude': hotel.longitude,
+                'start_date': hotel.start_date.isoformat(),
+                'end_date': hotel.end_date.isoformat(),
+                'users': users
+            })
 
     return jsonify(hotel_data)
 
