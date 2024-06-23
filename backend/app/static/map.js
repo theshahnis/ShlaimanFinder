@@ -133,7 +133,7 @@ function refreshLocations() {
 
 function addHotelMarker(hotel) {
     const position = [hotel.latitude, hotel.longitude];
-    const defaultHotelImage = '/static/images/hotel.jpg'; // Define default hotel image
+    const defaultHotelImage = '/images/hotel.jpg'; // Define default hotel image
     const hotelImage = hotel.image ? hotel.image : defaultHotelImage;
     const customIcon = L.divIcon({
         className: 'custom-marker blue',
