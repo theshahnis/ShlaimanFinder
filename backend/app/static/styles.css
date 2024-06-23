@@ -68,11 +68,11 @@ button {
 
 /* Navigation Bar Styles */
 .nav-bar {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 3px; /* Reduced gap */
-  padding: 0px 0; /* Reduced padding */
+  padding: 5px 0; /* Reduced padding */
 }
 
 .nav-bar li {
