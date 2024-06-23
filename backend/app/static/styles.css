@@ -5,17 +5,17 @@ html {
   background-color: #bea384;
 }
 nav {
-  position: fixed;
+  position: inherit;
   top: 0;
   width: 100%;
-  background-color: #f3b14e;
+  background-color: #33291a54;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  padding: 5px 0; /* Reduced padding */
+  padding: 1px 0; /* Reduced padding */
 }
 
 body {
-  padding-top: 30px; /* Adjusted padding to avoid content being hidden behind the nav */
+  padding-top: 5px; /* Adjusted padding to avoid content being hidden behind the nav */
 }
 body {
   font-family: "Poppins", sans-serif;
@@ -68,11 +68,11 @@ button {
 
 /* Navigation Bar Styles */
 .nav-bar {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 5px; /* Reduced gap */
-  padding: 5px 0; /* Reduced padding */
+  gap: 3px; /* Reduced gap */
+  padding: 0px 0; /* Reduced padding */
 }
 
 .nav-bar li {
@@ -80,12 +80,12 @@ button {
 }
 
 .nav-button {
-  background: linear-gradient(145deg, #e9a530, #f3b14e);
-  color: #fff;
-  padding: 5px 10px; /* Reduced padding */
-  border: 1px solid #e0a425;
+  background: linear-gradient(145deg, #372f858f, #873430a3);
+  color: #eae3e3;
+  padding: 3px 11px; /* Reduced padding */
+  border: 1px solid #979797;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 -2px 4px rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
   text-align: center;
