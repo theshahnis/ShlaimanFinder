@@ -169,13 +169,33 @@ function addHotelMarker(hotel) {
     marker.on('popupopen', function() {
         document.querySelectorAll('.attendee-icon').forEach(icon => {
             icon.addEventListener('click', function() {
-                alert(`User: ${this.getAttribute('data-username')}`);
+                const username = this.getAttribute('data-username');
+                showUserModal(username);
             });
         });
     });
 
     markers.push(marker);
 }
+
+function showUserModal(username) {
+    const modal = document.getElementById('userModal');
+    const modalContent = document.getElementById('userModalContent');
+    modalContent.innerHTML = `<p>User: ${username}</p>`;
+    modal.style.display = "block";
+
+    const span = document.getElementsByClassName("user-modal-close")[0];
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+}
+
 function loadCachedLocations() {
     const data = loadFromLocalStorage('locations');
     if (data) {
