@@ -4,6 +4,7 @@ let locationMode = false;
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
+    autoSelectMap();  // Request user's location on load
 
     document.getElementById('refreshButton').addEventListener('click', function() {
         if (!isOnline()) {
@@ -38,10 +39,7 @@ const locations = {
 };
 
 function initializeMap() {
-    const lastMapLocation = localStorage.getItem('lastMapLocation');
-    const defaultLocation = lastMapLocation ? JSON.parse(lastMapLocation) : locations.israelCentral;
-    
-    map = L.map('map').setView(defaultLocation, 11);
+    map = L.map('map').setView(locations.israelCentral, 11);  // Default to Israel Central
     applyMapMode(mapModes[currentMapModeIndex]);
 
     map.on('click', function(e) {
@@ -51,11 +49,11 @@ function initializeMap() {
             locationMode = false;
         }
     });
+    
 }
 
 function loadMap(location) {
     map.setView(locations[location], 11);
-    localStorage.setItem('lastMapLocation', JSON.stringify(locations[location])); // Store the selected map location
     refreshLocations();
 }
 
