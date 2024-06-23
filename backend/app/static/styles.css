@@ -15,7 +15,7 @@ nav {
 }
 
 body {
-  padding-top: 5px; /* Adjusted padding to avoid content being hidden behind the nav */
+  padding-top: 0px; /* Adjusted padding to avoid content being hidden behind the nav */
 }
 body {
   font-family: "Poppins", sans-serif;
