@@ -195,7 +195,7 @@ function loadCachedLocations() {
 function addMarker(location) {
     const position = [location.latitude, location.longitude];
     const iconColorClass = getIconColorClass(location);
-    const profileImage = location.profile_image ? `/profile_pics/${location.profile_image}` : '/profile_pics/default.png'; // Default user image
+    const profileImage = location.profile_image ? `${location.profile_image}` : 'default.png'; // Default user image
     const customIcon = L.divIcon({
         className: `custom-marker ${iconColorClass}`,
         html: `<div class="marker-image" style="background-image: url('${profileImage}');"></div>`,
