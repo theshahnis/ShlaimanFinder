@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
-from ..models import User, Group, StaticLocation, MeetingPoint
+from ..models import User, Group, StaticLocation, MeetingPoint,Hotel, UserHotel
 from ..extensions import db
 from werkzeug.security import generate_password_hash
 from .api import token_or_login_required
@@ -313,3 +313,71 @@ class AddStaticLocationResource(Resource):
     }))
     def post(self):
         return add_static_location()
+
+# Add hotel
+@superuser_bp.route('/add_hotel', methods=['POST'])
+@token_or_login_required
+def add_hotel():
+    if not current_user.superuser:
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+    
+    data = request.get_json()
+    name = data.get('name')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%d')
+    end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%d')
+
+    new_hotel = Hotel(
+        name=name,
+        latitude=latitude,
+        longitude=longitude,
+        start_date=start_date,
+        end_date=end_date
+    )
+    db.session.add(new_hotel)
+    db.session.commit()
+    return jsonify({'message': 'Hotel added successfully'}), 201
+
+# Fetch hotels
+@superuser_bp.route('/hotels', methods=['GET'])
+@token_or_login_required
+def get_hotels():
+    if not current_user.superuser:
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
+    hotels = Hotel.query.all()
+    return jsonify([hotel.to_dict() for hotel in hotels])
+
+# Assign user to hotel
+@superuser_bp.route('/assign_user_to_hotel', methods=['POST'])
+@token_or_login_required
+def assign_user_to_hotel():
+    if not current_user.superuser:
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
+    data = request.get_json()
+    user_id = data.get('user_id')
+    hotel_id = data.get('hotel_id')
+
+    user = User.query.get_or_404(user_id)
+    hotel = Hotel.query.get_or_404(hotel_id)
+
+    user.hotels.append(hotel)
+    db.session.commit()
+    return jsonify({'message': 'User assigned to hotel successfully'}), 200
+
+# Delete hotel
+@superuser_bp.route('/delete_hotel', methods=['POST'])
+@token_or_login_required
+def delete_hotel():
+    if not current_user.superuser:
+        return jsonify({'error': 'Access denied: Superuser only'}), 403
+
+    data = request.get_json()
+    hotel_id = data.get('hotel_id')
+
+    hotel = Hotel.query.get_or_404(hotel_id)
+    db.session.delete(hotel)
+    db.session.commit()
+    return jsonify({'message': 'Hotel deleted successfully'}), 200

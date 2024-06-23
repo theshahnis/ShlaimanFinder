@@ -62,6 +62,47 @@
         <tbody id="meetingPointsTableBody">
             <!-- Meeting points will be loaded here dynamically -->
         </tbody>
+        <h2>Manage Hotels</h2>
+    <form id="addHotelForm" class="form-inline">
+        <input type="text" name="name" placeholder="Hotel Name" required class="form-control">
+        <input type="number" step="any" name="latitude" placeholder="Latitude" required class="form-control">
+        <input type="number" step="any" name="longitude" placeholder="Longitude" required class="form-control">
+        <input type="date" name="start_date" required class="form-control">
+        <input type="date" name="end_date" required class="form-control">
+        <button type="submit" class="btn">Add Hotel</button>
+    </form>
+
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="hotelsTableBody">
+            <!-- Hotels will be loaded here dynamically -->
+        </tbody>
+    </table>
+
+    <h2>Assign Users to Hotels</h2>
+    <form id="assignUserToHotelForm" class="form-inline">
+        <select name="user_id" required class="form-control">
+            <option value="" disabled selected>Select User</option>
+            {% for user in users %}
+            <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+        <select name="hotel_id" required class="form-control">
+            <option value="" disabled selected>Select Hotel</option>
+            <!-- Options will be dynamically added here -->
+        </select>
+        <button type="submit" class="btn">Assign User to Hotel</button>
+    </form>
+
     </table>
 
 
@@ -302,6 +343,123 @@
             })
             .catch(error => {
                 console.error('Error deleting user:', error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchHotels();
+            document.getElementById('addHotelForm').addEventListener('submit', addHotel);
+            document.getElementById('assignUserToHotelForm').addEventListener('submit', assignUserToHotel);
+        });
+
+        function fetchHotels() {
+            fetch('/superuser/hotels')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('hotelsTableBody');
+                    const hotelSelect = document.querySelector('select[name="hotel_id"]');
+                    tableBody.innerHTML = '';
+                    hotelSelect.innerHTML = '<option value="" disabled selected>Select Hotel</option>';
+                    data.forEach(hotel => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${hotel.name}</td>
+                            <td>${hotel.latitude}</td>
+                            <td>${hotel.longitude}</td>
+                            <td>${new Date(hotel.start_date).toLocaleDateString()}</td>
+                            <td>${new Date(hotel.end_date).toLocaleDateString()}</td>
+                            <td><button class="delete-hotel btn btn-danger" data-hotel-id="${hotel.id}">Delete</button></td>
+                        `;
+                        tableBody.appendChild(row);
+
+                        const option = document.createElement('option');
+                        option.value = hotel.id;
+                        option.textContent = hotel.name;
+                        hotelSelect.appendChild(option);
+                    });
+
+                    document.querySelectorAll('.delete-hotel').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const hotelId = this.getAttribute('data-hotel-id');
+                            deleteHotel(hotelId);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching hotels:', error);
+                });
+        }
+
+        function addHotel(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/superuser/add_hotel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Hotel added:', data);
+                fetchHotels(); // Refresh the list
+            })
+            .catch(error => {
+                console.error('Error adding hotel:', error);
+            });
+        }
+
+        function deleteHotel(hotelId) {
+            if (!confirm('Are you sure you want to delete this hotel?')) {
+                return;
+            }
+
+            fetch('/superuser/delete_hotel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ hotel_id: hotelId })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Hotel deleted:', data);
+                fetchHotels(); // Refresh the list
+            })
+            .catch(error => {
+                console.error('Error deleting hotel:', error);
+            });
+        }
+
+        function assignUserToHotel(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('/superuser/assign_user_to_hotel', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('User assigned to hotel:', data);
+                alert('User assigned to hotel successfully');
+            })
+            .catch(error => {
+                console.error('Error assigning user to hotel:', error);
             });
         }
     </script>
