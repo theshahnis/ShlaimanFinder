@@ -25,17 +25,17 @@ body.dark-mode {
     color: #E0E0E0;
   }
   
-  body.dark-mode button.nav-button {
+  body.dark-mode .nav-button {
     background: linear-gradient(145deg, #333333, #555555);
     color: #FF5722;
     border: 1px solid #444444;
   }
   
-  body.dark-mode button.nav-button:hover {
+  body.dark-mode .nav-button:hover {
     background: linear-gradient(145deg, #555555, #333333);
   }
   
-  body.dark-mode button.nav-button.selected {
+  body.dark-mode .nav-button.selected {
     background-color: #673AB7;
     color: #E0E0E0;
     border: 2px solid #FF5722;
