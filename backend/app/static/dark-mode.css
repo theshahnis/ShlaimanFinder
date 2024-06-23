@@ -144,8 +144,8 @@ button.select-show {
     color: #E0E0E0;
     border: 1px solid #2E2E2E;
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
     width: 90%;
     max-width: 800px;
@@ -359,7 +359,7 @@ h2 {
     font-size: 16px;
     font-weight: 600;
     text-transform: uppercase;
-    display: inline-block;
+    display: grid;
     margin: 40px 8px 10px 8px;
     color: #151313;
 }
@@ -423,7 +423,7 @@ h2 {
     }
 
     .stage {
-        min-width: 200px;
+        min-width: 180px;
         width: auto;
     }
 }

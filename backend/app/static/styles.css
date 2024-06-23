@@ -139,8 +139,8 @@ button:active {
   color: #000;
   border: 1px solid #FBC02D;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 10px;
+  margin-bottom: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 800px;
@@ -365,7 +365,7 @@ h2 {
   font-size: 16px;
   font-weight: 600;
   text-transform: uppercase;
-  display: inline-block;
+  display: grid;
   margin: 40px 8px 10px 8px;
   color: #151313;
 }

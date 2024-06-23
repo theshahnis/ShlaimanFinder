@@ -104,7 +104,7 @@ function renderShows(shows, showsAttendees) {
         'Vulture': 'vulture_logo.png',
         'Buzzard': 'buzzard_logo.png',
         'Hawk': 'hawk_logo.png',
-        'Raven': 'default_logo.png'  // Add a default logo or leave this out
+        'Raven': 'raven.png'  // Add a default logo or leave this out
     };
 
     for (const stage of Object.keys(stages)) {
