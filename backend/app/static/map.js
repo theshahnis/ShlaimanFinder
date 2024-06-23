@@ -152,7 +152,7 @@ function addHotelMarker(hotel) {
 
     hotel.users.forEach(user => {
         popupContent += `
-            <img src="/profile_pics/${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon" data-username="${user.username}">
+            <img src="/profile_pics/${user.profile_image}" alt="${user.username}" title="${user.username}" class="attendee-icon" onclick="showUserModal('${user.username}', '/profile_pics/${user.profile_image}')">
         `;
     });
 
@@ -165,35 +165,29 @@ function addHotelMarker(hotel) {
 
     const marker = L.marker(position, { icon: customIcon }).addTo(map)
         .bindPopup(popupContent);
-
-    marker.on('popupopen', function() {
-        document.querySelectorAll('.attendee-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
-                const username = this.getAttribute('data-username');
-                showUserModal(username);
-            });
-        });
-    });
-
     markers.push(marker);
 }
 
-function showUserModal(username) {
+function showUserModal(username, imageUrl) {
     const modal = document.getElementById('userModal');
     const modalContent = document.getElementById('userModalContent');
-    modalContent.innerHTML = `<p>User: ${username}</p>`;
-    modal.style.display = "block";
+    modalContent.innerHTML = `
+        <h2>${username}</h2>
+        <img src="${imageUrl}" alt="${username}" class="attendee-icon">
+    `;
+    modal.style.display = 'block';
 
-    const span = document.getElementsByClassName("user-modal-close")[0];
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
+    // Close the modal when clicking outside of it
     window.onclick = function(event) {
         if (event.target == modal) {
-            modal.style.display = "none";
+            modal.style.display = 'none';
         }
-    }
+    };
+
+    // Close the modal when clicking on the close button
+    document.querySelector('.user-modal-close').onclick = function() {
+        modal.style.display = 'none';
+    };
 }
 
 function loadCachedLocations() {
