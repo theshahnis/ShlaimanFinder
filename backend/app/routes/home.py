@@ -9,7 +9,7 @@ from .api import token_or_login_required
 home_bp = Blueprint('home_bp', __name__)
 
 
-@home_bp('/home_data', methods=['GET'])
+@home_bp.route('/home_data', methods=['GET'])
 @token_or_login_required
 def get_home_data():
     # Active Users
