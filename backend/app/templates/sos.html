@@ -15,6 +15,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const sosButton = document.getElementById('sosButton');
     let holdTimer = null;
     let holdStartTime = null;
+    let userLocation = null;
+
+    // Request location on page load
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            userLocation = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+        }, function(error) {
+            alert('Unable to retrieve your location.');
+        });
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
 
     // Function to start the hold timer
     function startHoldTimer() {
@@ -50,65 +65,58 @@ document.addEventListener('DOMContentLoaded', function() {
     sosButton.addEventListener('touchcancel', clearHoldTimer);
 
     function sendSOS() {
-        // Assume current location is obtained from the browser's geolocation API
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                fetch('{{ url_for("sos_bp.send_sos") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ latitude: latitude, longitude: longitude })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }, function(error) {
-                alert('Unable to retrieve your location.');
+        if (userLocation) {
+            fetch('{{ url_for("sos_bp.send_sos") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userLocation)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
         } else {
-            alert('Geolocation is not supported by this browser.');
+            alert('Location not available.');
         }
     }
 });
 </script>
 
 <style>
-    .sos-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: calc(100vh - 60px); /* Adjust height to fill the viewport minus some margin for header */
-        text-align: center;
-    }
+.sos-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 60px); /* Adjust height to fill the viewport minus some margin for header */
+    text-align: center;
+}
 
-    .description {
-        margin-bottom: 20px; /* Add some space between the description and the button */
-    }
+.description {
+    margin-bottom: 20px; /* Add some space between the description and the button */
+}
 
-    #sosButton {
-        width: 150px; /* Adjusted size */
-        height: 150px; /* Adjusted size */
-        font-size: 24px;
-        border-radius: 50%;
-        background: linear-gradient(to bottom, green, red); /* Gradient background */
-        color: white;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+#sosButton {
+    width: 150px; /* Adjusted size */
+    height: 150px; /* Adjusted size */
+    font-size: 24px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, green, red); /* Gradient background */
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    #sosButton:active {
-        transform: scale(0.95);
-    }
+#sosButton:active {
+    transform: scale(0.95);
+}
 </style>
 {% endblock %}
